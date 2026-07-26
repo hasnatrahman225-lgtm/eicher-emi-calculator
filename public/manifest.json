@@ -2,7 +2,7 @@
     "name": "Eicher EMI Calculator",
     "short_name": "Eicher EMI",
     "description": "Eicher Truck Package Calculator for Field and Management",
-    "start_url": "./EICHER EMI CALCULATOR.html",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#f8fafc",
     "theme_color": "#8b5cf6",

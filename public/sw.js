@@ -1,7 +1,7 @@
-const CACHE_NAME = 'eicher-calculator-v1';
+const CACHE_NAME = 'eicher-calculator-v2';
 const urlsToCache = [
-  './EICHER EMI CALCULATOR.html',
-  './manifest.json'
+  '/',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
