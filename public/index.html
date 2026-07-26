@@ -775,11 +775,27 @@
                 document.getElementById("dpAmount").value = dpAmount;
                 updateDpPercent();
             }
-            const penaltySlabs = Math.ceil((minDp - dpAmount) / 50000);
-            penaltyRate = penaltySlabs * 0.5;
+            const actualShortfall = minDp - dpAmount;
+            penaltyRate = Math.floor(actualShortfall / 50000) * 0.5;
         }
 
-        const effectiveInterestRate = interestRate + penaltyRate;
+        let requiredRate = 5;
+        if (months > 35) requiredRate = 13;
+        else if (months > 29) requiredRate = 10;
+        else if (months > 24) requiredRate = 7;
+        
+        requiredRate += penaltyRate;
+        
+        if (interestRate < requiredRate) {
+            interestRate = requiredRate;
+            document.getElementById("interest").value = requiredRate.toString();
+            let msg = `For a duration of ${months} months, the base minimum profit rate is ${requiredRate - penaltyRate}%.`;
+            if (penaltyRate > 0) msg += ` Due to DP shortfall, a penalty of ${penaltyRate}% is added.`;
+            msg += ` The rate has been adjusted automatically to ${requiredRate}%.`;
+            alert(msg);
+        }
+
+        const effectiveInterestRate = interestRate;
         const totalLoan = price - dpAmount;
         const totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
         const totalPrice = price + totalInterest;
@@ -796,13 +812,13 @@
 
         let comparisonHTML = "";
         if (creditPriceExcel > 0) {
-            const difference = creditPriceExcel - totalPrice;
-            if (difference > 0) {
-                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #15803d;">Wow! You are saving <span style="font-size:24px;">${formatCurrency(difference)}</span> compared to the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
-            } else if (difference < 0) {
-                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #b91c1c;">Note: You are paying <span style="font-size:24px;">${formatCurrency(Math.abs(difference))}</span> more than the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
+            const diff = totalPrice - creditPriceExcel;
+            if (diff > 0) {
+                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:18px;"><strong>Loss compared to Credit Price: ${formatCurrency(diff)}</strong><br><span style="font-size:14px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+            } else if (diff < 0) {
+                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:18px;"><strong>Benefit compared to Credit Price: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:14px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
             } else {
-                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #0f172a;">Your Total Price perfectly matches the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
+                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:18px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:14px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
         }
 
@@ -815,12 +831,17 @@
             `;
         }
 
+        let basePriceHtml = "";
+        if (userRole !== "Field") {
+            basePriceHtml = `<li><strong>Base Product Price:</strong> ${formatCurrency(price)}</li>`;
+        }
+
         let explanationHTML = `
             ${comparisonHTML}
             ${penaltyHTML}
             <h4>Calculation Breakdown:</h4>
             <ul>
-                <li><strong>Base Product Price:</strong> ${formatCurrency(price)}</li>
+                ${basePriceHtml}
                 <li><strong>Downpayment Provided:</strong> ${formatCurrency(dpAmount)}</li>
                 <li><strong>Loan Amount Required:</strong> ${formatCurrency(totalLoan)}</li>
                 <li><strong>Effective Profit Rate:</strong> ${effectiveInterestRate}% per year</li>
