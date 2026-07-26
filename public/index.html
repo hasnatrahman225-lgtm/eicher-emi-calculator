@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eicher Truck Package Calculator</title>
+    <link rel="manifest" href="./manifest.json">
+    <style>
+        :root {
+            --primary: #8b5cf6; 
+            --primary-light: #a78bfa;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899; 
+            --teal: #14b8a6;
+            --orange: #f59e0b; 
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --gradient: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            --gradient-subtle: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 50%, #fef3c7 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-subtle);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            text-align: center;
+        }
+        
+        h1 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        /* Top Nav Actions */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-admin { background: #3b82f6; color: white; }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-close { background: #64748b; color: white; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr !important; }
+            .container { padding: 15px; margin-top: 40px; }
+            .top-nav { top: 10px; right: 10px; }
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button.primary-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(to right, #eff6ff, #fdf2f8);
+            border-radius: 12px;
+            border-left: 5px solid var(--secondary);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .result-card:nth-child(1) { border-top: 4px solid var(--primary); }
+        .result-card:nth-child(2) { border-top: 4px solid var(--teal); }
+        .result-card:nth-child(3) { border-top: 4px solid var(--secondary); }
+
+        .result-card h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-muted);
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        .result-card .value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: right;
+        }
+
+        th {
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+
+        .explanation {
+            margin-top: 25px;
+            background: #fffbeb;
+            padding: 18px;
+            border-left: 5px solid #f59e0b;
+            border-radius: 8px;
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        /* Overlay Styles */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .card-box {
+            background: white; padding: 30px; border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px;
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .tab-group {
+            display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border-color);
+        }
+        .tab {
+            flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--text-muted);
+        }
+        .tab.active {
+            color: var(--primary); border-bottom: 2px solid var(--primary); margin-bottom: -2px;
+        }
+
+        .admin-table th, .admin-table td { text-align: left; }
+    </style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="loginOverlay" class="overlay">
+    <h2 style="margin-bottom:20px;">EICHER EMI CALCULATOR</h2>
+    <div class="card-box">
+        <div class="tab-group">
+            <div class="tab active" onclick="switchLoginTab('login')">Login</div>
+            <div class="tab" onclick="switchLoginTab('forgot')">Forgot Password</div>
+        </div>
+
+        <!-- Error Message Box -->
+        <p id="loginMessage" style="color:red; display:none; text-align:center; margin-bottom:15px; font-weight:bold;"></p>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <label>Phone Number</label>
+            <input type="text" id="loginPhone" placeholder="01700000000" style="margin-bottom:15px;">
+            
+            <div id="passwordLoginSection">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Password" style="margin-bottom:15px;">
+                <button onclick="loginWithPassword()" class="primary-btn" style="margin-top:0;">Login with Password</button>
+                <p style="text-align:center; margin:15px 0;">-- OR --</p>
+            </div>
+
+            <div id="otpSection" style="display:none; background:#f1f5f9; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <label>Enter OTP</label>
+                <input type="text" id="loginOtp" placeholder="6-digit code" style="margin-bottom:10px;">
+                <button onclick="verifyOtpAndLogin()" style="width:100%; padding:10px; background:var(--teal); color:white; border:none; border-radius:6px; cursor:pointer;">Verify & Login</button>
+            </div>
+
+            <button id="btnSendOtp" onclick="sendOtpForLogin()" style="width:100%; padding:12px; background:var(--text-main); color:white; border:none; border-radius:8px; cursor:pointer;">Send OTP via SMS</button>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgotForm" style="display:none;">
+            <label>Phone Number</label>
+            <input type="text" id="forgotPhone" placeholder="01700000000" style="margin-bottom:15px;">
+            <button id="btnForgotSendOtp" onclick="sendOtpForForgot()" style="width:100%; padding:12px; background:var(--text-main); color:white; border:none; border-radius:8px; cursor:pointer; margin-bottom:15px;">Send Reset OTP</button>
+
+            <div id="forgotOtpSection" style="display:none; background:#f1f5f9; padding:15px; border-radius:8px;">
+                <label>Enter OTP</label>
+                <input type="text" id="forgotOtp" placeholder="6-digit code" style="margin-bottom:15px;">
+                <label>New Password</label>
+                <input type="password" id="forgotNewPassword" placeholder="New Password" style="margin-bottom:15px;">
+                <button onclick="setNewPassword()" style="width:100%; padding:10px; background:var(--secondary); color:white; border:none; border-radius:6px; cursor:pointer;">Reset Password</button>
+            </div>
+        </div>
+
+        <!-- Backend URL Config removed for production -->
+    </div>
+</div>
+
+<!-- Admin Dashboard Overlay -->
+<div id="adminOverlay" class="overlay" style="display:none; background: rgba(0,0,0,0.8);">
+    <div class="card-box" style="max-width: 600px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2 style="margin:0;">User Management</h2>
+            <button class="action-btn btn-close" onclick="closeAdmin()">Close</button>
+        </div>
+
+        <p id="adminMessage" style="color:green; display:none; font-weight:bold;"></p>
+
+        <!-- Add User -->
+        <div style="background:#f1f5f9; padding:15px; border-radius:8px; margin-bottom:20px;">
+            <h4 style="margin-top:0;">Add / Update User</h4>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="adminNewPhone" placeholder="Phone Number">
+                <select id="adminNewRole">
+                    <option value="Field">Field</option>
+                    <option value="Division">Division</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <button class="action-btn btn-admin" onclick="adminAddUser()">Save</button>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="adminUsersList">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp" style="display:none;">
+    <div class="top-nav">
+        <button id="btnOpenAdmin" class="action-btn btn-admin" style="display:none;" onclick="openAdmin()">Dashboard</button>
+        <button class="action-btn btn-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <h1>Eicher Truck EMI Calculator</h1>
+    <p style="text-align:center; margin-top:-10px; color:var(--text-muted);">Logged in as: <span id="displayRole" style="font-weight:bold; color:var(--primary);"></span></p>
+    
+    <div class="grid">
+        <div class="form-section">
+            <div class="form-group">
+                <label for="model">Select Truck Model</label>
+                <select id="model" onchange="updatePrice()">
+                    <option value="" disabled selected>-- Select a Model --</option>
+                    <option value="2450000">PRO 1049 CBC (2815)</option>
+                    <option value="2500000">PRO 1050 (3350) CT</option>
+                    <option value="2525000">PRO 1055 (2815) CT</option>
+                    <option value="2550000">PRO 2055 (2815)</option>
+                    <option value="2995000">PRO 1075 (3515)</option>
+                    <option value="2990000">PRO 1075 AB (3765)</option>
+                    <option value="3025000">PRO 1075 (4065)</option>
+                    <option value="3050000">PRO 1080 HT (3515)</option>
+                    <option value="3150000">PRO 1095 (4065)</option>
+                    <option value="3250000">PRO 1112 (3800)</option>
+                    <option value="3300000">PRO 1112 (4300)</option>
+                    <option value="3350000">PRO 1112 (5050)</option>
+                    <option value="3550000">PRO 1114 (4255)</option>
+                    <option value="3690000">PRO 3015 (4490)</option>
+                    <option value="3750000">PRO 3015 (5490)</option>
+                    <option value="3525000">PRO 1080 (2815) RDT</option>
+                    <option value="4850000">PRO 5025 H (5000)</option>
+                    <option value="5900000">PRO 6031 H (6150)</option>
+                    <option value="6350000">PRO 5025 T (4000)</option>
+                    <option value="4650000">PRO 5025 RMC (4000)</option>
+                    <option value="6900000">PRO 6037 H (6600)</option>
+                    <option value="4400000">PRO 5040 (3485)</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="priceGroup" style="display: none;">
+                <label for="price">Product Price (MRP) - Tk.</label>
+                <input type="number" id="price" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+            </div>
+
+            <div class="form-group">
+                <label>Downpayment</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="dpPercent" style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; display: block;">Percent (%)</label>
+                        <input type="number" id="dpPercent" placeholder="%" oninput="updateDpTk()">
+                    </div>
+                    <div>
+                        <label for="dpAmount" style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; display: block;">Amount (Tk)</label>
+                        <input type="number" id="dpAmount" placeholder="Tk" oninput="updateDpPercent()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="interest">Profit Rate (%)</label>
+                <input type="number" id="interest" placeholder="e.g. 10" value="10" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Installment Period (Months)</label>
+                <input type="number" id="duration" placeholder="e.g. 24" value="24">
+            </div>
+
+            <button class="primary-btn" onclick="calculate()">Calculate Package</button>
+        </div>
+
+        <div class="summary-section">
+            <div id="results" class="results">
+                <h3>Calculation Summary</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Total Price</h4>
+                        <div class="value" id="resTotalPrice">0</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Monthly EMI</h4>
+                        <div class="value" id="resEmi">0</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Total Profit</h4>
+                        <div class="value" id="resInterest">0</div>
+                    </div>
+                </div>
+                <div class="explanation" id="explanation"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // AUTHENTICATION & API LOGIC
+    // ==========================================
+    let userRole = "";
+    let currentUserPhone = "";
+
+    function getApiUrl() {
+        return '/api';
+    }
+
+    function showMessage(msg, isError = true) {
+        const el = document.getElementById("loginMessage");
+        el.style.display = "block";
+        el.style.color = isError ? "red" : "green";
+        el.innerText = msg;
+    }
+
+    function switchLoginTab(tab) {
+        document.getElementById("loginMessage").style.display = "none";
+        if (tab === 'login') {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("forgotForm").style.display = "none";
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.querySelectorAll('.tab')[1].classList.remove('active');
+        } else {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("forgotForm").style.display = "block";
+            document.querySelectorAll('.tab')[0].classList.remove('active');
+            document.querySelectorAll('.tab')[1].classList.add('active');
+        }
+    }
+
+    async function loginWithPassword() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+        if (!phone || !password) return showMessage("Please enter phone and password");
+
+        try {
+            const res = await fetch(`${getApiUrl()}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                grantAccess(phone, data.role);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function sendOtpForLogin() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        if (!phone) return showMessage("Please enter phone number");
+        
+        try {
+            const res = await fetch(`${getApiUrl()}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("OTP sent via SMS!", false);
+                document.getElementById("otpSection").style.display = "block";
+                document.getElementById("passwordLoginSection").style.display = "none";
+                document.getElementById("btnSendOtp").style.display = "none";
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function verifyOtpAndLogin() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const otp = document.getElementById("loginOtp").value.trim();
+        if (!otp) return showMessage("Please enter OTP");
+
+        try {
+            const res = await fetch(`${getApiUrl()}/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, otp })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (!data.hasPassword) {
+                    // Force them to set password next time they login, or just let them in.
+                    // To keep it simple, we let them in.
+                }
+                grantAccess(phone, data.role);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function sendOtpForForgot() {
+        const phone = document.getElementById("forgotPhone").value.trim();
+        if (!phone) return showMessage("Please enter phone number");
+        try {
+            const res = await fetch(`${getApiUrl()}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("OTP sent via SMS!", false);
+                document.getElementById("forgotOtpSection").style.display = "block";
+                document.getElementById("btnForgotSendOtp").style.display = "none";
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function setNewPassword() {
+        const phone = document.getElementById("forgotPhone").value.trim();
+        const otp = document.getElementById("forgotOtp").value.trim();
+        const newPassword = document.getElementById("forgotNewPassword").value.trim();
+        
+        if (!otp || !newPassword) return showMessage("Please fill all fields");
+
+        try {
+            const res = await fetch(`${getApiUrl()}/set-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, otp, newPassword })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("Password updated! You can now login.", false);
+                setTimeout(() => switchLoginTab('login'), 2000);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    function grantAccess(phone, role) {
+        currentUserPhone = phone;
+        userRole = role;
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("mainApp").style.display = "block";
+        document.getElementById("displayRole").innerText = role;
+
+        if (role === "Admin" || role === "Division") {
+            document.getElementById("priceGroup").style.display = "block";
+        } else {
+            document.getElementById("priceGroup").style.display = "none";
+        }
+
+        if (role === "Admin") {
+            document.getElementById("btnOpenAdmin").style.display = "block";
+        } else {
+            document.getElementById("btnOpenAdmin").style.display = "none";
+        }
+    }
+
+    function logout() {
+        userRole = "";
+        currentUserPhone = "";
+        document.getElementById("mainApp").style.display = "none";
+        document.getElementById("loginOverlay").style.display = "flex";
+        
+        // Reset forms
+        document.getElementById("loginPassword").value = "";
+        document.getElementById("loginOtp").value = "";
+        document.getElementById("forgotOtp").value = "";
+        document.getElementById("forgotNewPassword").value = "";
+        
+        document.getElementById("otpSection").style.display = "none";
+        document.getElementById("passwordLoginSection").style.display = "block";
+        document.getElementById("btnSendOtp").style.display = "block";
+        
+        document.getElementById("forgotOtpSection").style.display = "none";
+        document.getElementById("btnForgotSendOtp").style.display = "block";
+        
+        document.getElementById("loginMessage").style.display = "none";
+        switchLoginTab('login');
+    }
+
+    // ==========================================
+    // ADMIN DASHBOARD LOGIC
+    // ==========================================
+    
+    function showAdminMessage(msg, isError = false) {
+        const el = document.getElementById("adminMessage");
+        el.style.display = "block";
+        el.style.color = isError ? "red" : "green";
+        el.innerText = msg;
+        setTimeout(() => { el.style.display = "none"; }, 3000);
+    }
+
+    async function openAdmin() {
+        document.getElementById("adminOverlay").style.display = "flex";
+        await loadUsers();
+    }
+
+    function closeAdmin() {
+        document.getElementById("adminOverlay").style.display = "none";
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById("adminUsersList");
+                tbody.innerHTML = "";
+                data.users.forEach(u => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${u.phone}</td>
+                            <td>${u.role}</td>
+                            <td>
+                                <button class="action-btn btn-logout" onclick="adminDeleteUser('${u.phone}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch(e) {
+            showAdminMessage("Failed to load users", true);
+        }
+    }
+
+    async function adminAddUser() {
+        const targetPhone = document.getElementById("adminNewPhone").value.trim();
+        const role = document.getElementById("adminNewRole").value;
+        if (!targetPhone) return showAdminMessage("Enter a phone number", true);
+
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/add-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone, role })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("User saved!");
+                document.getElementById("adminNewPhone").value = "";
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    async function adminDeleteUser(targetPhone) {
+        if(!confirm(`Are you sure you want to delete ${targetPhone}?`)) return;
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/delete-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("User deleted!");
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    // ==========================================
+    // CALCULATOR LOGIC (UNCHANGED)
+    // ==========================================
+    const modelData = {
+        "2450000": { cp12: 2510000, cp24: 2640000, cp29: 2780000, cp35: 3020000, dp: 500000 },
+        "2500000": { cp12: 2560000, cp24: 2690000, cp29: 2840000, cp35: 3080000, dp: 500000 },
+        "2525000": { cp12: 2580000, cp24: 2720000, cp29: 2870000, cp35: 3110000, dp: 500000 },
+        "2550000": { cp12: 2610000, cp24: 2750000, cp29: 2900000, cp35: 3150000, dp: 500000 },
+        "2995000": { cp12: 3060000, cp24: 3220000, cp29: 3400000, cp35: 3680000, dp: 600000 },
+        "2990000": { cp12: 3060000, cp24: 3220000, cp29: 3390000, cp35: 3680000, dp: 600000 },
+        "3025000": { cp12: 3090000, cp24: 3260000, cp29: 3430000, cp35: 3720000, dp: 600000 },
+        "3050000": { cp12: 3120000, cp24: 3290000, cp29: 3460000, cp35: 3760000, dp: 600000 },
+        "3150000": { cp12: 3220000, cp24: 3390000, cp29: 3570000, cp35: 3870000, dp: 650000 },
+        "3250000": { cp12: 3320000, cp24: 3500000, cp29: 3680000, cp35: 3990000, dp: 650000 },
+        "3300000": { cp12: 3380000, cp24: 3550000, cp29: 3740000, cp35: 4060000, dp: 650000 },
+        "3350000": { cp12: 3430000, cp24: 3610000, cp29: 3800000, cp35: 4120000, dp: 650000 },
+        "3550000": { cp12: 3630000, cp24: 3820000, cp29: 4020000, cp35: 4350000, dp: 750000 },
+        "3690000": { cp12: 3770000, cp24: 3970000, cp29: 4180000, cp35: 4530000, dp: 750000 },
+        "3750000": { cp12: 3840000, cp24: 4040000, cp29: 4250000, cp35: 4610000, dp: 750000 },
+        "3525000": { cp12: 3610000, cp24: 3790000, cp29: 3990000, cp35: 4330000, dp: 750000 },
+        "4850000": { cp12: 4950000, cp24: 5200000, cp29: 5460000, cp35: 5890000, dp: 1200000 },
+        "5900000": { cp12: 6030000, cp24: 6320000, cp29: 6640000, cp35: 7160000, dp: 1500000 },
+        "6350000": { cp12: 6480000, cp24: 6770000, cp29: 7080000, cp35: 7600000, dp: 2000000 },
+        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0 },
+        "6900000": { cp12: 7030000, cp24: 7330000, cp29: 7650000, cp35: 8190000, dp: 2400000 },
+        "4400000": { cp12: 4500000, cp24: 4720000, cp29: 4970000, cp35: 5370000, dp: 1000000 }
+    };
+
+    function updatePrice() {
+        const modelSelect = document.getElementById("model");
+        const priceInput = document.getElementById("price");
+        if (modelSelect.value) {
+            priceInput.value = modelSelect.value;
+            const data = modelData[modelSelect.value];
+            if(data && data.dp) {
+                document.getElementById("dpAmount").value = data.dp;
+                updateDpPercent();
+            }
+        }
+    }
+
+    function updateDpTk() {
+        const price = parseFloat(document.getElementById("price").value);
+        const percent = parseFloat(document.getElementById("dpPercent").value);
+        if (!isNaN(price) && !isNaN(percent)) {
+            document.getElementById("dpAmount").value = Math.round((price * percent) / 100);
+        }
+    }
+
+    function updateDpPercent() {
+        const price = parseFloat(document.getElementById("price").value);
+        const amount = parseFloat(document.getElementById("dpAmount").value);
+        if (!isNaN(price) && !isNaN(amount) && price > 0) {
+            document.getElementById("dpPercent").value = ((amount / price) * 100).toFixed(2);
+        }
+    }
+
+    function formatCurrency(num) {
+        return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    }
+
+    function calculate() {
+        const price = parseFloat(document.getElementById("price").value);
+        let dpAmount = parseFloat(document.getElementById("dpAmount").value);
+        let interestRate = parseFloat(document.getElementById("interest").value);
+        const months = parseInt(document.getElementById("duration").value);
+
+        if (isNaN(price) || price <= 0) { alert("Please select a valid product model."); return; }
+        if (isNaN(dpAmount) || dpAmount <= 0) { alert("Please enter a valid downpayment."); return; }
+
+        const data = modelData[price.toString()];
+        const minDp = (data && data.dp) ? data.dp : 0;
+        
+        let penaltyRate = 0;
+        if (minDp > 0 && dpAmount < minDp) {
+            const shortfall = minDp - dpAmount;
+            if (shortfall > 100000) {
+                alert(`Downpayment cannot be reduced by more than 100,000 Tk. Minimum allowed is ${formatCurrency(minDp - 100000)}`);
+                dpAmount = minDp - 100000;
+                document.getElementById("dpAmount").value = dpAmount;
+                updateDpPercent();
+            }
+            const penaltySlabs = Math.ceil((minDp - dpAmount) / 50000);
+            penaltyRate = penaltySlabs * 0.5;
+        }
+
+        const effectiveInterestRate = interestRate + penaltyRate;
+        const totalLoan = price - dpAmount;
+        const totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
+        const totalPrice = price + totalInterest;
+        const emi = (totalLoan + totalInterest) / months;
+
+        let creditPriceExcel = 0;
+        if (data) {
+            if (months <= 12 && data.cp12) creditPriceExcel = data.cp12;
+            else if (months <= 24 && data.cp24) creditPriceExcel = data.cp24;
+            else if (months <= 29 && data.cp29) creditPriceExcel = data.cp29;
+            else if (months <= 35 && data.cp35) creditPriceExcel = data.cp35;
+            else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
+        }
+
+        let comparisonHTML = "";
+        if (creditPriceExcel > 0) {
+            const difference = creditPriceExcel - totalPrice;
+            if (difference > 0) {
+                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #15803d;">Wow! You are saving <span style="font-size:24px;">${formatCurrency(difference)}</span> compared to the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
+            } else if (difference < 0) {
+                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #b91c1c;">Note: You are paying <span style="font-size:24px;">${formatCurrency(Math.abs(difference))}</span> more than the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
+            } else {
+                comparisonHTML = `<p style="font-size:18px; font-weight:bold; color: #0f172a;">Your Total Price perfectly matches the standard Credit Price of ${formatCurrency(creditPriceExcel)}.</p>`;
+            }
+        }
+
+        let penaltyHTML = "";
+        if (penaltyRate > 0) {
+            penaltyHTML = `
+                <div style="background:#fee2e2; padding:10px; border-radius:6px; color:#991b1b; margin-top:10px; border-left:4px solid #ef4444;">
+                    <strong>Penalty Applied:</strong> Downpayment is less than minimum ${formatCurrency(minDp)}. Profit rate increased by ${penaltyRate}% (New Rate: ${effectiveInterestRate}%).
+                </div>
+            `;
+        }
+
+        let explanationHTML = `
+            ${comparisonHTML}
+            ${penaltyHTML}
+            <h4>Calculation Breakdown:</h4>
+            <ul>
+                <li><strong>Base Product Price:</strong> ${formatCurrency(price)}</li>
+                <li><strong>Downpayment Provided:</strong> ${formatCurrency(dpAmount)}</li>
+                <li><strong>Loan Amount Required:</strong> ${formatCurrency(totalLoan)}</li>
+                <li><strong>Effective Profit Rate:</strong> ${effectiveInterestRate}% per year</li>
+                <li><strong>Total Profit for ${months} Months:</strong> ${formatCurrency(totalInterest)}</li>
+            </ul>
+        `;
+
+        document.getElementById("results").style.display = "block";
+        document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
+        document.getElementById("resEmi").innerText = formatCurrency(emi);
+        document.getElementById("resInterest").innerText = formatCurrency(totalInterest);
+        document.getElementById("explanation").innerHTML = explanationHTML;
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        });
+    }
+</script>
+
+</body>
+</html>
