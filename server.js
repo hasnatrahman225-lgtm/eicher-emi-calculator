@@ -16,13 +16,19 @@ const SMS_API_URL = 'http://api.greenweb.com.bd/api.php?json';
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN || '110630013241785089604183b4b70f7c815a934e72e50dc5f2acd';
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://hasnatrahman225_db_user:hUAe1N2D0rClI34e@cluster0.rns2i2o.mongodb.net/?appName=Cluster0';
 
-// Connect to MongoDB
-mongoose.connect(MONGO_URI)
-  .then(() => {
-      console.log('Connected to MongoDB');
-      initDefaultAdmin();
-  })
-  .catch(err => console.error('MongoDB connection error:', err));
+// Serverless MongoDB Connection Middleware
+app.use(async (req, res, next) => {
+    if (mongoose.connection.readyState !== 1) {
+        try {
+            await mongoose.connect(MONGO_URI);
+            console.log('Connected to MongoDB');
+            await initDefaultAdmin();
+        } catch (err) {
+            console.error('MongoDB connection error:', err);
+        }
+    }
+    next();
+});
 
 // MongoDB Schemas
 const userSchema = new mongoose.Schema({
