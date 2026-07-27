@@ -222,6 +222,11 @@ app.post('/api/admin/delete-user', async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Eicher EMI Backend running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Eicher EMI Backend running on http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel Serverless
+module.exports = app;
