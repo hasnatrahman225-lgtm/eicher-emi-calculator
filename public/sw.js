@@ -1,10 +1,11 @@
-const CACHE_NAME = 'eicher-calculator-v2';
+const CACHE_NAME = 'rml-calculator-v3';
 const urlsToCache = [
   '/',
   '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force new service worker to take over immediately
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -13,15 +14,25 @@ self.addEventListener('install', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName); // Delete old caches
+          }
+        })
+      );
+    }).then(() => self.clients.claim()) // Claim clients immediately
+  );
+});
+
 self.addEventListener('fetch', event => {
+  // Network First, fallback to cache
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
