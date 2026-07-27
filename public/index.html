@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eicher Truck Package Calculator</title>
+    <title>RML EMI Calculator</title>
     <link rel="manifest" href="./manifest.json">
     <style>
         :root {
@@ -255,7 +255,7 @@
 
 <!-- Login Overlay -->
 <div id="loginOverlay" class="overlay">
-    <h2 style="margin-bottom:20px;">EICHER EMI CALCULATOR</h2>
+    <h2 style="margin-bottom:20px;">RML EMI CALCULATOR</h2>
     <div class="card-box">
         <div class="tab-group">
             <div class="tab active" onclick="switchLoginTab('login')">Login</div>
@@ -353,7 +353,7 @@
         <button class="action-btn btn-logout" onclick="logout()">Logout</button>
     </div>
 
-    <h1>Eicher Truck EMI Calculator</h1>
+    <h1>RML EMI Calculator</h1>
     <p style="text-align:center; margin-top:-10px; color:var(--text-muted);">Logged in as: <span id="displayRole" style="font-weight:bold; color:var(--primary);"></span></p>
     
     <div class="grid">
@@ -754,29 +754,29 @@
     // ==========================================
     // CALCULATOR LOGIC (UNCHANGED)
     // ==========================================
-    const modelData = {
-        "2450000": { cp12: 2510000, cp24: 2640000, cp29: 2780000, cp35: 3020000, dp: 500000 },
-        "2500000": { cp12: 2560000, cp24: 2690000, cp29: 2840000, cp35: 3080000, dp: 500000 },
-        "2525000": { cp12: 2580000, cp24: 2720000, cp29: 2870000, cp35: 3110000, dp: 500000 },
-        "2550000": { cp12: 2610000, cp24: 2750000, cp29: 2900000, cp35: 3150000, dp: 500000 },
-        "2995000": { cp12: 3060000, cp24: 3220000, cp29: 3400000, cp35: 3680000, dp: 600000 },
-        "2990000": { cp12: 3060000, cp24: 3220000, cp29: 3390000, cp35: 3680000, dp: 600000 },
-        "3025000": { cp12: 3090000, cp24: 3260000, cp29: 3430000, cp35: 3720000, dp: 600000 },
-        "3050000": { cp12: 3120000, cp24: 3290000, cp29: 3460000, cp35: 3760000, dp: 600000 },
-        "3150000": { cp12: 3220000, cp24: 3390000, cp29: 3570000, cp35: 3870000, dp: 650000 },
-        "3250000": { cp12: 3320000, cp24: 3500000, cp29: 3680000, cp35: 3990000, dp: 650000 },
-        "3300000": { cp12: 3380000, cp24: 3550000, cp29: 3740000, cp35: 4060000, dp: 650000 },
-        "3350000": { cp12: 3430000, cp24: 3610000, cp29: 3800000, cp35: 4120000, dp: 650000 },
-        "3550000": { cp12: 3630000, cp24: 3820000, cp29: 4020000, cp35: 4350000, dp: 750000 },
-        "3690000": { cp12: 3770000, cp24: 3970000, cp29: 4180000, cp35: 4530000, dp: 750000 },
-        "3750000": { cp12: 3840000, cp24: 4040000, cp29: 4250000, cp35: 4610000, dp: 750000 },
-        "3525000": { cp12: 3610000, cp24: 3790000, cp29: 3990000, cp35: 4330000, dp: 750000 },
-        "4850000": { cp12: 4950000, cp24: 5200000, cp29: 5460000, cp35: 5890000, dp: 1200000 },
-        "5900000": { cp12: 6030000, cp24: 6320000, cp29: 6640000, cp35: 7160000, dp: 1500000 },
-        "6350000": { cp12: 6480000, cp24: 6770000, cp29: 7080000, cp35: 7600000, dp: 2000000 },
+        const modelData = {
+        "2450000": { cp12: 2547500, cp24: 2645000, cp29: 2779875, cp35: 3018750, dp: 500000 },
+        "2500000": { cp12: 2600000, cp24: 2700000, cp29: 2838333, cp35: 3083333, dp: 500000 },
+        "2525000": { cp12: 2626250, cp24: 2727500, cp29: 2867563, cp35: 3115625, dp: 500000 },
+        "2550000": { cp12: 2652500, cp24: 2755000, cp29: 2896792, cp35: 3147917, dp: 500000 },
+        "2995000": { cp12: 3114750, cp24: 3234500, cp29: 3400154, cp35: 3693542, dp: 600000 },
+        "2990000": { cp12: 3109500, cp24: 3229000, cp29: 3394308, cp35: 3687083, dp: 600000 },
+        "3025000": { cp12: 3146250, cp24: 3267500, cp29: 3435229, cp35: 3732292, dp: 600000 },
+        "3050000": { cp12: 3172500, cp24: 3295000, cp29: 3464458, cp35: 3764583, dp: 600000 },
+        "3150000": { cp12: 3275000, cp24: 3400000, cp29: 3572917, cp35: 3879167, dp: 650000 },
+        "3250000": { cp12: 3380000, cp24: 3510000, cp29: 3689833, cp35: 4008333, dp: 650000 },
+        "3300000": { cp12: 3432500, cp24: 3565000, cp29: 3748292, cp35: 4072917, dp: 650000 },
+        "3350000": { cp12: 3485000, cp24: 3620000, cp29: 3806750, cp35: 4137500, dp: 650000 },
+        "3550000": { cp12: 3690000, cp24: 3830000, cp29: 4023667, cp35: 4366667, dp: 750000 },
+        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187350, cp35: 4547500, dp: 750000 },
+        "3750000": { cp12: 3900000, cp24: 4050000, cp29: 4257500, cp35: 4625000, dp: 750000 },
+        "3525000": { cp12: 3663750, cp24: 3802500, cp29: 3994438, cp35: 4334375, dp: 750000 },
+        "4850000": { cp12: 5032500, cp24: 5215000, cp29: 5467458, cp35: 5914583, dp: 1200000 },
+        "5900000": { cp12: 6120000, cp24: 6340000, cp29: 6644333, cp35: 7183333, dp: 1500000 },
+        "6350000": { cp12: 6567500, cp24: 6785000, cp29: 7085875, cp35: 7618750, dp: 2000000 },
         "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0 },
-        "6900000": { cp12: 7030000, cp24: 7330000, cp29: 7650000, cp35: 8190000, dp: 2400000 },
-        "4400000": { cp12: 4500000, cp24: 4720000, cp29: 4970000, cp35: 5370000, dp: 1000000 }
+        "6900000": { cp12: 7125000, cp24: 7350000, cp29: 7661250, cp35: 8212500, dp: 2400000 },
+        "4400000": { cp12: 4570000, cp24: 4740000, cp29: 4975167, cp35: 5391667, dp: 1000000 },
     };
 
     function updatePrice() {
@@ -884,7 +884,7 @@
         if (penaltyRate > 0) {
             penaltyHTML = `
                 <div style="background:#fee2e2; padding:10px; border-radius:6px; color:#991b1b; margin-top:10px; border-left:4px solid #ef4444;">
-                    <strong>Penalty Applied:</strong> Downpayment is less than minimum ${formatCurrency(minDp)}. Profit rate increased by ${penaltyRate}% (New Rate: ${effectiveInterestRate}%).
+                    <strong>Additional Charge:</strong> Downpayment is less than minimum ${formatCurrency(minDp)}. Profit rate increased by ${penaltyRate}% (New Rate: ${effectiveInterestRate}%).
                 </div>
             `;
         }
