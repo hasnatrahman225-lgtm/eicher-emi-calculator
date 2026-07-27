@@ -408,12 +408,12 @@
 
             <div class="form-group">
                 <label for="interest">Profit Rate (%)</label>
-                <input type="number" id="interest" placeholder="e.g. 10" value="10" step="0.1">
+                <input type="number" id="interest" placeholder="e.g. 5" step="0.1">
             </div>
 
             <div class="form-group">
                 <label for="duration">Installment Period (Months)</label>
-                <input type="number" id="duration" placeholder="e.g. 24" value="24">
+                <input type="number" id="duration" placeholder="e.g. 24">
             </div>
 
             <button class="primary-btn" onclick="calculate()">Calculate Package</button>
@@ -807,6 +807,43 @@
             document.getElementById("dpPercent").value = ((amount / price) * 100).toFixed(2);
         }
     }
+
+    function autoUpdateInterest() {
+        const price = parseFloat(document.getElementById("price").value);
+        let dpAmount = parseFloat(document.getElementById("dpAmount").value);
+        const months = parseInt(document.getElementById("duration").value);
+        const interestInput = document.getElementById("interest");
+        
+        if (isNaN(months) || months <= 0) return;
+
+        let requiredRate = 5;
+        if (months > 35) requiredRate = 13;
+        else if (months > 29) requiredRate = 10;
+        else if (months > 24) requiredRate = 7;
+        
+        let penaltyRate = 0;
+        if (!isNaN(price) && !isNaN(dpAmount)) {
+            const data = modelData[price.toString()];
+            const minDp = (data && data.dp) ? data.dp : 0;
+            if (minDp > 0 && dpAmount < minDp) {
+                let actualShortfall = minDp - dpAmount;
+                if (actualShortfall > 100000) actualShortfall = 100000;
+                penaltyRate = Math.floor(actualShortfall / 50000) * 0.5;
+            }
+        }
+        
+        requiredRate += penaltyRate;
+        
+        let currentInterest = parseFloat(interestInput.value);
+        if (isNaN(currentInterest) || currentInterest < requiredRate) {
+            interestInput.value = requiredRate;
+        }
+    }
+
+    document.getElementById("duration").addEventListener("input", autoUpdateInterest);
+    document.getElementById("price").addEventListener("change", autoUpdateInterest);
+    document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
+
 
     function formatCurrency(num) {
         return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
