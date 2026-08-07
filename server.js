@@ -34,7 +34,8 @@ app.use(async (req, res, next) => {
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, default: null }, // Null if password not set yet
-    role: { type: String, enum: ['Admin', 'Division', 'Field'], default: 'Field' }
+    role: { type: String, enum: ['Admin', 'Division', 'Field'], default: 'Field' },
+    devices: [{ type: String }] // Store up to 2 unique device IDs
 });
 
 const otpSchema = new mongoose.Schema({
@@ -129,6 +130,20 @@ app.post('/api/verify-otp', async (req, res) => {
         const user = await User.findOne({ phone });
         if (!user) return res.status(403).json({ error: 'User not authorized' });
 
+        const deviceId = req.body.deviceId;
+        if (!deviceId) return res.status(400).json({ error: 'Device ID required' });
+
+        // Device Limit Logic
+        const hasDevice = user.devices.includes(deviceId);
+        if (!hasDevice) {
+            if (user.devices.length >= 2) {
+                return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
+            } else {
+                user.devices.push(deviceId);
+                await user.save();
+            }
+        }
+
         res.json({ success: true, role: user.role, hasPassword: !!user.password });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
@@ -152,14 +167,27 @@ app.post('/api/set-password', async (req, res) => {
 
 // Route: Password Login
 app.post('/api/login', async (req, res) => {
-    const { phone, password } = req.body;
-    if (!phone || !password) return res.status(400).json({ error: 'Phone and Password required' });
+    const { phone, password, deviceId } = req.body;
+    if (!phone || !password || !deviceId) return res.status(400).json({ error: 'Phone, Password and Device ID required' });
 
     try {
         const user = await User.findOne({ phone });
         if (!user || user.password !== password) {
             return res.status(401).json({ error: 'Invalid phone number or password' });
         }
+        
+        // Device Limit Logic
+        const hasDevice = user.devices.includes(deviceId);
+        if (!hasDevice) {
+            if (user.devices.length >= 2) {
+                return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
+            } else {
+                // Register new device
+                user.devices.push(deviceId);
+                await user.save();
+            }
+        }
+
         res.json({ success: true, role: user.role });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
@@ -222,6 +250,20 @@ app.post('/api/admin/delete-user', async (req, res) => {
     try {
         await User.deleteOne({ phone: targetPhone });
         res.json({ success: true, message: 'User deleted' });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Reset Devices
+app.post('/api/admin/reset-devices', async (req, res) => {
+    const { adminPhone, targetPhone } = req.body;
+    if (!(await verifyAdmin(adminPhone))) return res.status(403).json({ error: 'Forbidden' });
+    if (!targetPhone) return res.status(400).json({ error: 'Target phone required' });
+
+    try {
+        await User.updateOne({ phone: targetPhone }, { devices: [] });
+        res.json({ success: true, message: 'Devices reset successfully' });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }
