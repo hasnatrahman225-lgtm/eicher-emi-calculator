@@ -335,6 +335,7 @@
                 <tr>
                     <th>Phone</th>
                     <th>Role</th>
+                    <th>Devices</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -496,16 +497,27 @@
         }
     }
 
+    function getOrCreateDeviceId() {
+        let deviceId = localStorage.getItem('rml_device_id');
+        if (!deviceId) {
+            deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('rml_device_id', deviceId);
+        }
+        return deviceId;
+    }
+
     async function loginWithPassword() {
         const phone = document.getElementById("loginPhone").value.trim();
         const password = document.getElementById("loginPassword").value.trim();
         if (!phone || !password) return showMessage("Please enter phone and password");
 
+        const deviceId = getOrCreateDeviceId();
+
         try {
             const res = await fetch(`${getApiUrl()}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, password })
+                body: JSON.stringify({ phone, password, deviceId })
             });
             const data = await res.json();
             if (data.success) {
@@ -547,11 +559,13 @@
         const otp = document.getElementById("loginOtp").value.trim();
         if (!otp) return showMessage("Please enter OTP");
 
+        const deviceId = getOrCreateDeviceId();
+
         try {
             const res = await fetch(`${getApiUrl()}/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, otp })
+                body: JSON.stringify({ phone, otp, deviceId })
             });
             const data = await res.json();
             if (data.success) {
@@ -691,11 +705,14 @@
                 const tbody = document.getElementById("adminUsersList");
                 tbody.innerHTML = "";
                 data.users.forEach(u => {
+                    const deviceCount = u.devices ? u.devices.length : 0;
                     tbody.innerHTML += `
                         <tr>
                             <td>${u.phone}</td>
                             <td>${u.role}</td>
+                            <td>${deviceCount}/2</td>
                             <td>
+                                <button class="action-btn btn-admin" style="background:var(--orange); font-size:12px; padding:5px 8px; margin-right:5px;" onclick="adminResetDevices('${u.phone}')">Reset Devices</button>
                                 <button class="action-btn btn-logout" onclick="adminDeleteUser('${u.phone}')">Delete</button>
                             </td>
                         </tr>
@@ -732,7 +749,8 @@
     }
 
     async function adminDeleteUser(targetPhone) {
-        if(!confirm(`Are you sure you want to delete ${targetPhone}?`)) return;
+        if (!confirm(`Are you sure you want to delete user ${targetPhone}?`)) return;
+        
         try {
             const res = await fetch(`${getApiUrl()}/admin/delete-user`, {
                 method: 'POST',
@@ -742,6 +760,27 @@
             const data = await res.json();
             if (data.success) {
                 showAdminMessage("User deleted!");
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    async function adminResetDevices(targetPhone) {
+        if (!confirm(`Are you sure you want to reset devices for ${targetPhone}? They will need to log in again from their devices.`)) return;
+        
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/reset-devices`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("Devices reset!");
                 loadUsers();
             } else {
                 showAdminMessage(data.error, true);
@@ -821,18 +860,7 @@
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
-        let penaltyRate = 0;
-        if (!isNaN(price) && !isNaN(dpAmount)) {
-            const data = modelData[price.toString()];
-            const minDp = (data && data.dp) ? data.dp : 0;
-            if (minDp > 0 && dpAmount < minDp) {
-                let actualShortfall = minDp - dpAmount;
-                if (actualShortfall > 100000) actualShortfall = 100000;
-                penaltyRate = Math.floor(actualShortfall / 50000) * 0.5;
-            }
-        }
-        
-        requiredRate += penaltyRate;
+        // Penalty logic removed as per request
         
         let currentInterest = parseFloat(interestInput.value);
         if (isNaN(currentInterest) || currentInterest < requiredRate) {
@@ -861,7 +889,6 @@
         const data = modelData[price.toString()];
         const minDp = (data && data.dp) ? data.dp : 0;
         
-        let penaltyRate = 0;
         if (minDp > 0 && dpAmount < minDp) {
             const shortfall = minDp - dpAmount;
             if (shortfall > 100000) {
@@ -870,8 +897,6 @@
                 document.getElementById("dpAmount").value = dpAmount;
                 updateDpPercent();
             }
-            const actualShortfall = minDp - dpAmount;
-            penaltyRate = Math.floor(actualShortfall / 50000) * 0.5;
         }
 
         let requiredRate = 5;
@@ -879,15 +904,10 @@
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
-        requiredRate += penaltyRate;
-        
         if (interestRate < requiredRate) {
             interestRate = requiredRate;
             document.getElementById("interest").value = requiredRate.toString();
-            let msg = `For a duration of ${months} months, the base minimum profit rate is ${requiredRate - penaltyRate}%.`;
-            if (penaltyRate > 0) msg += ` Due to DP shortfall, a penalty of ${penaltyRate}% is added.`;
-            msg += ` The rate has been adjusted automatically to ${requiredRate}%.`;
-            alert(msg);
+            alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
         }
 
         const effectiveInterestRate = interestRate;
@@ -917,18 +937,8 @@
             }
         }
 
-        let penaltyHTML = "";
-        if (penaltyRate > 0) {
-            penaltyHTML = `
-                <div style="background:#fee2e2; padding:10px; border-radius:6px; color:#991b1b; margin-top:10px; border-left:4px solid #ef4444;">
-                    <strong>Additional Charge:</strong> Downpayment is less than minimum ${formatCurrency(minDp)}. Profit rate increased by ${penaltyRate}% (New Rate: ${effectiveInterestRate}%).
-                </div>
-            `;
-        }
-
         let explanationHTML = `
             ${comparisonHTML}
-            ${penaltyHTML}
         `;
 
         document.getElementById("results").style.display = "block";
