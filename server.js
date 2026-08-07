@@ -47,6 +47,28 @@ const otpSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Otp = mongoose.model('Otp', otpSchema);
 
+const loginAttemptSchema = new mongoose.Schema({
+    phone: { type: String, required: true },
+    deviceId: { type: String },
+    ipAddress: { type: String },
+    userAgent: { type: String },
+    timestamp: { type: Date, default: Date.now }
+});
+const LoginAttempt = mongoose.model('LoginAttempt', loginAttemptSchema);
+
+async function logFailedAttempt(req, phone, deviceId) {
+    try {
+        await LoginAttempt.create({
+            phone,
+            deviceId,
+            ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown',
+            userAgent: req.headers['user-agent'] || 'Unknown'
+        });
+    } catch(e) {
+        console.error("Failed to log attempt", e);
+    }
+}
+
 // Create default admin on startup if it doesn't exist
 async function initDefaultAdmin() {
     const adminExists = await User.findOne({ phone: '01700000000' });
@@ -137,6 +159,7 @@ app.post('/api/verify-otp', async (req, res) => {
         const hasDevice = user.devices.includes(deviceId);
         if (!hasDevice) {
             if (user.devices.length >= 2) {
+                await logFailedAttempt(req, phone, deviceId);
                 return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
             } else {
                 user.devices.push(deviceId);
@@ -180,6 +203,7 @@ app.post('/api/login', async (req, res) => {
         const hasDevice = user.devices.includes(deviceId);
         if (!hasDevice) {
             if (user.devices.length >= 2) {
+                await logFailedAttempt(req, phone, deviceId);
                 return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
             } else {
                 // Register new device
@@ -264,6 +288,19 @@ app.post('/api/admin/reset-devices', async (req, res) => {
     try {
         await User.updateOne({ phone: targetPhone }, { devices: [] });
         res.json({ success: true, message: 'Devices reset successfully' });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get Blocked Logins
+app.post('/api/admin/blocked-logins', async (req, res) => {
+    const { adminPhone } = req.body;
+    if (!(await verifyAdmin(adminPhone))) return res.status(403).json({ error: 'Forbidden' });
+
+    try {
+        const logs = await LoginAttempt.find().sort({ timestamp: -1 }).limit(50);
+        res.json({ success: true, logs });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }
