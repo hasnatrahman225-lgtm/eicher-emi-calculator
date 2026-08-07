@@ -891,7 +891,7 @@
         }
     }
 
-    function autoUpdateInterest() {
+    function autoUpdateInterest(event) {
         const price = parseFloat(document.getElementById("price").value);
         let dpAmount = parseFloat(document.getElementById("dpAmount").value);
         const months = parseInt(document.getElementById("duration").value);
@@ -904,10 +904,14 @@
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
-        // Penalty logic removed as per request
-        
         let currentInterest = parseFloat(interestInput.value);
-        if (isNaN(currentInterest) || currentInterest < requiredRate) {
+        
+        // If the duration was changed, automatically reset the profit rate to the default for that duration
+        if (event && event.target && event.target.id === "duration") {
+            interestInput.value = requiredRate;
+        } 
+        // Otherwise (e.g. manual edit or DP change), just ensure it's not lower than the minimum
+        else if (isNaN(currentInterest) || currentInterest < requiredRate) {
             interestInput.value = requiredRate;
         }
     }
@@ -915,6 +919,7 @@
     document.getElementById("duration").addEventListener("input", autoUpdateInterest);
     document.getElementById("price").addEventListener("change", autoUpdateInterest);
     document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
+    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit
 
 
     function formatCurrency(num) {
