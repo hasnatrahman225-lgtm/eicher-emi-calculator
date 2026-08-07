@@ -343,6 +343,21 @@
                 <!-- Populated by JS -->
             </tbody>
         </table>
+
+        <h3 style="margin-top:30px; margin-bottom:15px; color:var(--text-main);">Blocked Login Attempts (3rd Device)</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Phone</th>
+                    <th>Device/Browser</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody id="adminBlockedList">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -687,6 +702,7 @@
     async function openAdmin() {
         document.getElementById("adminOverlay").style.display = "flex";
         await loadUsers();
+        await loadBlockedLogins();
     }
 
     function closeAdmin() {
@@ -721,6 +737,34 @@
             }
         } catch(e) {
             showAdminMessage("Failed to load users", true);
+        }
+    }
+
+    async function loadBlockedLogins() {
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/blocked-logins`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById("adminBlockedList");
+                tbody.innerHTML = "";
+                data.logs.forEach(log => {
+                    const time = new Date(log.timestamp).toLocaleString();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-size:12px;">${time}</td>
+                            <td>${log.phone}</td>
+                            <td style="font-size:11px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${log.userAgent}">${log.userAgent}</td>
+                            <td style="font-size:12px;">${log.ipAddress}</td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch(e) {
+            console.error("Failed to load blocked logins", e);
         }
     }
 
