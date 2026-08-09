@@ -963,7 +963,7 @@
         const totalLoan = price - dpAmount;
         const totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
         const totalPrice = price + totalInterest;
-        const emi = (totalLoan + totalInterest) / months;
+        const emi = ((totalLoan + totalInterest) / months) + 500;
 
         let creditPriceExcel = 0;
         if (data) {
@@ -988,6 +988,9 @@
 
         let explanationHTML = `
             ${comparisonHTML}
+            <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #4b5563; font-style: italic;">
+                * VTS চার্জ ৫০০ টাকা মান্থলি কিস্তির (EMI) সাথে যোগ করা হয়েছে।
+            </div>
         `;
 
         // Registration and Processing Fee Boxes
