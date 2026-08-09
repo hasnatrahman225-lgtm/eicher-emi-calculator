@@ -978,11 +978,11 @@
         if (creditPriceExcel > 0) {
             const diff = totalPrice - creditPriceExcel;
             if (diff > 0) {
-                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:18px;"><strong>Loss compared to Credit Price: ${formatCurrency(diff)}</strong><br><span style="font-size:14px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:16px;"><strong>Loss compared to Credit Price: ${formatCurrency(diff)}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
             } else if (diff < 0) {
-                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:18px;"><strong>Benefit compared to Credit Price: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:14px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:16px;"><strong>Benefit compared to Credit Price: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
             } else {
-                comparisonHTML = `<div style="margin-top:15px; padding:15px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:18px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:14px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:16px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
         }
 
@@ -1005,28 +1005,28 @@
 
         if (regCost > 0 || processingFee > 0) {
             explanationHTML += `
-                <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
                     <!-- Registration Box -->
-                    <div style="flex: 1; min-width: 140px; background: #e0e7ff; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #a5b4fc;">
-                        <div style="font-size: 12px; font-weight: bold; color: #4338ca; text-transform: uppercase;">Registration Cost</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #3730a3; margin: 5px 0;">${formatCurrency(regCost)}</div>
-                        <label style="font-size: 12px; color: #4f46e5; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; font-weight: bold;">
-                            <input type="checkbox" id="includeReg" onchange="calculate()" ${includeRegChecked ? 'checked' : ''} style="width: 16px; height: 16px;"> 
-                            Include in Initial Payment
+                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Reg. Cost</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(regCost)}</div>
+                        <label style="font-size: 11px; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 5px; font-weight: normal;">
+                            <input type="checkbox" id="includeReg" onchange="calculate()" ${includeRegChecked ? 'checked' : ''} style="margin: 0; width: 13px; height: 13px; accent-color: #4c1d95;"> 
+                            Add to Initial
                         </label>
                     </div>
 
                     <!-- Processing Fee Box -->
-                    <div style="flex: 1; min-width: 140px; background: #fce7f3; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #f9a8d4;">
-                        <div style="font-size: 12px; font-weight: bold; color: #be185d; text-transform: uppercase;">Processing Fee</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #9d174d; margin: 10px 0;">${formatCurrency(processingFee)}</div>
+                    <div style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Process Fee</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(processingFee)}</div>
                     </div>
 
                     <!-- Total Initial Payment Box -->
-                    <div style="flex: 1; min-width: 140px; background: #dcfce7; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #86efac;">
-                        <div style="font-size: 12px; font-weight: bold; color: #15803d; text-transform: uppercase;">Total Initial Payment</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #166534; margin: 10px 0;">${formatCurrency(initialPayment)}</div>
-                        <div style="font-size: 11px; color: #166534;">(DP + Processing Fee ${includeRegChecked ? '+ Reg' : ''})</div>
+                    <div style="background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Initial Pay</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(initialPayment)}</div>
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8);">(DP+Fee${includeRegChecked ? '+Reg' : ''})</div>
                     </div>
                 </div>
             `;
