@@ -923,7 +923,7 @@
 
 
     function formatCurrency(num) {
-        return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+        return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
     }
 
     function calculate() {
