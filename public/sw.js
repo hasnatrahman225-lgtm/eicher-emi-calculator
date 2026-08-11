@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rml-calculator-v3';
+const CACHE_NAME = 'rml-calculator-v4';
 const urlsToCache = [
   '/',
   '/manifest.json'
