@@ -158,7 +158,7 @@ app.post('/api/verify-otp', async (req, res) => {
         // Device Limit Logic
         const hasDevice = user.devices.includes(deviceId);
         if (!hasDevice) {
-            if (user.devices.length >= 2) {
+            if (user.role !== 'Admin' && user.devices.length >= 2) {
                 await logFailedAttempt(req, phone, deviceId);
                 return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
             } else {
@@ -202,7 +202,7 @@ app.post('/api/login', async (req, res) => {
         // Device Limit Logic
         const hasDevice = user.devices.includes(deviceId);
         if (!hasDevice) {
-            if (user.devices.length >= 2) {
+            if (user.role !== 'Admin' && user.devices.length >= 2) {
                 await logFailedAttempt(req, phone, deviceId);
                 return res.status(403).json({ error: 'Device limit reached! Max 2 devices allowed. Please contact Admin.' });
             } else {
