@@ -8,7 +8,12 @@
     "theme_color": "#8b5cf6",
     "icons": [
         {
-            "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Eicher_logo.svg/512px-Eicher_logo.svg.png",
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/logo.png",
             "sizes": "512x512",
             "type": "image/png"
         }
