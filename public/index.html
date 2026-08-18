@@ -979,10 +979,11 @@
 
         const effectiveInterestRate = interestRate;
         const totalLoan = price - dpAmount;
-        const totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
+        let totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
         let totalPrice = price + totalInterest;
         totalPrice = Math.round(totalPrice / 1000) * 1000;
-        const emi = ((totalLoan + totalInterest) / months) + 500;
+        totalInterest = totalPrice - price;
+        const emi = ((totalPrice - dpAmount) / months) + 500;
 
         let creditPriceExcel = 0;
         if (data) {
