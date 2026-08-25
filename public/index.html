@@ -439,6 +439,11 @@
                 <input type="number" id="duration" placeholder="e.g. 24">
             </div>
 
+            <div class="form-group" id="customEmiGroup" style="display: none;">
+                <label for="customEmi">Custom EMI (Optional)</label>
+                <input type="number" id="customEmi" placeholder="Fixed Monthly Tk.">
+            </div>
+
             <button class="primary-btn" onclick="calculate()">Calculate Package</button>
         </div>
 
@@ -668,8 +673,10 @@
 
         if (role === "Admin") {
             document.getElementById("btnOpenAdmin").style.display = "block";
+            document.getElementById("customEmiGroup").style.display = "block";
         } else {
             document.getElementById("btnOpenAdmin").style.display = "none";
+            document.getElementById("customEmiGroup").style.display = "none";
         }
     }
 
@@ -958,7 +965,7 @@
         const data = modelData[price.toString()];
         const minDp = (data && data.dp) ? data.dp : 0;
         
-        if (minDp > 0 && dpAmount < minDp) {
+        if (userRole !== "Admin" && minDp > 0 && dpAmount < minDp) {
             const shortfall = minDp - dpAmount;
             if (shortfall > 100000) {
                 alert(`Downpayment cannot be reduced by more than 100,000 Tk. Minimum allowed is ${formatCurrency(minDp - 100000)}`);
@@ -985,7 +992,30 @@
         let totalPrice = price + totalInterest;
         totalPrice = Math.round(totalPrice / 1000) * 1000;
         totalInterest = totalPrice - price;
-        const emi = ((totalPrice - dpAmount) / months) + 500;
+        let emi = ((totalPrice - dpAmount) / months) + 500;
+        let emiDisplayText = formatCurrency(emi);
+        let finalMonthEmi = emi;
+        
+        const customEmiInput = document.getElementById("customEmi").value;
+        if (userRole === "Admin" && customEmiInput && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+            const customEmi = parseFloat(customEmiInput);
+            const deficitPerMonth = emi - customEmi;
+            
+            if (deficitPerMonth > 0) {
+                const totalDeficit = deficitPerMonth * (months - 1);
+                const extraInterest = (totalDeficit * effectiveInterestRate * (months / 12)) / 100;
+                
+                totalInterest += extraInterest;
+                totalPrice += extraInterest;
+                
+                finalMonthEmi = emi + totalDeficit + extraInterest;
+                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
+            } else {
+                // If custom EMI is equal or greater, no extra interest logic applies currently,
+                // just default to normal string
+                emiDisplayText = formatCurrency(emi);
+            }
+        }
 
         let creditPriceExcel = 0;
         if (data) {
@@ -1059,7 +1089,7 @@
 
         document.getElementById("results").style.display = "block";
         document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
-        document.getElementById("resEmi").innerText = formatCurrency(emi);
+        document.getElementById("resEmi").innerHTML = emiDisplayText;
         document.getElementById("resInterest").innerText = formatCurrency(totalInterest);
         document.getElementById("explanation").innerHTML = explanationHTML;
     }
