@@ -1137,59 +1137,86 @@
 
 <!-- BUYER FORM MODAL -->
 <div id="buyerFormModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow-y: auto; padding: 20px; box-sizing: border-box;">
-    <div style="background: white; max-width: 900px; margin: 0 auto; padding: 40px; border-radius: 8px; position: relative;" id="printableFormArea">
+    <div style="background: white; max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; position: relative;" id="printableFormArea">
         <button onclick="closeBuyerForm()" style="position: absolute; top: 15px; right: 20px; background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" class="no-print">Close</button>
         <button onclick="window.print()" style="position: absolute; top: 15px; right: 100px; background: var(--teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" class="no-print">🖨️ Print / Save PDF</button>
 
         <!-- FORM CONTENT -->
-        <div class="buyer-form-content" style="color: black; font-family: 'Times New Roman', serif; line-height: 1.5;">
+        <div class="buyer-form-content" style="color: black; font-family: Calibri, sans-serif; line-height: 1.3; font-size: 14px;">
             
             <!-- HEADER -->
-            <table style="width: 100%; margin-bottom: 20px; border: none;">
-                <tr>
-                    <td style="width: 30%;"></td>
-                    <td style="width: 40%; text-align: center;">
-                        <h2 style="margin: 0; font-size: 24px; text-decoration: underline;">Runner Motors Ltd.</h2>
-                        <p style="margin: 5px 0;">138/1 Tejgaon I/A, Dhaka-1208</p>
-                        <h3 style="margin: 5px 0; text-decoration: underline;">Customer Form</h3>
-                    </td>
-                    <td style="width: 30%; font-size: 14px; vertical-align: top;">
-                        <div>Sales Unit: <input type="text" class="print-input" style="width: 120px;"></div>
-                        <div>Collection Unit: <input type="text" class="print-input" style="width: 100px;"></div>
-                        <div>Delivery Point: <input type="text" class="print-input" style="width: 100px;"></div>
-                        <div>Order No: <input type="text" class="print-input" style="width: 120px;"></div>
-                        <div>Delivery Date: <input type="date" class="print-input"></div>
-                        <div>Installment Date: <input type="text" class="print-input" style="width: 80px;"></div>
-                    </td>
-                </tr>
-            </table>
-
-            <!-- CUSTOMER INFO -->
-            <div style="margin-bottom: 20px; font-size: 15px;">
-                <div class="form-row">Name of Customer: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">A/C: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Father/Wife of: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Proprietor: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Mother's Name: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Occupation: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Present Address: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div class="form-row">Permanent Address: <input type="text" class="print-input" style="flex: 1;"></div>
-                <div style="display: flex; gap: 20px; margin-top: 5px;">
-                    <div style="flex: 1; display: flex;">Contact No: Phone: <input type="text" class="print-input" style="flex: 1; margin-left: 5px;"></div>
-                    <div style="flex: 1; display: flex;">NID: <input type="text" class="print-input" style="flex: 1; margin-left: 5px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div style="width: 25%;">
+                    <div style="border: 1px solid black; display: inline-block; padding: 5px 15px; font-weight: bold; margin-top: 15px;">F-1001</div>
+                </div>
+                <div style="width: 50%; text-align: center;">
+                    <div style="color: #1e3a8a; font-size: 28px; font-weight: 900; font-style: italic; letter-spacing: 2px; font-family: 'Arial Black', sans-serif; display: flex; justify-content: center; align-items: center; margin-bottom: 5px;">
+                        <span style="color: #dc2626;">&gt;</span>RUNNER
+                    </div>
+                    <h2 style="margin: 0; font-size: 20px; font-weight: bold;">Runner Motors Ltd.</h2>
+                    <p style="margin: 3px 0; font-size: 13px;">138/1 Tejgaon I/A, Dhaka-1208</p>
+                    <h3 style="margin: 5px 0; font-size: 22px; font-weight: bold;">Customer Form</h3>
+                </div>
+                <div style="width: 25%; font-size: 13px; text-align: left; padding-top: 15px;">
+                    <div style="display: flex; margin-bottom: 3px;">
+                        <div style="width: 100px;">Sales Unit</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 3px;">
+                        <div style="width: 100px;">Collection Unit</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 3px;">
+                        <div style="width: 100px;">Delivery Point</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 3px;">
+                        <div style="width: 100px;">Order No</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
+                    <div style="display: flex; margin-bottom: 3px;">
+                        <div style="width: 100px;">Delivery Date</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="width: 100px;">Installment Date</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    </div>
                 </div>
             </div>
 
+            <!-- CUSTOMER INFO -->
+            <div style="margin-bottom: 10px;">
+                <div class="form-row">Name of Customer :<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">A/C<span style="visibility: hidden;"> Name of Custo</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Father/Wife of<span style="visibility: hidden;"> mer </span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Proprietor<span style="visibility: hidden;"> of Custom</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Mother's Name<span style="visibility: hidden;"> of Cus</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Occupation<span style="visibility: hidden;"> of Custom</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Present Address<span style="visibility: hidden;"> of Cu</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row"><span style="visibility: hidden;">Present Address of Cu:</span><input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">Permanent Address:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row"><span style="visibility: hidden;">Permanent Address:</span><input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                
+                <div style="display: flex; margin-top: 5px;">
+                    <div>Contact No: Phone:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
+                    <div style="margin-left: 5px;">NID:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
+                </div>
+            </div>
+
+            <!-- MODEL INFO -->
+            <div style="border: 1px solid #22c55e; padding: 5px; margin-bottom: 10px; display: flex; align-items: center;">
+                <div>Model: </div><input type="text" class="print-input dotted-input" id="bfModel" style="flex: 1;">
+                <div style="margin-left: 5px;">WB:</div><input type="text" class="print-input dotted-input" style="width: 100px;">
+                <div style="margin-left: 5px;">Color:</div><input type="text" class="print-input dotted-input" style="width: 100px;">
+                <div style="margin-left: 5px;">Quantity:</div><input type="text" class="print-input dotted-input" style="width: 60px;">
+                <div style="margin-left: 5px;">Product:<span style="text-decoration: underline;">LMD</span>/HD/SCV</div>
+            </div>
+
             <!-- FINANCIAL TABLE -->
-            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center;">
+            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-bottom: 5px; text-align: center;">
                 <thead>
                     <tr>
                         <th style="width: 5%;">Sl No.</th>
-                        <th style="width: 30%; text-align: left;">Particulars</th>
-                        <th style="width: 15%;">Company Offer</th>
-                        <th style="width: 15%;">Customer Offer</th>
-                        <th style="width: 15%;">Final Negotiation</th>
-                        <th style="width: 20%;">Remarks</th>
+                        <th style="width: 25%; text-align: center;">Particulars</th>
+                        <th style="width: 18%;">Company Offer</th>
+                        <th style="width: 18%;">Customer Offer</th>
+                        <th style="width: 18%;">Final Negotiation</th>
+                        <th style="width: 16%;">Remarks</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1207,7 +1234,7 @@
                         <td><input type="text" class="print-input" id="bfCompanyProfit" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" id="bfFinalProfit" style="width: 90%; text-align: center; font-weight: bold;"></td>
-                        <td style="font-size: 12px;">(1-4)%</td>
+                        <td>(1-4)%</td>
                     </tr>
                     <tr>
                         <td>3.</td>
@@ -1215,7 +1242,7 @@
                         <td><input type="text" class="print-input" id="bfCompanyTotal" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" id="bfFinalTotal" style="width: 90%; text-align: center; font-weight: bold;"></td>
-                        <td style="font-size: 12px;">(1+2)</td>
+                        <td>(1+2)</td>
                     </tr>
                     <tr>
                         <td>4.</td>
@@ -1223,7 +1250,7 @@
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" id="bfFinalDp" style="width: 90%; text-align: center; font-weight: bold;"></td>
-                        <td><input type="text" class="print-input" placeholder="Customer Paid" style="width: 90%; text-align: center;"></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>5.</td>
@@ -1231,7 +1258,7 @@
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 90%; text-align: center;"></td>
                         <td><input type="text" class="print-input" id="bfOutstanding" style="width: 90%; text-align: center; font-weight: bold;"></td>
-                        <td style="font-size: 12px;">(3-4)</td>
+                        <td>(3-4)</td>
                     </tr>
                     <tr>
                         <td>6.</td>
@@ -1241,98 +1268,128 @@
                         <td><input type="text" class="print-input" id="bfEmi" style="width: 90%; text-align: center; font-weight: bold;"></td>
                         <td><input type="text" class="print-input" id="bfEmiMonths" placeholder="Months" style="width: 90%; text-align: center;"></td>
                     </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 10px; font-size: 16px;">Registration</td>
+                        <td colspan="2"><input type="text" class="print-input" id="bfRegNotes" style="width: 95%;"></td>
+                        <td style="text-align: left; padding-left: 10px; font-size: 16px;">Location</td>
+                        <td><input type="text" class="print-input" style="width: 95%;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 10px; font-size: 16px;">Insurance</td>
+                        <td><div style="display:flex; justify-content:flex-start; align-items:center; gap:5px;"><input type="checkbox"> 1st party</div></td>
+                        <td><div style="display:flex; justify-content:flex-start; align-items:center; gap:5px;"><input type="checkbox"> 3rd Party</div></td>
+                        <td style="text-align: left; padding-left: 10px;">Loan Processing Fee</td>
+                        <td><input type="text" class="print-input" id="bfProcessingNotes" style="width: 95%;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 10px; font-size: 16px;">Finance By</td>
+                        <td colspan="4" style="text-align: left; padding-left: 10px;">Runner Motors Ltd.</td>
+                    </tr>
                 </tbody>
             </table>
 
-            <!-- CONDITIONS TABLE -->
-            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <tr>
-                    <td style="width: 25%; font-weight: bold;">Registration</td>
-                    <td colspan="3"><input type="text" class="print-input" id="bfRegNotes" style="width: 98%;"></td>
-                </tr>
-                <tr>
-                    <td style="width: 25%; font-weight: bold;">Insurance</td>
-                    <td style="width: 25%;"><label><input type="checkbox"> 1st party</label></td>
-                    <td style="width: 25%;"><label><input type="checkbox"> 3rd party</label></td>
-                    <td style="width: 25%;"><input type="text" class="print-input" id="bfInsNotes" style="width: 90%;"></td>
-                </tr>
-                <tr>
-                    <td style="width: 25%; font-weight: bold;">Loan Processing Fee</td>
-                    <td colspan="3"><input type="text" class="print-input" id="bfProcessingNotes" style="width: 98%;"></td>
-                </tr>
-                <tr>
-                    <td style="width: 25%; font-weight: bold;">Finance By</td>
-                    <td colspan="3"><input type="text" class="print-input" value="Runner Motors Ltd." style="width: 98%;"></td>
-                </tr>
-            </table>
-
             <!-- KPI & NOTES -->
-            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">
                 <thead>
                     <tr>
-                        <th style="width: 10%;">Sl No.</th>
-                        <th style="width: 40%;">Credit Sales Package / KPI</th>
-                        <th style="width: 50%;">Remarks/Notes</th>
+                        <th style="width: 8%;">Sl No.</th>
+                        <th style="width: 50%; text-align: center; font-size: 16px; font-weight: bold;">Credit Sales Package</th>
+                        <th style="width: 42%; text-align: center; font-weight: bold;">Remarks/Notes</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td style="text-align: center;">1.</td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
-                        <td><input type="text" class="print-input" style="width: 95%;" id="bfVtsNote"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfVtsNote"></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">2.</td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;"></td>
                     </tr>
                     <tr>
                         <td style="text-align: center;">3.</td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;"></td>
                     </tr>
                 </tbody>
             </table>
 
             <!-- SIGNATURES -->
-            <div style="display: flex; justify-content: space-between; margin-top: 60px; font-weight: bold;">
-                <div style="text-align: center; border-top: 1px solid black; padding-top: 5px; width: 20%;">Customer's Signature</div>
-                <div style="text-align: center; border-top: 1px solid black; padding-top: 5px; width: 20%;">Executive/Sr. Executive</div>
-                <div style="text-align: center; border-top: 1px solid black; padding-top: 5px; width: 20%;">Manager/Incharge</div>
-                <div style="text-align: center; border-top: 1px solid black; padding-top: 5px; width: 20%;">Head of Sales</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; font-size: 13px;">
+                <div style="width: 25%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">Customer's Signature</div>
+                </div>
+                
+                <div style="width: 35%;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="border: 1px solid black; padding: 5px; width: 40%;">Dealer</td>
+                            <td style="border: 1px solid black; padding: 5px; width: 60%;"></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 5px;">Dealer Staff</td>
+                            <td style="border: 1px solid black; padding: 5px; height: 25px;"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="width: 30%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">Sales Person Sign & ID No.</div>
+                </div>
             </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; font-size: 13px;">
+                <div style="width: 25%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">Area Manager</div>
+                </div>
+                <div style="width: 30%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 5px;">Product Manager</div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <style>
-    .form-row { display: flex; margin-top: 5px; align-items: flex-end; }
+    .form-row { display: flex; align-items: flex-end; margin-bottom: 4px; }
     .print-input { 
         border: none; 
-        border-bottom: 1px dotted black; 
         background: transparent; 
-        font-family: 'Times New Roman', serif; 
-        font-size: 15px;
+        font-family: inherit; 
+        font-size: 14px;
         outline: none;
+    }
+    .dotted-input {
+        border-bottom: 2px dotted black;
+        margin-left: 5px;
     }
     .print-table th, .print-table td {
         border: 1px solid black;
-        padding: 6px;
+        padding: 4px 6px;
     }
     
     @media print {
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
         body * { visibility: hidden !important; }
         #buyerFormModal, #printableFormArea, #printableFormArea * { visibility: visible !important; }
-        #buyerFormModal { position: absolute; left: 0; top: 0; width: 100%; background: white !important; }
-        #printableFormArea { margin: 0; padding: 0; max-width: 100%; }
+        #buyerFormModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: white !important; padding: 0 !important; }
+        #printableFormArea { margin: 0; padding: 0; max-width: 100%; border-radius: 0; }
         .no-print { display: none !important; }
-        .print-input { border-bottom: none !important; }
     }
 </style>
 <script>
     let globalCalcData = {};
     function openBuyerForm() {
-        // Populate inputs based on global calculation variables (set in calculate())
+        const modelSelect = document.getElementById("price");
+        const modelName = modelSelect.options[modelSelect.selectedIndex].text;
+        document.getElementById("bfModel").value = modelName;
+        
         document.getElementById("bfCompanyPrice").value = formatCurrency(globalCalcData.price);
         document.getElementById("bfFinalPrice").value = formatCurrency(globalCalcData.price);
         
@@ -1346,7 +1403,6 @@
         
         document.getElementById("bfOutstanding").value = formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount);
         
-        // Use the raw Custom EMI string or format it
         if(globalCalcData.isCustomEmi) {
              document.getElementById("bfEmi").value = formatCurrency(globalCalcData.customEmi) + " & " + formatCurrency(globalCalcData.finalMonthEmi);
         } else {
@@ -1354,16 +1410,15 @@
         }
         document.getElementById("bfEmiMonths").value = globalCalcData.months + " Months";
         
-        // Notes
         let regNote = "";
-        if (globalCalcData.includeRegChecked) regNote = "Included in initial payment: Tk. " + globalCalcData.regCost;
+        if (globalCalcData.includeRegChecked) regNote = "Included: Tk. " + globalCalcData.regCost;
         document.getElementById("bfRegNotes").value = regNote;
         
         let processNote = "";
-        if (globalCalcData.processingFee > 0) processNote = "Loan Processing Fee included in initial payment: Tk. " + globalCalcData.processingFee;
+        if (globalCalcData.processingFee > 0) processNote = "Included: Tk. " + globalCalcData.processingFee;
         document.getElementById("bfProcessingNotes").value = processNote;
         
-        document.getElementById("bfVtsNote").value = "Monthly EMI includes Tk. 500 VTS charge";
+        document.getElementById("bfVtsNote").value = "Includes Tk. 500 VTS";
         
         document.getElementById("buyerFormModal").style.display = "block";
     }
@@ -1374,4 +1429,6 @@
 
 </body>
 </html>
+
+
 
