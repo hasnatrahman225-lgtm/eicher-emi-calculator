@@ -1056,18 +1056,65 @@
             </div>
         `;
 
-        // Registration and Processing Fee Boxes
+        // Registration and Processing Fee Options
         let regCost = (data && data.regCost) ? data.regCost : 0;
         let processingFee = (data && data.processingFee) ? data.processingFee : 0;
         
-        let includeRegChecked = false;
-        const regCheckbox = document.getElementById("includeReg");
-        if (regCheckbox) {
-            includeRegChecked = regCheckbox.checked;
+        let selectedRegOption = "none";
+        const checkedRegOption = document.querySelector('input[name="regOption"]:checked');
+        if (checkedRegOption) {
+            selectedRegOption = checkedRegOption.value;
         }
 
+        // Adjustments based on selected registration option
+        let effectiveEmi = emi;
+        let effectiveFinalMonthEmi = finalMonthEmi;
         let initialPayment = dpAmount + processingFee;
-        if (includeRegChecked) initialPayment += regCost;
+        let regNote = "Not Included";
+        let regPkgNote1 = "";
+        let regPkgNote2 = "";
+
+        if (selectedRegOption === "dp") {
+            initialPayment += regCost;
+            regNote = "Included with DP: " + formatCurrency(regCost);
+            if (isCustomEmi) {
+                regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
+            }
+        } else if (selectedRegOption === "emi") {
+            const regPerMonth = months > 0 ? Math.round(regCost / months) : 0;
+            effectiveEmi = emi + regPerMonth;
+            if (isCustomEmi) {
+                effectiveFinalMonthEmi = finalMonthEmi + regPerMonth;
+                emiDisplayText = `${formatCurrency(customEmi + regPerMonth)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months, incl. Reg ${formatCurrency(regPerMonth)}/mo)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
+                regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
+                regPkgNote2 = "Includes Monthly Reg Tk. " + formatCurrency(regPerMonth) + "/mo";
+            } else {
+                effectiveFinalMonthEmi = effectiveEmi;
+                emiDisplayText = formatCurrency(effectiveEmi);
+                regPkgNote1 = "Monthly Installment includes Reg Tk. " + formatCurrency(regPerMonth) + "/mo";
+            }
+            regNote = "Included with Monthly EMI: " + formatCurrency(regPerMonth) + "/mo (Total: " + formatCurrency(regCost) + ")";
+        } else if (selectedRegOption === "last_emi") {
+            effectiveFinalMonthEmi = finalMonthEmi + regCost;
+            regNote = "Pay with Last (" + months + "th) Installment: " + formatCurrency(regCost);
+            regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
+            regPkgNote2 = "Includes Registration: " + formatCurrency(regCost);
+            
+            if (isCustomEmi) {
+                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month, incl. Reg)</span></div>`;
+            } else {
+                emiDisplayText = `${formatCurrency(emi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month, incl. Reg)</span></div>`;
+            }
+        } else if (selectedRegOption === "free") {
+            regNote = "FREE (Company Promotional Offer)";
+            regPkgNote1 = isCustomEmi ? ("Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi)) : "Registration Free / Waived";
+            regPkgNote2 = isCustomEmi ? "Registration Free / Waived" : "";
+        } else {
+            // None
+            if (isCustomEmi) {
+                regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
+            }
+        }
 
         if (regCost > 0 || processingFee > 0) {
             explanationHTML += `
@@ -1076,23 +1123,47 @@
                     <div style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Reg. Cost</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(regCost)}</div>
-                        <label style="font-size: 11px; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 5px; font-weight: normal;">
-                            <input type="checkbox" id="includeReg" onchange="calculate()" ${includeRegChecked ? 'checked' : ''} style="margin: 0; width: 13px; height: 13px; accent-color: #4c1d95;"> 
-                            Add to Initial
-                        </label>
+                        <div style="font-size: 10.5px; color: rgba(255,255,255,0.9); font-weight: 500;">${selectedRegOption === 'free' ? 'FREE OFFER' : selectedRegOption === 'dp' ? 'IN INITIAL DP' : selectedRegOption === 'emi' ? 'IN MONTHLY EMI' : selectedRegOption === 'last_emi' ? 'IN LAST EMI' : 'STANDARD'}</div>
                     </div>
 
                     <!-- Processing Fee Box -->
                     <div style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Process Fee</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(processingFee)}</div>
+                        <div style="font-size: 10.5px; color: rgba(255,255,255,0.8);">Standard</div>
                     </div>
 
                     <!-- Total Initial Payment Box -->
                     <div style="background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Initial Pay</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(initialPayment)}</div>
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.8);">(DP+Fee${includeRegChecked ? '+Reg' : ''})</div>
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8);">(DP+Fee${selectedRegOption === 'dp' ? '+Reg' : ''})</div>
+                    </div>
+                </div>
+
+                <!-- 4 Registration Payment Options -->
+                <div style="background: #f8fafc; border: 1.5px solid #8b5cf6; border-radius: 10px; padding: 12px; margin-top: 12px; color: #1e293b;">
+                    <div style="font-weight: bold; font-size: 13px; color: #6d28d9; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>🚗 Registration Payment Options:</span>
+                        <span style="font-size: 11px; color: #64748b; font-weight: normal;">(Choose one)</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
+                            <input type="radio" name="regOption" value="dp" onchange="calculate()" ${selectedRegOption === 'dp' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
+                            <span>1. Pay with Down Payment</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
+                            <input type="radio" name="regOption" value="emi" onchange="calculate()" ${selectedRegOption === 'emi' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
+                            <span>2. Pay with Installment (Monthly)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
+                            <input type="radio" name="regOption" value="last_emi" onchange="calculate()" ${selectedRegOption === 'last_emi' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
+                            <span>3. Pay with Last Installment</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
+                            <input type="radio" name="regOption" value="free" onchange="calculate()" ${selectedRegOption === 'free' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
+                            <span>4. Registration Free (Offer)</span>
+                        </label>
                     </div>
                 </div>
             `;
@@ -1116,9 +1187,15 @@
                 isCustomEmi: isCustomEmi,
                 customEmi: customEmi,
                 finalMonthEmi: finalMonthEmi,
-                includeRegChecked: includeRegChecked,
+                selectedRegOption: selectedRegOption,
                 regCost: regCost,
-                processingFee: processingFee
+                processingFee: processingFee,
+                effectiveEmi: effectiveEmi,
+                effectiveFinalMonthEmi: effectiveFinalMonthEmi,
+                initialPayment: initialPayment,
+                regNote: regNote,
+                regPkgNote1: regPkgNote1,
+                regPkgNote2: regPkgNote2
             };
         } else {
             document.getElementById("buyerFormBtnContainer").style.display = "none";
@@ -1505,29 +1582,34 @@
             
             setVal("bfOutstanding", formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount));
             
+            // Installment & Package Notes
             if (globalCalcData.isCustomEmi) {
-                setVal("bfEmi", formatCurrency(globalCalcData.customEmi));
+                const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
+                setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.finalMonthEmi));
+                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || ("Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi)));
                 setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", "");
+                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
+                setVal("bfFinalEmiNote", "");
+            } else if (globalCalcData.selectedRegOption === 'last_emi') {
+                setVal("bfEmi", formatCurrency(globalCalcData.emi));
+                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
+                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || ("Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi)));
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
             } else {
-                setVal("bfEmi", formatCurrency(globalCalcData.emi));
+                setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
                 setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
-                setVal("bfPkgRow1", "");
+                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || "");
                 setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", "");
+                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
             }
             setVal("bfPkgRow3", "");
             setVal("bfNoteRow3", "");
             
-            let regNote = "";
-            if (globalCalcData.includeRegChecked && globalCalcData.regCost) {
-                regNote = "Included: Tk. " + globalCalcData.regCost;
-            }
-            setVal("bfRegNotes", regNote);
+            setVal("bfRegNotes", globalCalcData.regNote || "Not Included");
             
             let processNote = "";
             if (globalCalcData.processingFee > 0) {
