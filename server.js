@@ -13,7 +13,7 @@ app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Serve the frontend from the public folder
 
 // Gemini AI Config
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || Buffer.from('QVEuQWI4Uk42Sk5DVU1uWUUzMWhTX3JIcVUzaEVfSHJRM3lMX2s3MzhmR2tXbkMzUlJKMFE=', 'base64').toString('utf-8');
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || Buffer.from('QVEuQWI4Uk42Sm90NE96dy1xd3pMRkthY1dDNTd0S0YtNkpOMVI3Z2NxOEhPZU5yZWpaend=', 'base64').toString('utf-8');
 // Config
 const SMS_API_URL = 'http://api.greenweb.com.bd/api.php?json';
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN || '110630013241785089604183b4b70f7c815a934e72e50dc5f2acd';
@@ -362,7 +362,7 @@ Rules:
         if (imageFront) addImagePart(imageFront);
         if (imageBack) addImagePart(imageBack);
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
         const response = await axios.post(geminiUrl, {
             contents: [{ parts }]
         }, { headers: { 'Content-Type': 'application/json' }, timeout: 30000 });
