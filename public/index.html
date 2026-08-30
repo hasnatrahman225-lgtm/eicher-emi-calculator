@@ -503,6 +503,7 @@
     // ==========================================
     let userRole = "";
     let currentUserPhone = "";
+    let globalCalcData = {};
 
     function getApiUrl() {
         return '/api';
@@ -1384,46 +1385,69 @@
     }
 </style>
 <script>
-    let globalCalcData = {};
     function openBuyerForm() {
-        const modelSelect = document.getElementById("price");
-        const modelName = modelSelect.options[modelSelect.selectedIndex].text;
-        document.getElementById("bfModel").value = modelName;
-        
-        document.getElementById("bfCompanyPrice").value = formatCurrency(globalCalcData.price);
-        document.getElementById("bfFinalPrice").value = formatCurrency(globalCalcData.price);
-        
-        document.getElementById("bfCompanyProfit").value = formatCurrency(globalCalcData.totalInterest);
-        document.getElementById("bfFinalProfit").value = formatCurrency(globalCalcData.totalInterest);
-        
-        document.getElementById("bfCompanyTotal").value = formatCurrency(globalCalcData.totalPrice);
-        document.getElementById("bfFinalTotal").value = formatCurrency(globalCalcData.totalPrice);
-        
-        document.getElementById("bfFinalDp").value = formatCurrency(globalCalcData.dpAmount);
-        
-        document.getElementById("bfOutstanding").value = formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount);
-        
-        if(globalCalcData.isCustomEmi) {
-             document.getElementById("bfEmi").value = formatCurrency(globalCalcData.customEmi) + " & " + formatCurrency(globalCalcData.finalMonthEmi);
-        } else {
-             document.getElementById("bfEmi").value = formatCurrency(globalCalcData.emi);
+        try {
+            if (!globalCalcData || !globalCalcData.price) {
+                alert("Please calculate the package first.");
+                return;
+            }
+            const modelSelect = document.getElementById("model");
+            let modelName = "";
+            if (modelSelect && modelSelect.selectedIndex >= 0 && modelSelect.options[modelSelect.selectedIndex]) {
+                modelName = modelSelect.options[modelSelect.selectedIndex].text;
+            }
+            
+            const bfModelEl = document.getElementById("bfModel");
+            if (bfModelEl) bfModelEl.value = modelName;
+            
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+
+            setVal("bfCompanyPrice", formatCurrency(globalCalcData.price));
+            setVal("bfFinalPrice", formatCurrency(globalCalcData.price));
+            
+            setVal("bfCompanyProfit", formatCurrency(globalCalcData.totalInterest));
+            setVal("bfFinalProfit", formatCurrency(globalCalcData.totalInterest));
+            
+            setVal("bfCompanyTotal", formatCurrency(globalCalcData.totalPrice));
+            setVal("bfFinalTotal", formatCurrency(globalCalcData.totalPrice));
+            
+            setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+            
+            setVal("bfOutstanding", formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount));
+            
+            if (globalCalcData.isCustomEmi) {
+                setVal("bfEmi", formatCurrency(globalCalcData.customEmi) + " & " + formatCurrency(globalCalcData.finalMonthEmi));
+            } else {
+                setVal("bfEmi", formatCurrency(globalCalcData.emi));
+            }
+            setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+            
+            let regNote = "";
+            if (globalCalcData.includeRegChecked && globalCalcData.regCost) {
+                regNote = "Included: Tk. " + globalCalcData.regCost;
+            }
+            setVal("bfRegNotes", regNote);
+            
+            let processNote = "";
+            if (globalCalcData.processingFee > 0) {
+                processNote = "Included: Tk. " + globalCalcData.processingFee;
+            }
+            setVal("bfProcessingNotes", processNote);
+            
+            setVal("bfVtsNote", "Includes Tk. 500 VTS");
+            
+            document.getElementById("buyerFormModal").style.display = "block";
+        } catch (err) {
+            console.error("Error opening buyer form:", err);
+            alert("Error opening buyer form: " + err.message);
         }
-        document.getElementById("bfEmiMonths").value = globalCalcData.months + " Months";
-        
-        let regNote = "";
-        if (globalCalcData.includeRegChecked) regNote = "Included: Tk. " + globalCalcData.regCost;
-        document.getElementById("bfRegNotes").value = regNote;
-        
-        let processNote = "";
-        if (globalCalcData.processingFee > 0) processNote = "Included: Tk. " + globalCalcData.processingFee;
-        document.getElementById("bfProcessingNotes").value = processNote;
-        
-        document.getElementById("bfVtsNote").value = "Includes Tk. 500 VTS";
-        
-        document.getElementById("buyerFormModal").style.display = "block";
     }
     function closeBuyerForm() {
-        document.getElementById("buyerFormModal").style.display = "none";
+        const modal = document.getElementById("buyerFormModal");
+        if (modal) modal.style.display = "none";
     }
 </script>
 
