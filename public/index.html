@@ -1159,11 +1159,16 @@
             
             <!-- HEADER -->
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="width: 25%; display: flex; align-items: flex-start; gap: 8px;">
+                <div style="width: 28%; display: flex; align-items: flex-start; gap: 8px;">
                     <div style="border: 1px solid black; display: inline-block; padding: 4px 10px; font-weight: bold; margin-top: 4px; font-size: 13px;">F-1001</div>
-                    <div id="bfNidPhotoBox" style="width: 62px; height: 72px; border: 1px solid #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #64748b; text-align: center; overflow: hidden; background: #f8fafc; border-radius: 2px;">
-                        <span id="bfNidPhotoPlaceholder" style="font-size: 9px; line-height: 1.1; padding: 2px;">NID Photo</span>
-                        <img id="bfNidPhotoImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="bfNidPhotoBox" style="width: 90px; height: 58px; border: 1px solid #1e293b; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #64748b; text-align: center; overflow: hidden; background: #fff; border-radius: 2px; padding: 1px; box-sizing: border-box;">
+                            <span id="bfNidPhotoPlaceholder" style="font-size: 9px; line-height: 1.1; padding: 2px;">NID Card</span>
+                            <img id="bfNidPhotoImg" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <div id="bfVerifiedBadge" style="display: none; font-size: 9.5px; color: #16a34a; font-weight: bold; margin-top: 2px; text-align: center;">
+                            ✓ NID Verified
+                        </div>
                     </div>
                 </div>
                 <div style="width: 50%; text-align: center;">
@@ -1627,13 +1632,36 @@
 
             const data = result.data;
             
-            // Auto-fill form fields
+            // Auto-fill form fields (English)
             if (data.name) document.getElementById("bfCustName").value = data.name;
             if (data.fatherOrHusbandName) document.getElementById("bfCustFather").value = data.fatherOrHusbandName;
             if (data.motherName) document.getElementById("bfCustMother").value = data.motherName;
-            if (data.presentAddress) document.getElementById("bfCustPresentAddr").value = data.presentAddress;
-            if (data.permanentAddress) document.getElementById("bfCustPermAddr").value = data.permanentAddress;
             if (data.nidNumber) document.getElementById("bfCustNid").value = data.nidNumber;
+
+            // Address splitting across lines for clean printing
+            if (data.presentAddress) {
+                if (data.presentAddress.length > 55) {
+                    const idx = data.presentAddress.lastIndexOf(",", 55);
+                    const splitAt = idx > 25 ? idx + 1 : 55;
+                    document.getElementById("bfCustPresentAddr").value = data.presentAddress.substring(0, splitAt).trim();
+                    document.getElementById("bfCustPresentAddr2").value = data.presentAddress.substring(splitAt).trim();
+                } else {
+                    document.getElementById("bfCustPresentAddr").value = data.presentAddress;
+                    document.getElementById("bfCustPresentAddr2").value = "";
+                }
+            }
+
+            if (data.permanentAddress) {
+                if (data.permanentAddress.length > 55) {
+                    const idx = data.permanentAddress.lastIndexOf(",", 55);
+                    const splitAt = idx > 25 ? idx + 1 : 55;
+                    document.getElementById("bfCustPermAddr").value = data.permanentAddress.substring(0, splitAt).trim();
+                    document.getElementById("bfCustPermAddr2").value = data.permanentAddress.substring(splitAt).trim();
+                } else {
+                    document.getElementById("bfCustPermAddr").value = data.permanentAddress;
+                    document.getElementById("bfCustPermAddr2").value = "";
+                }
+            }
 
             // Set Photo Proof in form header
             if (nidFrontBase64) {
@@ -1646,7 +1674,12 @@
                 }
             }
 
-            alert("✅ NID Card scanned successfully! Customer details have been auto-filled.");
+            // Verification Badge
+            const badge = document.getElementById("bfVerifiedBadge");
+            if (badge) badge.style.display = "block";
+
+            const verifyMsg = data.verificationNotes || "Smart NID Authenticity Checked";
+            alert("✅ NID Card scanned & translated successfully!\n• Status: " + verifyMsg + "\n• Customer details have been auto-filled in English.");
             closeNidScanModal();
         } catch (err) {
             console.error("NID scan error:", err);
