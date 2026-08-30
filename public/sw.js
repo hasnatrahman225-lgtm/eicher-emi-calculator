@@ -1,9 +1,10 @@
-const CACHE_NAME = 'rml-calculator-v13';
+const CACHE_NAME = 'rml-calculator-v14';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/logo-v2.png'
+  '/logo-v2.png',
+  '/runner-logo.png'
 ];
 
 self.addEventListener('install', event => {
