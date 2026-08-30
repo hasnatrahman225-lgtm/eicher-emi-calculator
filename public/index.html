@@ -1182,20 +1182,40 @@
 
             <!-- CUSTOMER INFO -->
             <div style="margin-bottom: 4px; font-size: 12px;">
-                <div class="form-row">Name of Customer :<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">A/C<span style="visibility: hidden;"> Name of Custo</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Father/Wife of<span style="visibility: hidden;"> mer </span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Proprietor<span style="visibility: hidden;"> of Custom</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Mother's Name<span style="visibility: hidden;"> of Cus</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Occupation<span style="visibility: hidden;"> of Custom</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Present Address<span style="visibility: hidden;"> of Cu</span>:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row"><span style="visibility: hidden;">Present Address of Cu:</span><input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row">Permanent Address:<input type="text" class="print-input dotted-input" style="flex: 1;"></div>
-                <div class="form-row"><span style="visibility: hidden;">Permanent Address:</span><input type="text" class="print-input dotted-input" style="flex: 1;"></div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Name of Customer</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">A/C</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Father/Wife of</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Proprietor</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Mother's Name</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Occupation</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Present Address</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;"></div><div style="visibility: hidden;">:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;">Permanent Address</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 135px; flex-shrink: 0;"></div><div style="visibility: hidden;">:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
                 
-                <div style="display: flex; margin-top: 2px;">
-                    <div>Contact No: Phone:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
-                    <div style="margin-left: 5px;">NID:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
+                <div style="display: flex; align-items: flex-end; margin-top: 2px;">
+                    <div style="width: 135px; flex-shrink: 0;">Contact No: Phone</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    <div style="margin-left: 8px; margin-right: 2px; font-weight: 500;">NID:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
                 </div>
             </div>
 
@@ -1381,45 +1401,48 @@
     @media print {
         @page {
             size: A4 portrait;
-            margin: 5mm 8mm;
+            margin: 5mm;
         }
         html, body {
-            height: 100%;
+            height: auto !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: white !important;
         }
-        body * { visibility: hidden !important; }
-        #buyerFormModal, #printableFormArea, #printableFormArea * { 
-            visibility: visible !important; 
+        #loginOverlay, #mainApp, #adminModal, .theme-btn, .no-print {
+            display: none !important;
         }
-        #buyerFormModal { 
-            position: absolute !important; 
-            left: 0 !important; 
-            top: 0 !important; 
-            width: 100% !important; 
+        #buyerFormModal {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
             height: auto !important;
-            background: white !important; 
-            padding: 0 !important; 
             margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            box-shadow: none !important;
             overflow: visible !important;
         }
-        #printableFormArea { 
-            margin: 0 !important; 
-            padding: 0 !important; 
-            max-width: 100% !important; 
-            border-radius: 0 !important; 
+        #printableFormArea {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
             box-shadow: none !important;
+            border-radius: 0 !important;
         }
-        .no-print { display: none !important; }
         .buyer-form-content {
-            font-size: 11.5px !important;
+            font-size: 11px !important;
             line-height: 1.15 !important;
-        }
-        .print-input {
-            font-size: 11.5px !important;
+            zoom: 85% !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .print-table th, .print-table td {
-            padding: 2px 3px !important;
+            padding: 1.5px 3px !important;
+            font-size: 10.5px !important;
+        }
+        .print-input {
+            font-size: 11px !important;
         }
     }
 </style>
