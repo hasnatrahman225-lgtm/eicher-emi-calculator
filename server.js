@@ -320,22 +320,41 @@ app.post('/api/scan-nid', async (req, res) => {
     try {
         const parts = [
             {
-                text: `You are an expert OCR parser for Bangladeshi National ID (NID) cards.
+                text: `You are an expert OCR, translation, and verification parser for Bangladeshi National ID (NID) cards.
 Analyze the provided NID image(s) (Front and/or Back side of Smart NID or Old laminated NID).
-Extract the customer's personal details and output ONLY a valid raw JSON object with these exact keys:
+
+CRITICAL REQUIREMENT:
+1. This is for an ENGLISH Buyer Form. ALL EXTRACTED TEXT MUST BE IN ENGLISH (LATIN SCRIPT).
+2. Transliterate all Bengali names into standard English spelling:
+   - "মোঃ আবুল কাশেম" -> "Md. Abul Kashem"
+   - "খাতুনে জান্নাত" -> "Khatune Jannat"
+   - "মোঃ মতিউর রহমান" -> "Md. Motiur Rahman"
+3. Translate and format Bengali addresses into standard English postal address format:
+   - E.g. "House/Holding: 38, Vill/Road: Chhoto Bazar, PO: Mymensingh - 2200, PS: Mymensingh Sadar, Dist: Mymensingh"
+4. Perform NID Authenticity & Verification Checks:
+   - Identify Card Type (Smart NID or Laminated NID).
+   - Check if the NID number matches the standard format (10-digit Smart NID or 17/13-digit legacy NID).
+   - Check if 2D Barcode (PDF417) / Government Seal / Hologram are visible.
+
+Extract and output ONLY a valid raw JSON object with these exact keys:
 {
-  "nidNumber": "extracted NID number (clean numbers only, e.g. 10, 13, or 17 digits)",
-  "name": "Customer Name in English (transliterate or use English name if present, e.g. Md Motiur Rahman)",
-  "fatherOrHusbandName": "Father's or Husband's name in English/Bangla",
-  "motherName": "Mother's name in English/Bangla",
-  "presentAddress": "Present Address / Address text on back side",
-  "permanentAddress": "Permanent Address / Address text on back side",
-  "dob": "Date of Birth (e.g. 15 May 1990 or 1990-05-15)"
+  "nidNumber": "clean digits only (e.g. 5530927648)",
+  "name": "Customer Name in English",
+  "fatherOrHusbandName": "Father's or Husband's name in English",
+  "motherName": "Mother's name in English",
+  "presentAddress": "Present Address in English",
+  "permanentAddress": "Permanent Address in English",
+  "dob": "Date of Birth (e.g. 18 Aug 1981)",
+  "bloodGroup": "Blood Group if visible (e.g. O+)",
+  "cardType": "Smart NID Card",
+  "isVerified": true,
+  "verificationNotes": "10-Digit Smart NID Verified with Security Seal & 2D Barcode"
 }
 
 Rules:
-- Output strictly raw JSON. Do NOT wrap in markdown codeblocks.
-- If any field is not visible or not found, set its value to "".`
+- Strict English output for every field.
+- Do NOT wrap in markdown code blocks.
+- If any field is not found or unclear, set its value to "".`
             }
         ];
 
