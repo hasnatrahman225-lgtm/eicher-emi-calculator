@@ -1483,9 +1483,9 @@
             if (globalCalcData.isCustomEmi) {
                 setVal("bfEmi", formatCurrency(globalCalcData.customEmi));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", "");
+                setVal("bfPkgRow1", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.finalMonthEmi));
                 setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.finalMonthEmi));
+                setVal("bfPkgRow2", "");
                 setVal("bfFinalEmiNote", "");
             } else {
                 setVal("bfEmi", formatCurrency(globalCalcData.emi));
