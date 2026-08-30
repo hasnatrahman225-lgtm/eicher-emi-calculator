@@ -1318,18 +1318,18 @@
                 <tbody>
                     <tr>
                         <td style="text-align: center; padding: 4px;">1.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow1"></td>
                         <td><input type="text" class="print-input" style="width: 98%;" id="bfVtsNote"></td>
                     </tr>
                     <tr>
                         <td style="text-align: center; padding: 4px;">2.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;"></td>
-                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow2"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfFinalEmiNote"></td>
                     </tr>
                     <tr>
                         <td style="text-align: center; padding: 4px;">3.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;"></td>
-                        <td><input type="text" class="print-input" style="width: 98%;"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow3"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfNoteRow3"></td>
                     </tr>
                 </tbody>
             </table>
@@ -1481,11 +1481,22 @@
             setVal("bfOutstanding", formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount));
             
             if (globalCalcData.isCustomEmi) {
-                setVal("bfEmi", formatCurrency(globalCalcData.customEmi) + " & " + formatCurrency(globalCalcData.finalMonthEmi));
+                setVal("bfEmi", formatCurrency(globalCalcData.customEmi));
+                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
+                setVal("bfPkgRow1", "");
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.finalMonthEmi));
+                setVal("bfFinalEmiNote", "");
             } else {
                 setVal("bfEmi", formatCurrency(globalCalcData.emi));
+                setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+                setVal("bfPkgRow1", "");
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "");
+                setVal("bfFinalEmiNote", "");
             }
-            setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+            setVal("bfPkgRow3", "");
+            setVal("bfNoteRow3", "");
             
             let regNote = "";
             if (globalCalcData.includeRegChecked && globalCalcData.regCost) {
@@ -1498,8 +1509,6 @@
                 processNote = "Included: Tk. " + globalCalcData.processingFee;
             }
             setVal("bfProcessingNotes", processNote);
-            
-            setVal("bfVtsNote", "Includes Tk. 500 VTS");
             
             document.getElementById("buyerFormModal").style.display = "block";
         } catch (err) {
