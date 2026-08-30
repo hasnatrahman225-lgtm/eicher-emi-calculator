@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RML EMI Calculator</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./logo-v2.png">
+    <link rel="apple-touch-icon" href="./logo-v2.png">
+    <style>
+        :root {
+            --primary: #8b5cf6; 
+            --primary-light: #a78bfa;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899; 
+            --teal: #14b8a6;
+            --orange: #f59e0b; 
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --gradient: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+            --gradient-subtle: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 50%, #fef3c7 100%);
+        }
+
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --gradient-subtle: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-subtle);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            text-align: center;
+        }
+        
+        h1 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        /* Top Nav Actions */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-btn {
+            background: var(--text-main);
+            color: var(--card-bg);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .theme-btn:active { transform: scale(0.9); }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-admin { background: #3b82f6; color: white; }
+        .btn-logout { background: #ef4444; color: white; }
+        .btn-close { background: #64748b; color: white; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr !important; }
+            .container { padding: 15px; margin-top: 40px; }
+            .top-nav { top: 10px; right: 10px; }
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button.primary-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            padding: 15px 10px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            transition: transform 0.2s;
+        }
+        .result-card:hover { transform: translateY(-3px); }
+
+        .result-card:nth-child(1) { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .result-card:nth-child(2) { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
+        .result-card:nth-child(3) { background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); }
+
+        .result-card h4 {
+            margin: 0 0 5px 0;
+            color: rgba(255,255,255,0.8);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-card .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: right;
+        }
+
+        th {
+            background: var(--gradient);
+            color: white;
+            text-align: center;
+        }
+
+        .explanation {
+            margin-top: 25px;
+            background: var(--bg-color);
+            padding: 20px;
+            border-left: 5px solid var(--primary);
+            border-radius: 12px;
+            color: var(--text-main);
+            line-height: 1.6;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Overlay Styles */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .card-box {
+            background: var(--card-bg); padding: 30px; border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 600px;
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .tab-group {
+            display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border-color);
+        }
+        .tab {
+            flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: var(--text-muted);
+        }
+        .tab.active {
+            color: var(--primary); border-bottom: 2px solid var(--primary); margin-bottom: -2px;
+        }
+
+        .admin-table th, .admin-table td { text-align: left; }
+    </style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="loginOverlay" class="overlay">
+    <h2 style="margin-bottom:20px;">RML EMI CALCULATOR</h2>
+    <div class="card-box">
+        <div class="tab-group">
+            <div class="tab active" onclick="switchLoginTab('login')">Login</div>
+            <div class="tab" onclick="switchLoginTab('forgot')">Forgot Password</div>
+        </div>
+
+        <!-- Error Message Box -->
+        <p id="loginMessage" style="color:red; display:none; text-align:center; margin-bottom:15px; font-weight:bold;"></p>
+
+        <!-- Login Form -->
+        <div id="loginForm">
+            <label>Phone Number</label>
+            <input type="text" id="loginPhone" placeholder="01700000000" style="margin-bottom:15px;">
+            
+            <div id="passwordLoginSection">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Password" style="margin-bottom:15px;">
+                <button onclick="loginWithPassword()" class="primary-btn" style="margin-top:0;">Login with Password</button>
+                <p style="text-align:center; margin:15px 0;">-- OR --</p>
+            </div>
+
+            <div id="otpSection" style="display:none; background:#f1f5f9; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <label>Enter OTP</label>
+                <input type="text" id="loginOtp" placeholder="6-digit code" style="margin-bottom:10px;">
+                <button onclick="verifyOtpAndLogin()" style="width:100%; padding:10px; background:var(--teal); color:white; border:none; border-radius:6px; cursor:pointer;">Verify & Login</button>
+            </div>
+
+            <button id="btnSendOtp" onclick="sendOtpForLogin()" style="width:100%; padding:12px; background:var(--text-main); color:white; border:none; border-radius:8px; cursor:pointer;">Send OTP via SMS</button>
+        </div>
+
+        <!-- Forgot Password Form -->
+        <div id="forgotForm" style="display:none;">
+            <label>Phone Number</label>
+            <input type="text" id="forgotPhone" placeholder="01700000000" style="margin-bottom:15px;">
+            <button id="btnForgotSendOtp" onclick="sendOtpForForgot()" style="width:100%; padding:12px; background:var(--text-main); color:white; border:none; border-radius:8px; cursor:pointer; margin-bottom:15px;">Send Reset OTP</button>
+
+            <div id="forgotOtpSection" style="display:none; background:#f1f5f9; padding:15px; border-radius:8px;">
+                <label>Enter OTP</label>
+                <input type="text" id="forgotOtp" placeholder="6-digit code" style="margin-bottom:15px;">
+                <label>New Password</label>
+                <input type="password" id="forgotNewPassword" placeholder="New Password" style="margin-bottom:15px;">
+                <button onclick="setNewPassword()" style="width:100%; padding:10px; background:var(--secondary); color:white; border:none; border-radius:6px; cursor:pointer;">Reset Password</button>
+            </div>
+        </div>
+
+        <!-- Backend URL Config removed for production -->
+    </div>
+</div>
+
+<!-- Admin Dashboard Overlay -->
+<div id="adminOverlay" class="overlay" style="display:none; background: rgba(0,0,0,0.8);">
+    <div class="card-box" style="max-width: 600px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2 style="margin:0;">User Management</h2>
+            <button class="action-btn btn-close" onclick="closeAdmin()">Close</button>
+        </div>
+
+        <p id="adminMessage" style="color:green; display:none; font-weight:bold;"></p>
+
+        <!-- Add User -->
+        <div style="background:#f1f5f9; padding:15px; border-radius:8px; margin-bottom:20px;">
+            <h4 style="margin-top:0;">Add / Update User</h4>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="adminNewPhone" placeholder="Phone Number">
+                <select id="adminNewRole">
+                    <option value="Field">Field</option>
+                    <option value="Division">Division</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <button class="action-btn btn-admin" onclick="adminAddUser()">Save</button>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Devices</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="adminUsersList">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:30px; margin-bottom:15px; color:var(--text-main);">Blocked Login Attempts (3rd Device)</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Phone</th>
+                    <th>Device/Browser</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody id="adminBlockedList">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Main App -->
+<div class="container" id="mainApp" style="display:none;">
+    <div class="top-nav">
+        <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+        <button id="btnOpenAdmin" class="action-btn btn-admin" style="display:none;" onclick="openAdmin()">Dashboard</button>
+        <button class="action-btn btn-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <h1>RML EMI Calculator</h1>
+    <p style="text-align:center; margin-top:-10px; color:var(--text-muted);">Logged in as: <span id="displayRole" style="font-weight:bold; color:var(--primary);"></span></p>
+    
+    <div class="grid">
+        <div class="form-section">
+            <div class="form-group">
+                <label for="model">Select Truck Model</label>
+                                                                <select id="model" onchange="updatePrice()">
+                    <option value="" disabled selected>-- Select a Model --</option>
+                    <option value="2450000">PRO 1049 CBC (2815)</option>
+                    <option value="2500000">PRO 1050 (3350) CT</option>
+                    <option value="2525000">PRO 1055 (2815) CT </option>
+                    <option value="2550000">PRO 2055 (2815)</option>
+                    <option value="2980000">PRO 1075 (3515)</option>
+                    <option value="2990000">PRO 1075 AB (3765)</option>
+                    <option value="3000000">PRO 1075 (4065)</option>
+                    <option value="3025000">PRO 1080 HT (3515)</option>
+                    <option value="3150000">PRO 1095 (4065)</option>
+                    <option value="3250000">PRO 1112 (3800)</option>
+                    <option value="3300000">PRO 1112 (4300)</option>
+                    <option value="3325000">PRO 1112 (5050)</option>
+                    <option value="3510000">PRO 1114 (4255)</option>
+                    <option value="3690000">PRO 3015 (4490)</option>
+                    <option value="3760000">PRO 3015 (5490)</option>
+                    <option value="3500000">PRO 1080 (2815) RDT</option>
+                    <option value="4700000">PRO 5025 H (5000)</option>
+                    <option value="5750000">PRO 6031 H (6150)</option>
+                    <option value="6350000">PRO 5025 T (4000)</option>
+                    <option value="4650000">PRO 5025 RMC (4000)</option>
+                    <option value="6550000">PRO 6037 H (6600)</option>
+                    <option value="4350000">PRO 5040 (3485)</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="priceGroup" style="display: none;">
+                <label for="price">Credit Price (MRP) - Tk.</label>
+                <input type="number" id="price" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
+            </div>
+
+            <div class="form-group" id="cashPriceGroup" style="display: none;">
+                <label for="cashPrice">Cash Price - Tk.</label>
+                <input type="text" id="cashPrice" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed; color: #059669; font-weight: bold;">
+            </div>
+
+            <div class="form-group">
+                <label>Downpayment</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="dpPercent" style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; display: block;">Percent (%)</label>
+                        <input type="number" id="dpPercent" placeholder="%" oninput="updateDpTk()">
+                    </div>
+                    <div>
+                        <label for="dpAmount" style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; display: block;">Amount (Tk)</label>
+                        <input type="number" id="dpAmount" placeholder="Tk" oninput="updateDpPercent()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="interest">Profit Rate (%)</label>
+                <input type="number" id="interest" placeholder="e.g. 5" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Installment Period (Months)</label>
+                <input type="number" id="duration" placeholder="e.g. 24">
+            </div>
+
+            <div class="form-group" id="customEmiGroup" style="display: none;">
+                <label for="customEmi">Custom EMI (Optional)</label>
+                <input type="number" id="customEmi" placeholder="Fixed Monthly Tk.">
+            </div>
+
+            <button class="primary-btn" onclick="calculate()">Calculate Package</button>
+        </div>
+
+        <div class="summary-section">
+            <div id="results" class="results">
+                <h3>Calculation Summary</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Total Price</h4>
+                        <div class="value" id="resTotalPrice">0</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Monthly EMI</h4>
+                        <div class="value" id="resEmi">0</div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Total Profit</h4>
+                        <div class="value" id="resInterest">0</div>
+                    </div>
+                </div>
+                <div class="explanation" id="explanation"></div>
+                <div id="buyerFormBtnContainer" style="display: none; margin-top: 20px; text-align: center;">
+                    <button class="primary-btn" onclick="openBuyerForm()" style="background-color: var(--teal); display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Generate Buyer Form
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // THEME LOGIC
+    // ==========================================
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const btn = document.querySelector('.theme-btn');
+        if (document.body.classList.contains('dark-mode')) {
+            btn.innerText = '☀️';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            btn.innerText = '🌙';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.theme-btn').innerText = '☀️';
+    }
+
+    // ==========================================
+    // AUTHENTICATION & API LOGIC
+    // ==========================================
+    let userRole = "";
+    let currentUserPhone = "";
+    let globalCalcData = {};
+
+    function getApiUrl() {
+        return '/api';
+    }
+
+    function showMessage(msg, isError = true) {
+        const el = document.getElementById("loginMessage");
+        el.style.display = "block";
+        el.style.color = isError ? "red" : "green";
+        el.innerText = msg;
+    }
+
+    function switchLoginTab(tab) {
+        document.getElementById("loginMessage").style.display = "none";
+        if (tab === 'login') {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("forgotForm").style.display = "none";
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.querySelectorAll('.tab')[1].classList.remove('active');
+        } else {
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("forgotForm").style.display = "block";
+            document.querySelectorAll('.tab')[0].classList.remove('active');
+            document.querySelectorAll('.tab')[1].classList.add('active');
+        }
+    }
+
+    function getOrCreateDeviceId() {
+        let deviceId = localStorage.getItem('rml_device_id');
+        if (!deviceId) {
+            deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+            localStorage.setItem('rml_device_id', deviceId);
+        }
+        return deviceId;
+    }
+
+    async function loginWithPassword() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+        if (!phone || !password) return showMessage("Please enter phone and password");
+
+        const deviceId = getOrCreateDeviceId();
+
+        try {
+            const res = await fetch(`${getApiUrl()}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password, deviceId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                grantAccess(phone, data.role);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function sendOtpForLogin() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        if (!phone) return showMessage("Please enter phone number");
+        
+        try {
+            const res = await fetch(`${getApiUrl()}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("OTP sent via SMS!", false);
+                document.getElementById("otpSection").style.display = "block";
+                document.getElementById("passwordLoginSection").style.display = "none";
+                document.getElementById("btnSendOtp").style.display = "none";
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function verifyOtpAndLogin() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const otp = document.getElementById("loginOtp").value.trim();
+        if (!otp) return showMessage("Please enter OTP");
+
+        const deviceId = getOrCreateDeviceId();
+
+        try {
+            const res = await fetch(`${getApiUrl()}/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, otp, deviceId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (!data.hasPassword) {
+                    // Force them to set password next time they login, or just let them in.
+                    // To keep it simple, we let them in.
+                }
+                grantAccess(phone, data.role);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function sendOtpForForgot() {
+        const phone = document.getElementById("forgotPhone").value.trim();
+        if (!phone) return showMessage("Please enter phone number");
+        try {
+            const res = await fetch(`${getApiUrl()}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("OTP sent via SMS!", false);
+                document.getElementById("forgotOtpSection").style.display = "block";
+                document.getElementById("btnForgotSendOtp").style.display = "none";
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    async function setNewPassword() {
+        const phone = document.getElementById("forgotPhone").value.trim();
+        const otp = document.getElementById("forgotOtp").value.trim();
+        const newPassword = document.getElementById("forgotNewPassword").value.trim();
+        
+        if (!otp || !newPassword) return showMessage("Please fill all fields");
+
+        try {
+            const res = await fetch(`${getApiUrl()}/set-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, otp, newPassword })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showMessage("Password updated! You can now login.", false);
+                setTimeout(() => switchLoginTab('login'), 2000);
+            } else {
+                showMessage(data.error);
+            }
+        } catch (e) {
+            showMessage("Failed to connect to backend server.");
+        }
+    }
+
+    function grantAccess(phone, role) {
+        currentUserPhone = phone;
+        userRole = role;
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("mainApp").style.display = "block";
+        document.getElementById("displayRole").innerText = role;
+
+        if (role === "Admin" || role === "Division") {
+            document.getElementById("priceGroup").style.display = "block";
+            document.getElementById("cashPriceGroup").style.display = "block";
+        } else {
+            document.getElementById("priceGroup").style.display = "none";
+            document.getElementById("cashPriceGroup").style.display = "none";
+        }
+
+        if (role === "Admin") {
+            document.getElementById("btnOpenAdmin").style.display = "block";
+            document.getElementById("customEmiGroup").style.display = "block";
+        } else {
+            document.getElementById("btnOpenAdmin").style.display = "none";
+            document.getElementById("customEmiGroup").style.display = "none";
+        }
+    }
+
+    function logout() {
+        userRole = "";
+        currentUserPhone = "";
+        document.getElementById("mainApp").style.display = "none";
+        document.getElementById("loginOverlay").style.display = "flex";
+        
+        // Reset forms
+        document.getElementById("loginPassword").value = "";
+        document.getElementById("loginOtp").value = "";
+        document.getElementById("forgotOtp").value = "";
+        document.getElementById("forgotNewPassword").value = "";
+        
+        document.getElementById("otpSection").style.display = "none";
+        document.getElementById("passwordLoginSection").style.display = "block";
+        document.getElementById("btnSendOtp").style.display = "block";
+        
+        document.getElementById("forgotOtpSection").style.display = "none";
+        document.getElementById("btnForgotSendOtp").style.display = "block";
+        
+        document.getElementById("loginMessage").style.display = "none";
+        switchLoginTab('login');
+    }
+
+    // ==========================================
+    // ADMIN DASHBOARD LOGIC
+    // ==========================================
+    
+    function showAdminMessage(msg, isError = false) {
+        const el = document.getElementById("adminMessage");
+        el.style.display = "block";
+        el.style.color = isError ? "red" : "green";
+        el.innerText = msg;
+        setTimeout(() => { el.style.display = "none"; }, 3000);
+    }
+
+    async function openAdmin() {
+        document.getElementById("adminOverlay").style.display = "flex";
+        await loadUsers();
+        await loadBlockedLogins();
+    }
+
+    function closeAdmin() {
+        document.getElementById("adminOverlay").style.display = "none";
+    }
+
+    async function loadUsers() {
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById("adminUsersList");
+                tbody.innerHTML = "";
+                data.users.forEach(u => {
+                    const deviceCount = u.devices ? u.devices.length : 0;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${u.phone}</td>
+                            <td>${u.role}</td>
+                            <td>${deviceCount}/2</td>
+                            <td>
+                                <button class="action-btn btn-admin" style="background:var(--orange); font-size:12px; padding:5px 8px; margin-right:5px;" onclick="adminResetDevices('${u.phone}')">Reset Devices</button>
+                                <button class="action-btn btn-logout" onclick="adminDeleteUser('${u.phone}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch(e) {
+            showAdminMessage("Failed to load users", true);
+        }
+    }
+
+    async function loadBlockedLogins() {
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/blocked-logins`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const tbody = document.getElementById("adminBlockedList");
+                tbody.innerHTML = "";
+                data.logs.forEach(log => {
+                    const time = new Date(log.timestamp).toLocaleString();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-size:12px;">${time}</td>
+                            <td>${log.phone}</td>
+                            <td style="font-size:11px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${log.userAgent}">${log.userAgent}</td>
+                            <td style="font-size:12px;">${log.ipAddress}</td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch(e) {
+            console.error("Failed to load blocked logins", e);
+        }
+    }
+
+    async function adminAddUser() {
+        const targetPhone = document.getElementById("adminNewPhone").value.trim();
+        const role = document.getElementById("adminNewRole").value;
+        if (!targetPhone) return showAdminMessage("Enter a phone number", true);
+
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/add-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone, role })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("User saved!");
+                document.getElementById("adminNewPhone").value = "";
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    async function adminDeleteUser(targetPhone) {
+        if (!confirm(`Are you sure you want to delete user ${targetPhone}?`)) return;
+        
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/delete-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("User deleted!");
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    async function adminResetDevices(targetPhone) {
+        if (!confirm(`Are you sure you want to reset devices for ${targetPhone}? They will need to log in again from their devices.`)) return;
+        
+        try {
+            const res = await fetch(`${getApiUrl()}/admin/reset-devices`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ adminPhone: currentUserPhone, targetPhone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAdminMessage("Devices reset!");
+                loadUsers();
+            } else {
+                showAdminMessage(data.error, true);
+            }
+        } catch(e) {
+            showAdminMessage("Failed", true);
+        }
+    }
+
+    // ==========================================
+    // CALCULATOR LOGIC (UNCHANGED)
+    // ==========================================
+                                        const modelData = {
+        "2450000": { cp12: 2548000, cp24: 2645000, cp29: 2780000, cp35: 3019000, dp: 500000, regCost: 66496, processingFee: 14185, cashPrice: 2150000 },
+        "2500000": { cp12: 2600000, cp24: 2700000, cp29: 2838000, cp35: 3083000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2200000 },
+        "2525000": { cp12: 2626000, cp24: 2728000, cp29: 2868000, cp35: 3116000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2225000 },
+        "2550000": { cp12: 2653000, cp24: 2755000, cp29: 2897000, cp35: 3148000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2225000 },
+        "2980000": { cp12: 3099000, cp24: 3218000, cp29: 3383000, cp35: 3674000, dp: 600000, regCost: 98268, processingFee: 14185, cashPrice: 2655000 },
+        "2990000": { cp12: 3110000, cp24: 3229000, cp29: 3394000, cp35: 3687000, dp: 600000, regCost: 100297, processingFee: 14185, cashPrice: 2665000 },
+        "3000000": { cp12: 3120000, cp24: 3240000, cp29: 3406000, cp35: 3700000, dp: 600000, regCost: 100769, processingFee: 14185, cashPrice: 2675000 },
+        "3025000": { cp12: 3146000, cp24: 3268000, cp29: 3435000, cp35: 3732000, dp: 600000, regCost: 98976, processingFee: 14185, cashPrice: 2775000 },
+        "3150000": { cp12: 3275000, cp24: 3400000, cp29: 3573000, cp35: 3879000, dp: 650000, regCost: 100439, processingFee: 14185, cashPrice: 2900000 },
+        "3250000": { cp12: 3380000, cp24: 3510000, cp29: 3690000, cp35: 4008000, dp: 650000, regCost: 130843, processingFee: 14185, cashPrice: 2900000 },
+        "3300000": { cp12: 3433000, cp24: 3565000, cp29: 3748000, cp35: 4073000, dp: 650000, regCost: 131961, processingFee: 14185, cashPrice: 2950000 },
+        "3325000": { cp12: 3459000, cp24: 3593000, cp29: 3778000, cp35: 4105000, dp: 650000, regCost: 136633, processingFee: 14185, cashPrice: 2975000 },
+        "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPrice: 3160000 },
+        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPrice: 3330000 },
+        "3760000": { cp12: 3911000, cp24: 4061000, cp29: 4269000, cp35: 4638000, dp: 750000, regCost: 154719, processingFee: 14185, cashPrice: 3400000 },
+        "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 123227, processingFee: 14185, cashPrice: 3250000 },
+        "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPrice: 4450000 },
+        "5750000": { cp12: 5963000, cp24: 6175000, cp29: 6469000, cp35: 6990000, dp: 1500000, regCost: 196608, processingFee: 14185, cashPrice: 5500000 },
+        "6350000": { cp12: 6568000, cp24: 6785000, cp29: 7086000, cp35: 7619000, dp: 2000000, regCost: 173726, processingFee: 14185, cashPrice: 6100000 },
+        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0, regCost: 186363, processingFee: 14185, cashPrice: 4400000 },
+        "6550000": { cp12: 6764000, cp24: 6977000, cp29: 7272000, cp35: 7795000, dp: 2280000, regCost: 196608, processingFee: 14185, cashPrice: 6300000 },
+        "4350000": { cp12: 4518000, cp24: 4685000, cp29: 4917000, cp35: 5327000, dp: 1000000, regCost: 155247, processingFee: 14185, cashPrice: 4100000 },
+    };
+
+    function updatePrice() {
+        const modelSelect = document.getElementById("model");
+        const priceInput = document.getElementById("price");
+        const cashPriceInput = document.getElementById("cashPrice");
+        
+        if (modelSelect.value) {
+            priceInput.value = modelSelect.value;
+            const data = modelData[modelSelect.value];
+            
+            if (data && cashPriceInput) {
+                if (data.cashPrice) {
+                    cashPriceInput.value = formatCurrency(data.cashPrice);
+                } else {
+                    cashPriceInput.value = "N/A";
+                }
+            }
+            
+            if(data && data.dp) {
+                document.getElementById("dpAmount").value = data.dp;
+                updateDpPercent();
+            }
+        }
+    }
+
+    function updateDpTk() {
+        const price = parseFloat(document.getElementById("price").value);
+        const percent = parseFloat(document.getElementById("dpPercent").value);
+        if (!isNaN(price) && !isNaN(percent)) {
+            document.getElementById("dpAmount").value = Math.round((price * percent) / 100);
+        }
+    }
+
+    function updateDpPercent() {
+        const price = parseFloat(document.getElementById("price").value);
+        const amount = parseFloat(document.getElementById("dpAmount").value);
+        if (!isNaN(price) && !isNaN(amount) && price > 0) {
+            document.getElementById("dpPercent").value = ((amount / price) * 100).toFixed(2);
+        }
+    }
+
+    function autoUpdateInterest(event) {
+        const price = parseFloat(document.getElementById("price").value);
+        let dpAmount = parseFloat(document.getElementById("dpAmount").value);
+        const months = parseInt(document.getElementById("duration").value);
+        const interestInput = document.getElementById("interest");
+        
+        if (isNaN(months) || months <= 0) return;
+
+        let requiredRate = 5;
+        if (months > 35) requiredRate = 13;
+        else if (months > 29) requiredRate = 10;
+        else if (months > 24) requiredRate = 7;
+        
+        let currentInterest = parseFloat(interestInput.value);
+        
+        // If the duration was changed, automatically reset the profit rate to the default for that duration
+        if (event && event.target && event.target.id === "duration") {
+            interestInput.value = requiredRate;
+        } 
+        // Otherwise (e.g. manual edit or DP change), just ensure it's not lower than the minimum
+        else if (isNaN(currentInterest) || currentInterest < requiredRate) {
+            interestInput.value = requiredRate;
+        }
+    }
+
+    document.getElementById("duration").addEventListener("input", autoUpdateInterest);
+    document.getElementById("price").addEventListener("change", autoUpdateInterest);
+    document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
+    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit
+
+
+    function formatCurrency(num) {
+        return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    }
+
+    function calculate() {
+        const price = parseFloat(document.getElementById("price").value);
+        let dpAmount = parseFloat(document.getElementById("dpAmount").value);
+        let interestRate = parseFloat(document.getElementById("interest").value);
+        const months = parseInt(document.getElementById("duration").value);
+
+        if (isNaN(price) || price <= 0) { alert("Please select a valid product model."); return; }
+        if (isNaN(dpAmount) || dpAmount <= 0) { alert("Please enter a valid downpayment."); return; }
+
+        const data = modelData[price.toString()];
+        const minDp = (data && data.dp) ? data.dp : 0;
+        
+        if (userRole !== "Admin" && minDp > 0 && dpAmount < minDp) {
+            const shortfall = minDp - dpAmount;
+            if (shortfall > 100000) {
+                alert(`Downpayment cannot be reduced by more than 100,000 Tk. Minimum allowed is ${formatCurrency(minDp - 100000)}`);
+                dpAmount = minDp - 100000;
+                document.getElementById("dpAmount").value = dpAmount;
+                updateDpPercent();
+            }
+        }
+
+        let requiredRate = 5;
+        if (months > 35) requiredRate = 13;
+        else if (months > 29) requiredRate = 10;
+        else if (months > 24) requiredRate = 7;
+        
+        if (interestRate < requiredRate) {
+            interestRate = requiredRate;
+            document.getElementById("interest").value = requiredRate.toString();
+            alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
+        }
+
+        const effectiveInterestRate = interestRate;
+        const totalLoan = price - dpAmount;
+        let totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
+        let totalPrice = price + totalInterest;
+        totalPrice = Math.round(totalPrice / 1000) * 1000;
+        totalInterest = totalPrice - price;
+        let emi = ((totalPrice - dpAmount) / months) + 500;
+        let emiDisplayText = formatCurrency(emi);
+        let finalMonthEmi = emi;
+        
+        const customEmiInput = document.getElementById("customEmi").value;
+        let isCustomEmi = false;
+        let customEmi = 0;
+        
+        if (userRole === "Admin" && customEmiInput && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+            customEmi = parseFloat(customEmiInput);
+            const deficitPerMonth = emi - customEmi;
+            
+            if (deficitPerMonth > 0) {
+                isCustomEmi = true;
+                const totalDeficit = deficitPerMonth * (months - 1);
+                const extraInterest = (totalDeficit * effectiveInterestRate * (months / 12)) / 100;
+                
+                totalInterest += extraInterest;
+                totalPrice += extraInterest;
+                
+                finalMonthEmi = emi + totalDeficit + extraInterest;
+                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
+            } else {
+                // If custom EMI is equal or greater, no extra interest logic applies currently,
+                // just default to normal string
+                emiDisplayText = formatCurrency(emi);
+            }
+        }
+
+        let creditPriceExcel = 0;
+        if (data) {
+            if (months <= 12 && data.cp12) creditPriceExcel = data.cp12;
+            else if (months <= 24 && data.cp24) creditPriceExcel = data.cp24;
+            else if (months <= 29 && data.cp29) creditPriceExcel = data.cp29;
+            else if (months <= 35 && data.cp35) creditPriceExcel = data.cp35;
+            else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
+        }
+
+        let comparisonHTML = "";
+        if (creditPriceExcel > 0) {
+            const diff = totalPrice - creditPriceExcel;
+            if (diff > 0) {
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:16px;"><strong>Loss compared to Credit Price: ${formatCurrency(diff)}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+            } else if (diff < 0) {
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:16px;"><strong>Benefit compared to Credit Price: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+            } else {
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:16px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+            }
+        }
+
+        let explanationHTML = `
+            ${comparisonHTML}
+            <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #4b5563; font-style: italic;">
+                * VTS চার্জ ৫০০ টাকা মান্থলি কিস্তির (EMI) সাথে যোগ করা হয়েছে।
+            </div>
+        `;
+
+        // Registration and Processing Fee Boxes
+        let regCost = (data && data.regCost) ? data.regCost : 0;
+        let processingFee = (data && data.processingFee) ? data.processingFee : 0;
+        
+        let includeRegChecked = false;
+        const regCheckbox = document.getElementById("includeReg");
+        if (regCheckbox) {
+            includeRegChecked = regCheckbox.checked;
+        }
+
+        let initialPayment = dpAmount + processingFee;
+        if (includeRegChecked) initialPayment += regCost;
+
+        if (regCost > 0 || processingFee > 0) {
+            explanationHTML += `
+                <div class="results-grid" style="gap: 10px; margin-top: 10px;">
+                    <!-- Registration Box -->
+                    <div style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Reg. Cost</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(regCost)}</div>
+                        <label style="font-size: 11px; color: rgba(255,255,255,0.9); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 5px; font-weight: normal;">
+                            <input type="checkbox" id="includeReg" onchange="calculate()" ${includeRegChecked ? 'checked' : ''} style="margin: 0; width: 13px; height: 13px; accent-color: #4c1d95;"> 
+                            Add to Initial
+                        </label>
+                    </div>
+
+                    <!-- Processing Fee Box -->
+                    <div style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Process Fee</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(processingFee)}</div>
+                    </div>
+
+                    <!-- Total Initial Payment Box -->
+                    <div style="background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Initial Pay</div>
+                        <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(initialPayment)}</div>
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8);">(DP+Fee${includeRegChecked ? '+Reg' : ''})</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById("results").style.display = "block";
+        document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
+        document.getElementById("resEmi").innerHTML = emiDisplayText;
+        document.getElementById("resInterest").innerText = formatCurrency(totalInterest);
+        document.getElementById("explanation").innerHTML = explanationHTML;
+        
+        if (userRole === "Admin" || userRole === "Division") {
+            document.getElementById("buyerFormBtnContainer").style.display = "block";
+            globalCalcData = {
+                price: price,
+                totalInterest: totalInterest,
+                totalPrice: totalPrice,
+                dpAmount: dpAmount,
+                months: months,
+                emi: emi,
+                isCustomEmi: isCustomEmi,
+                customEmi: customEmi,
+                finalMonthEmi: finalMonthEmi,
+                includeRegChecked: includeRegChecked,
+                regCost: regCost,
+                processingFee: processingFee
+            };
+        } else {
+            document.getElementById("buyerFormBtnContainer").style.display = "none";
+        }
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        });
+    }
+</script>
+
+
+<!-- BUYER FORM MODAL -->
+<div id="buyerFormModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow-y: auto; padding: 20px; box-sizing: border-box;">
+    <div style="background: white; max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; position: relative;" id="printableFormArea">
+        <button onclick="closeBuyerForm()" style="position: absolute; top: 15px; right: 20px; background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" class="no-print">Close</button>
+        <button onclick="window.print()" style="position: absolute; top: 15px; right: 100px; background: var(--teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;" class="no-print">🖨️ Print / Save PDF</button>
+
+                <!-- FORM CONTENT -->
+        <div class="buyer-form-content" style="color: black; font-family: Calibri, 'Segoe UI', sans-serif; line-height: 1.25; font-size: 13.5px;">
+            
+            <!-- HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="width: 25%;">
+                    <div style="border: 1px solid black; display: inline-block; padding: 4px 12px; font-weight: bold; margin-top: 8px; font-size: 14px;">F-1001</div>
+                </div>
+                <div style="width: 50%; text-align: center;">
+                    <img src="data:image/png;base64,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" alt="Runner Motors PLC" style="height: 42px; max-width: 100%; object-fit: contain; margin-bottom: 3px;">
+                    <p style="margin: 2px 0; font-size: 12px;">138/1 Tejgaon I/A, Dhaka-1208</p>
+                    <h3 style="margin: 4px 0; font-size: 20px; font-weight: bold; text-decoration: underline;">Customer Form</h3>
+                </div>
+                <div style="width: 32%; font-size: 13px; text-align: left; padding-top: 5px;">
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Sales Unit</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Collection Unit</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Delivery Point</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Order No</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Delivery Date</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Installment Date</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOMER INFO -->
+            <div style="margin-bottom: 10px; font-size: 13.5px;">
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Name of Customer</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">A/C</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Father/Wife of</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Proprietor</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Mother's Name</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Occupation</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Present Address</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;"></div><div style="visibility: hidden;">:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;">Permanent Address</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                <div class="form-row">
+                    <div style="width: 140px; flex-shrink: 0;"></div><div style="visibility: hidden;">:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                </div>
+                
+                <div style="display: flex; align-items: flex-end; margin-top: 4px;">
+                    <div style="width: 140px; flex-shrink: 0;">Contact No: Phone</div><div>:</div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
+                    <div style="margin-left: 10px; margin-right: 4px; font-weight: 500;">NID:</div><input type="text" class="print-input dotted-input" style="flex: 1;">
+                </div>
+            </div>
+
+            <!-- MODEL INFO -->
+            <div style="border: 1px solid #22c55e; padding: 5px 8px; margin-bottom: 10px; display: flex; align-items: center; font-size: 13.5px;">
+                <div>Model: </div><input type="text" class="print-input dotted-input" id="bfModel" style="flex: 1;">
+                <div style="margin-left: 8px;">WB:</div><input type="text" class="print-input dotted-input" style="width: 90px;">
+                <div style="margin-left: 8px;">Color:</div><input type="text" class="print-input dotted-input" style="width: 90px;">
+                <div style="margin-left: 8px;">Quantity:</div><input type="text" class="print-input dotted-input" style="width: 60px;">
+                <div style="margin-left: 8px;">Product:<span style="text-decoration: underline;">LMD</span>/HD/SCV</div>
+            </div>
+
+            <!-- FINANCIAL TABLE -->
+            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-bottom: 10px; text-align: center; font-size: 13px;">
+                <thead>
+                    <tr>
+                        <th style="width: 5%; padding: 5px;">Sl No.</th>
+                        <th style="width: 25%; text-align: center; padding: 5px;">Particulars</th>
+                        <th style="width: 18%; padding: 5px;">Company Offer</th>
+                        <th style="width: 18%; padding: 5px;">Customer Offer</th>
+                        <th style="width: 18%; padding: 5px;">Final Negotiation</th>
+                        <th style="width: 16%; padding: 5px;">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1.</td>
+                        <td style="text-align: left; padding-left: 6px;">Initial Price</td>
+                        <td><input type="text" class="print-input" id="bfCompanyPrice" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfFinalPrice" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td style="text-align: left; padding-left: 6px;">Markup Profit</td>
+                        <td><input type="text" class="print-input" id="bfCompanyProfit" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfFinalProfit" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td>(1-4)%</td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td style="text-align: left; padding-left: 6px;">Sales Price</td>
+                        <td><input type="text" class="print-input" id="bfCompanyTotal" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfFinalTotal" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td>(1+2)</td>
+                    </tr>
+                    <tr>
+                        <td>4.</td>
+                        <td style="text-align: left; padding-left: 6px;">Down Payment</td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfFinalDp" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>5.</td>
+                        <td style="text-align: left; padding-left: 6px;">Outstanding</td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfOutstanding" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td>(3-4)</td>
+                    </tr>
+                    <tr>
+                        <td>6.</td>
+                        <td style="text-align: left; padding-left: 6px;">EMI</td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
+                        <td><input type="text" class="print-input" id="bfEmi" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td><input type="text" class="print-input" id="bfEmiMonths" placeholder="Months" style="width: 95%; text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Registration</td>
+                        <td colspan="2"><input type="text" class="print-input" id="bfRegNotes" style="width: 95%;"></td>
+                        <td style="text-align: left; padding-left: 6px; font-weight: 500;">Location</td>
+                        <td><input type="text" class="print-input" style="width: 95%;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Insurance</td>
+                        <td><div style="display:flex; justify-content:center; align-items:center; gap:5px;"><input type="checkbox"> 1st party</div></td>
+                        <td><div style="display:flex; justify-content:center; align-items:center; gap:5px;"><input type="checkbox"> 3rd Party</div></td>
+                        <td style="text-align: left; padding-left: 6px; font-weight: 500;">Loan Processing Fee</td>
+                        <td><input type="text" class="print-input" id="bfProcessingNotes" style="width: 95%;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Finance By</td>
+                        <td colspan="4" style="text-align: left; padding-left: 6px;">Runner Motors Ltd.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- KPI & NOTES -->
+            <table class="print-table" style="width: 100%; border-collapse: collapse; margin-top: 6px; margin-bottom: 15px; font-size: 13px;">
+                <thead>
+                    <tr>
+                        <th style="width: 8%; padding: 4px;">Sl No.</th>
+                        <th style="width: 50%; text-align: center; font-weight: bold; padding: 4px;">Credit Sales Package</th>
+                        <th style="width: 42%; text-align: center; font-weight: bold; padding: 4px;">Remarks/Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center; padding: 4px;">1.</td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow1"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfVtsNote"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; padding: 4px;">2.</td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow2"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfFinalEmiNote"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; padding: 4px;">3.</td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow3"></td>
+                        <td><input type="text" class="print-input" style="width: 98%;" id="bfNoteRow3"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- SIGNATURES -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 25px; font-size: 13px;">
+                <div style="width: 25%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 4px;">Customer's Signature</div>
+                </div>
+                
+                <div style="width: 35%;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                        <tr>
+                            <td style="border: 1px solid black; padding: 3px 6px; width: 35%; font-weight: 500;">Dealer</td>
+                            <td style="border: 1px solid black; padding: 2px; width: 65%;"><input type="text" class="print-input" style="width: 96%; text-align: center;"></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 3px 6px; font-weight: 500;">Dealer Staff</td>
+                            <td style="border: 1px solid black; padding: 2px;"><input type="text" class="print-input" style="width: 96%; text-align: center;"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="width: 30%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 4px;">Sales Person Sign & ID No.</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 35px; font-size: 13px;">
+                <div style="width: 28%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 4px;">Area Manager</div>
+                </div>
+                <div style="width: 28%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 4px;">Division Manager</div>
+                </div>
+                <div style="width: 28%; text-align: center;">
+                    <div style="border-top: 1px solid black; padding-top: 4px;">Head of Sales</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-row { display: flex; align-items: flex-end; margin-bottom: 5px; }
+    .print-input { 
+        border: none; 
+        background: transparent; 
+        font-family: inherit; 
+        font-size: 13.5px;
+        outline: none;
+        padding: 0;
+        margin: 0;
+    }
+    .print-input:focus {
+        background-color: rgba(20, 184, 166, 0.08) !important;
+        border-radius: 2px;
+    }
+    .dotted-input {
+        border-bottom: 1.5px dotted black;
+        margin-left: 4px;
+    }
+    .print-table th, .print-table td {
+        border: 1px solid black;
+        padding: 4px 6px;
+    }
+    
+    @media print {
+        @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+        }
+        html, body {
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+        }
+        #loginOverlay, #mainApp, #adminModal, .theme-btn, .no-print {
+            display: none !important;
+        }
+        #buyerFormModal {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+        #printableFormArea {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        .buyer-form-content {
+            font-size: 13px !important;
+            line-height: 1.25 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-input {
+            font-size: 13px !important;
+        }
+        .print-table th, .print-table td {
+            padding: 3.5px 5px !important;
+            font-size: 12.5px !important;
+        }
+    }
+</style>
+
+<script>
+    function openBuyerForm() {
+        try {
+            if (!globalCalcData || !globalCalcData.price) {
+                alert("Please calculate the package first.");
+                return;
+            }
+            const modelSelect = document.getElementById("model");
+            let modelName = "";
+            if (modelSelect && modelSelect.selectedIndex >= 0 && modelSelect.options[modelSelect.selectedIndex]) {
+                modelName = modelSelect.options[modelSelect.selectedIndex].text;
+            }
+            
+            const bfModelEl = document.getElementById("bfModel");
+            if (bfModelEl) bfModelEl.value = modelName;
+            
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+
+            setVal("bfCompanyPrice", formatCurrency(globalCalcData.price));
+            setVal("bfFinalPrice", formatCurrency(globalCalcData.price));
+            
+            setVal("bfCompanyProfit", formatCurrency(globalCalcData.totalInterest));
+            setVal("bfFinalProfit", formatCurrency(globalCalcData.totalInterest));
+            
+            setVal("bfCompanyTotal", formatCurrency(globalCalcData.totalPrice));
+            setVal("bfFinalTotal", formatCurrency(globalCalcData.totalPrice));
+            
+            setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+            
+            setVal("bfOutstanding", formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount));
+            
+            if (globalCalcData.isCustomEmi) {
+                setVal("bfEmi", formatCurrency(globalCalcData.customEmi));
+                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
+                setVal("bfPkgRow1", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.finalMonthEmi));
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "");
+                setVal("bfFinalEmiNote", "");
+            } else {
+                setVal("bfEmi", formatCurrency(globalCalcData.emi));
+                setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+                setVal("bfPkgRow1", "");
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "");
+                setVal("bfFinalEmiNote", "");
+            }
+            setVal("bfPkgRow3", "");
+            setVal("bfNoteRow3", "");
+            
+            let regNote = "";
+            if (globalCalcData.includeRegChecked && globalCalcData.regCost) {
+                regNote = "Included: Tk. " + globalCalcData.regCost;
+            }
+            setVal("bfRegNotes", regNote);
+            
+            let processNote = "";
+            if (globalCalcData.processingFee > 0) {
+                processNote = "Included: Tk. " + globalCalcData.processingFee;
+            }
+            setVal("bfProcessingNotes", processNote);
+            
+            document.getElementById("buyerFormModal").style.display = "block";
+        } catch (err) {
+            console.error("Error opening buyer form:", err);
+            alert("Error opening buyer form: " + err.message);
+        }
+    }
+    function closeBuyerForm() {
+        const modal = document.getElementById("buyerFormModal");
+        if (modal) modal.style.display = "none";
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
