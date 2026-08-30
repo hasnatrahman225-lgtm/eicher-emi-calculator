@@ -1159,16 +1159,20 @@
             
             <!-- HEADER -->
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <div style="width: 28%; display: flex; align-items: flex-start; gap: 8px;">
-                    <div style="border: 1px solid black; display: inline-block; padding: 4px 10px; font-weight: bold; margin-top: 4px; font-size: 13px;">F-1001</div>
-                    <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div id="bfNidPhotoBox" style="width: 90px; height: 58px; border: 1px solid #1e293b; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #64748b; text-align: center; overflow: hidden; background: #fff; border-radius: 2px; padding: 1px; box-sizing: border-box;">
-                            <span id="bfNidPhotoPlaceholder" style="font-size: 9px; line-height: 1.1; padding: 2px;">NID Card</span>
-                            <img id="bfNidPhotoImg" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
-                        </div>
-                        <div id="bfVerifiedBadge" style="display: none; font-size: 9.5px; color: #16a34a; font-weight: bold; margin-top: 2px; text-align: center;">
-                            ✓ NID Verified
-                        </div>
+                <!-- NID CARD PROOF SECTION (FRONT & BACK) -->
+                <div style="width: 29%; display: flex; flex-direction: column; align-items: flex-start; gap: 6px;">
+                    <!-- FRONT CARD -->
+                    <div id="bfNidFrontBox" style="width: 148px; height: 92px; border: 1px solid #1e293b; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 4px; padding: 1px; box-sizing: border-box;">
+                        <span id="bfNidFrontPlaceholder" style="font-size: 10px; color: #64748b; font-weight: 500;">NID Front Side</span>
+                        <img id="bfNidFrontImg" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <!-- BACK CARD -->
+                    <div id="bfNidBackBox" style="width: 148px; height: 92px; border: 1px solid #1e293b; display: none; align-items: center; justify-content: center; overflow: hidden; background: #fff; border-radius: 4px; padding: 1px; box-sizing: border-box;">
+                        <span id="bfNidBackPlaceholder" style="font-size: 10px; color: #64748b; font-weight: 500;">NID Back Side</span>
+                        <img id="bfNidBackImg" src="" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <div id="bfVerifiedBadge" style="display: none; font-size: 10px; color: #16a34a; font-weight: bold; width: 148px; text-align: center; margin-top: 1px;">
+                        ✓ NID Verified
                     </div>
                 </div>
                 <div style="width: 50%; text-align: center;">
@@ -1663,15 +1667,29 @@
                 }
             }
 
-            // Set Photo Proof in form header
+            // Set Photo Proof in form header (Front & Back)
             if (nidFrontBase64) {
-                const photoImg = document.getElementById("bfNidPhotoImg");
-                const placeholder = document.getElementById("bfNidPhotoPlaceholder");
-                if (photoImg && placeholder) {
-                    photoImg.src = nidFrontBase64;
-                    photoImg.style.display = "block";
-                    placeholder.style.display = "none";
+                const frontImg = document.getElementById("bfNidFrontImg");
+                const frontPh = document.getElementById("bfNidFrontPlaceholder");
+                if (frontImg && frontPh) {
+                    frontImg.src = nidFrontBase64;
+                    frontImg.style.display = "block";
+                    frontPh.style.display = "none";
                 }
+            }
+            if (nidBackBase64) {
+                const backImg = document.getElementById("bfNidBackImg");
+                const backPh = document.getElementById("bfNidBackPlaceholder");
+                const backBox = document.getElementById("bfNidBackBox");
+                if (backImg && backPh && backBox) {
+                    backImg.src = nidBackBase64;
+                    backImg.style.display = "block";
+                    backPh.style.display = "none";
+                    backBox.style.display = "flex";
+                }
+            } else {
+                const backBox = document.getElementById("bfNidBackBox");
+                if (backBox) backBox.style.display = "none";
             }
 
             // Verification Badge
