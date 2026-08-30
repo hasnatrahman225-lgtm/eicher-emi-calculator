@@ -1158,24 +1158,24 @@
                     <p style="margin: 3px 0; font-size: 13px;">138/1 Tejgaon I/A, Dhaka-1208</p>
                     <h3 style="margin: 5px 0; font-size: 22px; font-weight: bold;">Customer Form</h3>
                 </div>
-                <div style="width: 25%; font-size: 13px; text-align: left; padding-top: 15px;">
-                    <div style="display: flex; margin-bottom: 3px;">
-                        <div style="width: 100px;">Sales Unit</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                <div style="width: 30%; font-size: 13px; text-align: left; padding-top: 5px;">
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Sales Unit</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
-                    <div style="display: flex; margin-bottom: 3px;">
-                        <div style="width: 100px;">Collection Unit</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Collection Unit</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
-                    <div style="display: flex; margin-bottom: 3px;">
-                        <div style="width: 100px;">Delivery Point</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Delivery Point</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
-                    <div style="display: flex; margin-bottom: 3px;">
-                        <div style="width: 100px;">Order No</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Order No</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
-                    <div style="display: flex; margin-bottom: 3px;">
-                        <div style="width: 100px;">Delivery Date</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Delivery Date</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
-                    <div style="display: flex;">
-                        <div style="width: 100px;">Installment Date</div><div>: <input type="text" class="print-input" style="width: 90px; border-bottom: none;"></div>
+                    <div style="display: flex; align-items: flex-end; margin-bottom: 4px;">
+                        <div style="width: 105px;">Installment Date</div><div>: </div><input type="text" class="print-input dotted-input" style="flex: 1; margin-left: 4px;">
                     </div>
                 </div>
             </div>
@@ -1326,12 +1326,12 @@
                 <div style="width: 35%;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <td style="border: 1px solid black; padding: 5px; width: 40%;">Dealer</td>
-                            <td style="border: 1px solid black; padding: 5px; width: 60%;"></td>
+                            <td style="border: 1px solid black; padding: 3px 5px; width: 35%; font-weight: 500;">Dealer</td>
+                            <td style="border: 1px solid black; padding: 2px; width: 65%;"><input type="text" class="print-input" style="width: 96%; text-align: center;"></td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid black; padding: 5px;">Dealer Staff</td>
-                            <td style="border: 1px solid black; padding: 5px; height: 25px;"></td>
+                            <td style="border: 1px solid black; padding: 3px 5px; font-weight: 500;">Dealer Staff</td>
+                            <td style="border: 1px solid black; padding: 2px;"><input type="text" class="print-input" style="width: 96%; text-align: center;"></td>
                         </tr>
                     </table>
                 </div>
@@ -1362,6 +1362,10 @@
         font-family: inherit; 
         font-size: 14px;
         outline: none;
+    }
+    .print-input:focus {
+        background-color: rgba(20, 184, 166, 0.08) !important;
+        border-radius: 2px;
     }
     .dotted-input {
         border-bottom: 2px dotted black;
