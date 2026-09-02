@@ -2236,34 +2236,49 @@
 
 <script>
     // ==========================================
-    // OFFER LETTER / SALES QUOTE LOGIC
+    // OFFER LETTER / SALES QUOTE LOGIC (NULL SAFE)
     // ==========================================
     const modelSpecs = {
-        "2450000": { name: "Pro 1049 CBC (2815)", gvw: "4995 Kg", payload: "3000 Kg", wb: "2815 mm", cargo: "10.6'x6.0' (LxW)", disp: "2953 cc", hp: "95 HP", tyre: "7.00x16 (6+1)", origin: "India", yom: "2025/26" },
-        "2500000": { name: "Pro 1050 (3350) CT", gvw: "5400 Kg", payload: "3500 Kg", wb: "3350 mm", cargo: "12.2'x6.6' (LxW)", disp: "3298 cc", hp: "100 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "2525000": { name: "Pro 1055 (2815) CT", gvw: "5400 Kg", payload: "3500 Kg", wb: "2815 mm", cargo: "10.6'x6.6' (LxW)", disp: "3298 cc", hp: "100 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "2550000": { name: "Pro 2055 (2815)", gvw: "5950 Kg", payload: "4000 Kg", wb: "2815 mm", cargo: "10.6'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "2980000": { name: "Pro 1075 (3515)", gvw: "7490 Kg", payload: "5000 Kg", wb: "3515 mm", cargo: "14.2'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "2990000": { name: "Pro 1075 AB (3765)", gvw: "7490 Kg", payload: "5000 Kg", wb: "3765 mm", cargo: "16.2'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "3000000": { name: "Pro 1075 (4065)", gvw: "7490 Kg", payload: "5000 Kg", wb: "4065 mm", cargo: "17.3'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025/26" },
-        "3025000": { name: "Pro 1080 HT (3515)", gvw: "8250 Kg", payload: "5500 Kg", wb: "3515 mm", cargo: "14.2'x6.8' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025/26" },
-        "3150000": { name: "Pro 1095 (4065)", gvw: "9500 Kg", payload: "6500 Kg", wb: "4065 mm", cargo: "17.3'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025/26" },
-        "3250000": { name: "Pro 1112 (3800)", gvw: "11990 Kg", payload: "8000 Kg", wb: "3800 mm", cargo: "17.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3300000": { name: "Pro 1112 (4300)", gvw: "11990 Kg", payload: "8000 Kg", wb: "4300 mm", cargo: "19.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3325000": { name: "Pro 1112 (5050)", gvw: "11990 Kg", payload: "8000 Kg", wb: "5050 mm", cargo: "22.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3510000": { name: "Pro 1114 (4255)", gvw: "14500 Kg", payload: "10000 Kg", wb: "4255 mm", cargo: "19.2'x7.5' (LxW)", disp: "3770 cc", hp: "135 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3690000": { name: "Pro 3015 (4490)", gvw: "15500 Kg", payload: "11000 Kg", wb: "4490 mm", cargo: "20.2'x7.5' (LxW)", disp: "3770 cc", hp: "150 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3760000": { name: "Pro 3015 (5490)", gvw: "15500 Kg", payload: "11000 Kg", wb: "5490 mm", cargo: "24.2'x7.5' (LxW)", disp: "3770 cc", hp: "150 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025/26" },
-        "3500000": { name: "Pro 1080 (2815) RDT", gvw: "8250 Kg", payload: "5000 Kg", wb: "2815 mm", cargo: "10.0'x6.5' (Tipper)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025/26" },
-        "4700000": { name: "Pro 5025 H (5000)", gvw: "25000 Kg", payload: "18000 Kg", wb: "5000 mm", cargo: "24.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (10+1)", origin: "India", yom: "2025/26" },
-        "5750000": { name: "Pro 6031 H (6150)", gvw: "31000 Kg", payload: "23000 Kg", wb: "6150 mm", cargo: "28.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (12+1)", origin: "India", yom: "2025/26" },
-        "6350000": { name: "Pro 5025 T (4000)", gvw: "25000 Kg", payload: "16 Cu.M (Tipper)", wb: "4000 mm", cargo: "16 Cu.M Box Body", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (10+1)", origin: "India", yom: "2025/26" },
-        "4650000": { name: "Pro 5025 RMC (4000)", gvw: "25000 Kg", payload: "6 Cu.M (RMC)", wb: "4000 mm", cargo: "6 Cu.M Transit Mixer", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (10+1)", origin: "India", yom: "2025/26" },
-        "6550000": { name: "Pro 6037 H (6600)", gvw: "37000 Kg", payload: "28000 Kg", wb: "6600 mm", cargo: "30.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (14+1)", origin: "India", yom: "2025/26" },
-        "4350000": { name: "Pro 5040 (3485)", gvw: "40000 Kg (GCW)", payload: "Prime Mover", wb: "3485 mm", cargo: "Prime Mover 4x2", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (6+1)", origin: "India", yom: "2025/26" }
+        "2450000": { name: "Pro 1049 CBC (2815)", gvw: "4995 Kg", payload: "3000 Kg", wb: "2815 mm", cargo: "10.6'x6.0' (LxW)", disp: "2953 cc", hp: "95 HP", tyre: "7.00x16 (6+1)", origin: "India", yom: "2025" },
+        "2500000": { name: "Pro 1050 (3350) CT", gvw: "5400 Kg", payload: "3500 Kg", wb: "3350 mm", cargo: "12.2'x6.6' (LxW)", disp: "3298 cc", hp: "100 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "2525000": { name: "Pro 1055 (2815) CT", gvw: "5400 Kg", payload: "3500 Kg", wb: "2815 mm", cargo: "10.6'x6.6' (LxW)", disp: "3298 cc", hp: "100 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "2550000": { name: "Pro 2055 (2815)", gvw: "5950 Kg", payload: "4000 Kg", wb: "2815 mm", cargo: "10.6'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "2980000": { name: "Pro 1075 (3515)", gvw: "7490 Kg", payload: "5000 Kg", wb: "3515 mm", cargo: "14.2'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "2990000": { name: "Pro 1075 AB (3765)", gvw: "7490 Kg", payload: "5000 Kg", wb: "3765 mm", cargo: "16.2'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "3000000": { name: "Pro 1075 (4065)", gvw: "7490 Kg", payload: "5000 Kg", wb: "4065 mm", cargo: "17.3'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "7.50x16 (6+1)", origin: "India", yom: "2025" },
+        "3025000": { name: "Pro 1080 HT (3515)", gvw: "8250 Kg", payload: "5500 Kg", wb: "3515 mm", cargo: "14.2'x6.8' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025" },
+        "3150000": { name: "Pro 1095 (4065)", gvw: "9500 Kg", payload: "6500 Kg", wb: "4065 mm", cargo: "17.3'x6.6' (LxW)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025" },
+        "3250000": { name: "Pro 1112 (3800)", gvw: "11990 Kg", payload: "8000 Kg", wb: "3800 mm", cargo: "17.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025" },
+        "3300000": { name: "Pro 1112 (4300)", gvw: "11990 Kg", payload: "8000 Kg", wb: "4300 mm", cargo: "19.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025" },
+        "3325000": { name: "Pro 1112 (5050)", gvw: "11990 Kg", payload: "8000 Kg", wb: "5050 mm", cargo: "22.2'x7.2' (LxW)", disp: "3770 cc", hp: "120 HP", tyre: "8.25x20 (6+1)", origin: "India", yom: "2025" },
+        "3510000": { name: "Pro 1114 (4255)", gvw: "14500 Kg", payload: "10000 Kg", wb: "4255 mm", cargo: "19.2'x7.5' (LxW)", disp: "3770 cc", hp: "135 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025" },
+        "3690000": { name: "Pro 3015 (4490)", gvw: "15500 Kg", payload: "11000 Kg", wb: "4490 mm", cargo: "20.2'x7.5' (LxW)", disp: "3770 cc", hp: "150 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025" },
+        "3760000": { name: "Pro 3015 (5490)", gvw: "15500 Kg", payload: "11000 Kg", wb: "5490 mm", cargo: "24.2'x7.5' (LxW)", disp: "3770 cc", hp: "150 HP", tyre: "9.00x20 (6+1)", origin: "India", yom: "2025" },
+        "3500000": { name: "Pro 1080 (2815) RDT", gvw: "8250 Kg", payload: "5000 Kg", wb: "2815 mm", cargo: "10.0'x6.5' (Tipper)", disp: "3298 cc", hp: "110 HP", tyre: "8.25x16 (6+1)", origin: "India", yom: "2025" },
+        "4700000": { name: "Pro 5025 H (5000)", gvw: "25000 Kg", payload: "18000 Kg", wb: "5000 mm", cargo: "24.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (10+1)", origin: "India", yom: "2025" },
+        "5750000": { name: "Pro 6031 H (6150)", gvw: "31000 Kg", payload: "23000 Kg", wb: "6150 mm", cargo: "28.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (12+1)", origin: "India", yom: "2025" },
+        "6350000": { name: "Pro 5025 T (4000)", gvw: "25000 Kg", payload: "16 Cu.M (Tipper)", wb: "4000 mm", cargo: "16 Cu.M Box Body", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (10+1)", origin: "India", yom: "2025" },
+        "4650000": { name: "Pro 5025 RMC (4000)", gvw: "25000 Kg", payload: "6 Cu.M (RMC)", wb: "4000 mm", cargo: "6 Cu.M Transit Mixer", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (10+1)", origin: "India", yom: "2025" },
+        "6550000": { name: "Pro 6037 H (6600)", gvw: "37000 Kg", payload: "28000 Kg", wb: "6600 mm", cargo: "30.0'x7.8' (LxW)", disp: "5131 cc", hp: "210 HP", tyre: "10.00x20 (14+1)", origin: "India", yom: "2025" },
+        "4350000": { name: "Pro 5040 (3485)", gvw: "40000 Kg (GCW)", payload: "Prime Mover", wb: "3485 mm", cargo: "Prime Mover 4x2", disp: "5131 cc", hp: "210 HP", tyre: "11.00x20 (6+1)", origin: "India", yom: "2025" }
     };
 
     let currentOfferMode = "cash";
+
+    function safeSetText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+    }
+
+    function safeSetValue(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+    }
+
+    function safeSetHtml(id, html) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    }
 
     function parseNum(val) {
         if (!val) return 0;
@@ -2291,21 +2306,21 @@
 
             const modelPriceKey = globalCalcData.price.toString();
             const spec = modelSpecs[modelPriceKey] || {
-                name: document.getElementById("model")?.options[document.getElementById("model")?.selectedIndex]?.text || "Pro Series",
-                gvw: "N/A", payload: "N/A", wb: "N/A", cargo: "N/A", disp: "N/A", hp: "N/A", tyre: "N/A", origin: "India", yom: "2025/26"
+                name: modelEl.options[modelEl.selectedIndex]?.text || "Pro Series",
+                gvw: "N/A", payload: "N/A", wb: "N/A", cargo: "N/A", disp: "N/A", hp: "N/A", tyre: "N/A", origin: "India", yom: "2025"
             };
 
             // Sidebar specs
-            document.getElementById("olSpecModel").value = spec.name;
-            document.getElementById("olSpecReg").value = spec.gvw;
-            document.getElementById("olSpecPayload").value = spec.payload;
-            document.getElementById("olSpecWb").value = spec.wb;
-            document.getElementById("olSpecCargo").value = spec.cargo;
-            document.getElementById("olSpecDisp").value = spec.disp;
-            document.getElementById("olSpecHp").value = spec.hp;
-            document.getElementById("olSpecTyre").value = spec.tyre;
-            document.getElementById("olSpecOrigin").value = spec.origin;
-            document.getElementById("olSpecYom").value = spec.yom;
+            safeSetValue("olSpecModel", spec.name);
+            safeSetValue("olSpecReg", spec.gvw);
+            safeSetValue("olSpecPayload", spec.payload);
+            safeSetValue("olSpecWb", spec.wb);
+            safeSetValue("olSpecCargo", spec.cargo);
+            safeSetValue("olSpecDisp", spec.disp);
+            safeSetValue("olSpecHp", spec.hp);
+            safeSetValue("olSpecTyre", spec.tyre);
+            safeSetValue("olSpecOrigin", spec.origin);
+            safeSetValue("olSpecYom", spec.yom);
 
             // Dates
             const now = new Date();
@@ -2315,16 +2330,15 @@
             const curMonth = monthNames[now.getMonth()];
             const curYear = now.getFullYear();
             
-            document.getElementById("olIssueDate").value = `${day}${suffix} ${curMonth} ${curYear}`;
-            
+            safeSetValue("olIssueDate", `${day}${suffix} ${curMonth} ${curYear}`);
             const lastDayOfMonth = new Date(curYear, now.getMonth() + 1, 0).getDate();
-            document.getElementById("olValidityDate").value = `${lastDayOfMonth}th ${curMonth} ${curYear}`;
+            safeSetValue("olValidityDate", `${lastDayOfMonth}th ${curMonth} ${curYear}`);
 
             // Ref No
             const modelNum = spec.name.match(/\d+/)?.[0] || "1095";
             const mm = String(now.getMonth() + 1).padStart(2, '0');
             const yy = String(curYear).slice(-2);
-            document.getElementById("olRefNo").value = `RML/CS/SQ/${modelNum}/${mm}${yy}/${Math.floor(100 + Math.random() * 900)}`;
+            safeSetValue("olRefNo", `RML/CS/SQ/${modelNum}/${mm}${yy}/${Math.floor(100 + Math.random() * 900)}`);
 
             // Cash Mode Values
             const data = modelData[modelPriceKey];
@@ -2332,76 +2346,82 @@
             const cashPrice = (data && data.cashPrice) ? data.cashPrice : unitPrice;
             const regCost = (data && data.regCost) ? data.regCost : 0;
 
-            document.getElementById("olCashModelLabel").innerText = spec.name;
-            document.getElementById("olCashUnitPrice").value = formatNumberOnly(unitPrice);
-            document.getElementById("olCashSpecialPrice").value = formatNumberOnly(cashPrice);
-            document.getElementById("olCashRegCost").value = formatNumberOnly(regCost);
-            document.getElementById("olCashRegSpecial").value = formatNumberOnly(regCost);
+            safeSetText("olCashModelLabel", spec.name);
+            safeSetValue("olCashUnitPrice", formatNumberOnly(unitPrice));
+            safeSetValue("olCashSpecialPrice", formatNumberOnly(cashPrice));
+            safeSetValue("olCashRegCost", formatNumberOnly(regCost));
+            safeSetValue("olCashRegSpecial", "");
             recalcCashOffer();
 
             // Credit Mode Values
-            document.getElementById("olCreditModelName").value = "Eicher " + spec.name + " Cabin & Chassis";
-            document.getElementById("olCreditTotalPrice").value = formatCurrency(globalCalcData.totalPrice);
-            const dpPct = ((globalCalcData.dpAmount / globalCalcData.price) * 100).toFixed(2);
-            document.getElementById("olCreditDp").value = `${formatCurrency(globalCalcData.dpAmount)} (${dpPct}%)`;
-            document.getElementById("olCreditMonths").value = `${globalCalcData.months} Months @ ${document.getElementById("interest").value}% Profit`;
-            document.getElementById("olCreditEmi").value = `${formatCurrency(globalCalcData.effectiveEmi)} / Month (${globalCalcData.months} Mos)`;
+            const months = globalCalcData.months || parseInt(document.getElementById("duration")?.value) || 24;
+            const profit = globalCalcData.profitRate || parseFloat(document.getElementById("interest")?.value) || 5;
+            const totalCreditPrice = globalCalcData.totalPrice || globalCalcData.price;
+            const dp = globalCalcData.dpAmount || (modelData[modelPriceKey]?.dp || 500000);
+            const dpPct = ((dp / globalCalcData.price) * 100).toFixed(2);
+            const emiVal = globalCalcData.effectiveEmi || globalCalcData.emi;
+
+            safeSetValue("olCreditModelName", "Eicher " + spec.name + " Cabin & Chassis");
+            safeSetValue("olCreditTotalPrice", formatCurrency(totalCreditPrice));
+            safeSetValue("olCreditDp", `${formatCurrency(dp)} (${dpPct}%)`);
+            safeSetValue("olCreditMonths", `${months} Months @ ${profit}% Profit`);
+            safeSetValue("olCreditEmi", `${formatCurrency(emiVal)} / Month (${months} Mos)`);
             
-            if (globalCalcData.isCustomEmi || globalCalcData.selectedRegOption === 'last_emi') {
-                document.getElementById("olCreditLastEmiRow").style.display = "table-row";
-                document.getElementById("olCreditLastEmi").value = formatCurrency(globalCalcData.effectiveFinalMonthEmi) + ` (${globalCalcData.months}th Month Balloon)`;
-            } else {
-                document.getElementById("olCreditLastEmiRow").style.display = "none";
+            const lastEmiRow = document.getElementById("olCreditLastEmiRow");
+            if (lastEmiRow) {
+                if (globalCalcData.isCustomEmi || globalCalcData.selectedRegOption === 'last_emi') {
+                    lastEmiRow.style.display = "table-row";
+                    safeSetValue("olCreditLastEmi", formatCurrency(globalCalcData.effectiveFinalMonthEmi) + ` (${months}th Month Balloon)`);
+                } else {
+                    lastEmiRow.style.display = "none";
+                }
             }
 
-            document.getElementById("olCreditRegNote").value = globalCalcData.regNote || "Standard";
+            safeSetValue("olCreditRegNote", globalCalcData.regNote || "Included with DP");
 
             switchOfferMode(mode);
-            document.getElementById("offerLetterModal").style.display = "block";
+            const modal = document.getElementById("offerLetterModal");
+            if (modal) modal.style.display = "block";
         } catch(e) {
             console.error("Error opening offer letter:", e);
             alert("Error opening offer letter: " + e.message);
         }
     }
 
-            function switchOfferMode(mode) {
+    function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
         const cashSection = document.getElementById("olCashProposalSection");
         const creditSection = document.getElementById("olCreditProposalSection");
-        const titleEl = document.getElementById("olProposalTitle");
-        const termsText = document.getElementById("olPaymentTermsText");
 
         if (mode === "cash") {
-            btnCash.style.background = "#0f172a";
-            btnCash.style.color = "#ffffff";
-            btnCredit.style.background = "transparent";
-            btnCredit.style.color = "#334155";
-            cashSection.style.display = "block";
-            creditSection.style.display = "none";
-            titleEl.innerText = "Commercial proposal (cash):";
-            termsText.innerHTML = '100% payment is to be made by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. If finance by Bank/NBFI, then 30 days are allowed from the date of the delivery. If delay, then 2% flat profit will be charged.';
+            if (btnCash) { btnCash.style.background = "#004b87"; btnCash.style.color = "#ffffff"; }
+            if (btnCredit) { btnCredit.style.background = "transparent"; btnCredit.style.color = "#334155"; }
+            if (cashSection) cashSection.style.display = "block";
+            if (creditSection) creditSection.style.display = "none";
+            safeSetText("olProposalTitle", "Commercial proposal (cash):");
+            safeSetHtml("olPaymentTermsText", '100% payment is to be made by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. If finance by Bank/NBFI, then 30 days are allowed from the date of the delivery. If delay, then 2% flat profit will be charged.');
         } else {
-            btnCredit.style.background = "#0f172a";
-            btnCredit.style.color = "#ffffff";
-            btnCash.style.background = "transparent";
-            btnCash.style.color = "#334155";
-            cashSection.style.display = "none";
-            creditSection.style.display = "block";
-            titleEl.innerText = "Commercial proposal (Credit / Installment):";
-            termsText.innerHTML = 'Down payment of <strong>' + (document.getElementById("olCreditDp").value) + '</strong> and loan processing fee to be paid by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. Monthly installment of <strong>' + (document.getElementById("olCreditEmi").value) + '</strong> to be paid via MICR Cheque / BEFTN / Online every month.';
+            if (btnCredit) { btnCredit.style.background = "#004b87"; btnCredit.style.color = "#ffffff"; }
+            if (btnCash) { btnCash.style.background = "transparent"; btnCash.style.color = "#334155"; }
+            if (cashSection) cashSection.style.display = "none";
+            if (creditSection) creditSection.style.display = "block";
+            safeSetText("olProposalTitle", "Commercial proposal (Credit / Installment):");
+            const dpVal = document.getElementById("olCreditDp")?.value || "DP";
+            const emiVal = document.getElementById("olCreditEmi")?.value || "EMI";
+            safeSetHtml("olPaymentTermsText", 'Down payment of <strong>' + dpVal + '</strong> and loan processing fee to be paid by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. Monthly installment of <strong>' + emiVal + '</strong> to be paid via MICR Cheque / BEFTN / Online every month.');
         }
     }
 
     function recalcCashOffer() {
-        const unit = parseNum(document.getElementById("olCashUnitPrice").value);
-        const special = parseNum(document.getElementById("olCashSpecialPrice").value);
-        const regCost = parseNum(document.getElementById("olCashRegCost").value);
-        const regSpecial = parseNum(document.getElementById("olCashRegSpecial").value);
+        const unit = parseNum(document.getElementById("olCashUnitPrice")?.value);
+        const special = parseNum(document.getElementById("olCashSpecialPrice")?.value);
+        const regCost = parseNum(document.getElementById("olCashRegCost")?.value);
+        const regSpecial = parseNum(document.getElementById("olCashRegSpecial")?.value);
 
-        document.getElementById("olCashTotalUnit").innerText = formatNumberOnly(unit + regCost);
-        document.getElementById("olCashTotalSpecial").innerText = formatNumberOnly(special + regSpecial);
+        safeSetText("olCashTotalUnit", formatNumberOnly(unit + regCost));
+        safeSetText("olCashTotalSpecial", formatNumberOnly(special + regSpecial));
     }
 
     function recalcCashOfferFromSpecial() {
@@ -2409,7 +2429,8 @@
     }
 
     function closeOfferLetter() {
-        document.getElementById("offerLetterModal").style.display = "none";
+        const modal = document.getElementById("offerLetterModal");
+        if (modal) modal.style.display = "none";
     }
 </script>
 
