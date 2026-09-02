@@ -2381,7 +2381,7 @@
         }
     }
 
-    function switchOfferMode(mode) {
+        function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
@@ -2404,16 +2404,6 @@
             btnCredit.style.color = "#ffffff";
             btnCash.style.background = "transparent";
             btnCash.style.color = "#334155";
-            cashSection.style.display = "none";
-            creditSection.style.display = "block";
-            titleEl.innerText = "Commercial proposal (Credit / Installment):";
-            termsText.innerHTML = 'Down payment of <strong>' + (document.getElementById("olCreditDp").value) + '</strong> and loan processing fee to be paid by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. Monthly installment of <strong>' + (document.getElementById("olCreditEmi").value) + '</strong> to be paid via MICR Cheque / BEFTN / Online every month.';
-        }
-    } else {
-            btnCredit.style.background = "#2563eb";
-            btnCredit.style.color = "#ffffff";
-            btnCash.style.background = "transparent";
-            btnCash.style.color = "#475569";
             cashSection.style.display = "none";
             creditSection.style.display = "block";
             titleEl.innerText = "Commercial proposal (Credit / Installment):";
