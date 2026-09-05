@@ -20,14 +20,35 @@ const SMS_API_TOKEN = process.env.SMS_API_TOKEN || '110630013241785089604183b4b7
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://hasnatrahman225_db_user:hUAe1N2D0rClI34e@cluster0.rns2i2o.mongodb.net/?appName=Cluster0';
 
 // Serverless MongoDB Connection Middleware
+let cachedDb = null;
+async function connectToDatabase() {
+    if (cachedDb && mongoose.connection.readyState === 1) {
+        return cachedDb;
+    }
+    try {
+        const db = await mongoose.connect(MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+            bufferCommands: false
+        });
+        cachedDb = db;
+        console.log('Connected to MongoDB');
+        await initDefaultAdmin();
+        return db;
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+        throw err;
+    }
+}
+
 app.use(async (req, res, next) => {
-    if (mongoose.connection.readyState !== 1) {
+    if (req.path.startsWith('/api')) {
         try {
-            await mongoose.connect(MONGO_URI);
-            console.log('Connected to MongoDB');
-            await initDefaultAdmin();
+            await connectToDatabase();
         } catch (err) {
-            console.error('MongoDB connection error:', err);
+            return res.status(500).json({ 
+                success: false, 
+                error: 'Database connection failed: ' + (err.message || 'Check MongoDB IP access list (0.0.0.0/0).') 
+            });
         }
     }
     next();
