@@ -631,14 +631,14 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, password, deviceId })
             });
-            const data = await res.json();
-            if (data.success) {
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
                 grantAccess(phone, data.role);
             } else {
-                showMessage(data.error);
+                showMessage((data && data.error) ? data.error : `Server response error (${res.status})`);
             }
         } catch (e) {
-            showMessage("Failed to connect to backend server.");
+            showMessage("Failed to connect to backend server. " + (e.message || ""));
         }
     }
 
@@ -652,17 +652,17 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone })
             });
-            const data = await res.json();
-            if (data.success) {
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
                 showMessage("OTP sent via SMS!", false);
                 document.getElementById("otpSection").style.display = "block";
                 document.getElementById("passwordLoginSection").style.display = "none";
                 document.getElementById("btnSendOtp").style.display = "none";
             } else {
-                showMessage(data.error);
+                showMessage((data && data.error) ? data.error : `Server response error (${res.status})`);
             }
         } catch (e) {
-            showMessage("Failed to connect to backend server.");
+            showMessage("Failed to connect to backend server. " + (e.message || ""));
         }
     }
 
@@ -679,18 +679,14 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, otp, deviceId })
             });
-            const data = await res.json();
-            if (data.success) {
-                if (!data.hasPassword) {
-                    // Force them to set password next time they login, or just let them in.
-                    // To keep it simple, we let them in.
-                }
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
                 grantAccess(phone, data.role);
             } else {
-                showMessage(data.error);
+                showMessage((data && data.error) ? data.error : `Server response error (${res.status})`);
             }
         } catch (e) {
-            showMessage("Failed to connect to backend server.");
+            showMessage("Failed to connect to backend server. " + (e.message || ""));
         }
     }
 
@@ -703,16 +699,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone })
             });
-            const data = await res.json();
-            if (data.success) {
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
                 showMessage("OTP sent via SMS!", false);
                 document.getElementById("forgotOtpSection").style.display = "block";
                 document.getElementById("btnForgotSendOtp").style.display = "none";
             } else {
-                showMessage(data.error);
+                showMessage((data && data.error) ? data.error : `Server response error (${res.status})`);
             }
         } catch (e) {
-            showMessage("Failed to connect to backend server.");
+            showMessage("Failed to connect to backend server. " + (e.message || ""));
         }
     }
 
@@ -729,15 +725,15 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, otp, newPassword })
             });
-            const data = await res.json();
-            if (data.success) {
+            const data = await res.json().catch(() => null);
+            if (data && data.success) {
                 showMessage("Password updated! You can now login.", false);
                 setTimeout(() => switchLoginTab('login'), 2000);
             } else {
-                showMessage(data.error);
+                showMessage((data && data.error) ? data.error : `Server response error (${res.status})`);
             }
         } catch (e) {
-            showMessage("Failed to connect to backend server.");
+            showMessage("Failed to connect to backend server. " + (e.message || ""));
         }
     }
 
@@ -2374,7 +2370,7 @@
         }
     }
 
-            function switchOfferMode(mode) {
+                function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
