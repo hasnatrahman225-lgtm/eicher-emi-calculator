@@ -1018,20 +1018,22 @@
         
         let currentInterest = parseFloat(interestInput.value);
         
-        // If the duration was changed, automatically reset the profit rate to the default for that duration
+        // If the duration was changed, automatically set default profit rate for that duration
         if (event && event.target && event.target.id === "duration") {
             interestInput.value = requiredRate;
         } 
-        // Otherwise (e.g. manual edit or DP change), just ensure it's not lower than the minimum
-        else if (isNaN(currentInterest) || currentInterest < requiredRate) {
-            interestInput.value = requiredRate;
+        // For non-admin users, enforce minimum required rate on manual edit or DP change
+        else if (userRole !== "Admin") {
+            if (isNaN(currentInterest) || currentInterest < requiredRate) {
+                interestInput.value = requiredRate;
+            }
         }
     }
 
     document.getElementById("duration").addEventListener("input", autoUpdateInterest);
     document.getElementById("price").addEventListener("change", autoUpdateInterest);
     document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
-    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit
+    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit for non-admins
 
 
     function formatCurrency(num) {
@@ -1065,7 +1067,7 @@
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
-        if (interestRate < requiredRate) {
+        if (userRole !== "Admin" && interestRate < requiredRate) {
             interestRate = requiredRate;
             document.getElementById("interest").value = requiredRate.toString();
             alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
@@ -1424,30 +1426,14 @@
                 <tbody>
                     <tr>
                         <td>1.</td>
-                        <td style="text-align: left; padding-left: 6px;">Initial Price</td>
-                        <td><input type="text" class="print-input" id="bfCompanyPrice" style="width: 95%; text-align: center;"></td>
+                        <td style="text-align: left; padding-left: 6px;">Total Price</td>
+                        <td><input type="text" class="print-input" id="bfCompanyTotal" style="width: 95%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
-                        <td><input type="text" class="print-input" id="bfFinalPrice" style="width: 95%; text-align: center; font-weight: bold;"></td>
+                        <td><input type="text" class="print-input" id="bfFinalTotal" style="width: 95%; text-align: center; font-weight: bold;"></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td>2.</td>
-                        <td style="text-align: left; padding-left: 6px;">Markup Profit</td>
-                        <td><input type="text" class="print-input" id="bfCompanyProfit" style="width: 95%; text-align: center;"></td>
-                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
-                        <td><input type="text" class="print-input" id="bfFinalProfit" style="width: 95%; text-align: center; font-weight: bold;"></td>
-                        <td>(1-4)%</td>
-                    </tr>
-                    <tr>
-                        <td>3.</td>
-                        <td style="text-align: left; padding-left: 6px;">Sales Price</td>
-                        <td><input type="text" class="print-input" id="bfCompanyTotal" style="width: 95%; text-align: center;"></td>
-                        <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
-                        <td><input type="text" class="print-input" id="bfFinalTotal" style="width: 95%; text-align: center; font-weight: bold;"></td>
-                        <td>(1+2)</td>
-                    </tr>
-                    <tr>
-                        <td>4.</td>
                         <td style="text-align: left; padding-left: 6px;">Down Payment</td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
@@ -1455,15 +1441,15 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>5.</td>
+                        <td>3.</td>
                         <td style="text-align: left; padding-left: 6px;">Outstanding</td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
                         <td><input type="text" class="print-input" id="bfOutstanding" style="width: 95%; text-align: center; font-weight: bold;"></td>
-                        <td>(3-4)</td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td>6.</td>
+                        <td>4.</td>
                         <td style="text-align: left; padding-left: 6px;">EMI</td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
                         <td><input type="text" class="print-input" style="width: 95%; text-align: center;"></td>
@@ -2388,29 +2374,33 @@
         }
     }
 
-    function switchOfferMode(mode) {
+            function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
         const cashSection = document.getElementById("olCashProposalSection");
         const creditSection = document.getElementById("olCreditProposalSection");
+        const titleEl = document.getElementById("olProposalTitle");
+        const termsText = document.getElementById("olPaymentTermsText");
 
         if (mode === "cash") {
-            if (btnCash) { btnCash.style.background = "#004b87"; btnCash.style.color = "#ffffff"; }
-            if (btnCredit) { btnCredit.style.background = "transparent"; btnCredit.style.color = "#334155"; }
-            if (cashSection) cashSection.style.display = "block";
-            if (creditSection) creditSection.style.display = "none";
-            safeSetText("olProposalTitle", "Commercial proposal (cash):");
-            safeSetHtml("olPaymentTermsText", '100% payment is to be made by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. If finance by Bank/NBFI, then 30 days are allowed from the date of the delivery. If delay, then 2% flat profit will be charged.');
+            btnCash.style.background = "#0f172a";
+            btnCash.style.color = "#ffffff";
+            btnCredit.style.background = "transparent";
+            btnCredit.style.color = "#334155";
+            cashSection.style.display = "block";
+            creditSection.style.display = "none";
+            titleEl.innerText = "Commercial proposal (cash):";
+            termsText.innerHTML = '100% payment is to be made by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. If finance by Bank/NBFI, then 30 days are allowed from the date of the delivery. If delay, then 2% flat profit will be charged.';
         } else {
-            if (btnCredit) { btnCredit.style.background = "#004b87"; btnCredit.style.color = "#ffffff"; }
-            if (btnCash) { btnCash.style.background = "transparent"; btnCash.style.color = "#334155"; }
-            if (cashSection) cashSection.style.display = "none";
-            if (creditSection) creditSection.style.display = "block";
-            safeSetText("olProposalTitle", "Commercial proposal (Credit / Installment):");
-            const dpVal = document.getElementById("olCreditDp")?.value || "DP";
-            const emiVal = document.getElementById("olCreditEmi")?.value || "EMI";
-            safeSetHtml("olPaymentTermsText", 'Down payment of <strong>' + dpVal + '</strong> and loan processing fee to be paid by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. Monthly installment of <strong>' + emiVal + '</strong> to be paid via MICR Cheque / BEFTN / Online every month.');
+            btnCredit.style.background = "#0f172a";
+            btnCredit.style.color = "#ffffff";
+            btnCash.style.background = "transparent";
+            btnCash.style.color = "#334155";
+            cashSection.style.display = "none";
+            creditSection.style.display = "block";
+            titleEl.innerText = "Commercial proposal (Credit / Installment):";
+            termsText.innerHTML = 'Down payment of <strong>' + (document.getElementById("olCreditDp").value) + '</strong> and loan processing fee to be paid by PO/Online account in favor of "<strong>RUNNER MOTORS LTD.</strong>" before delivery. Monthly installment of <strong>' + (document.getElementById("olCreditEmi").value) + '</strong> to be paid via MICR Cheque / BEFTN / Online every month.';
         }
     }
 
