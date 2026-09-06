@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rml-calculator-v36';
+const CACHE_NAME = 'rml-calculator-v37';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,12 +8,9 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Force new service worker to take over immediately
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
@@ -23,19 +20,35 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName); // Delete old caches
+            return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim()) // Claim clients immediately
+    }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // Network First, fallback to cache
+  const url = new URL(event.request.url);
+
+  // Dynamic API calls: Network Only
+  if (url.pathname.startsWith('/api/')) {
+    return event.respondWith(fetch(event.request));
+  }
+
+  // Static Assets: Stale-While-Revalidate for 0ms instant load
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(cachedResponse => {
+        const fetchPromise = fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+            cache.put(event.request, networkResponse.clone());
+          }
+          return networkResponse;
+        }).catch(() => cachedResponse);
+
+        return cachedResponse || fetchPromise;
+      });
     })
   );
 });

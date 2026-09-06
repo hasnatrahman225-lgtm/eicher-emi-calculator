@@ -1030,6 +1030,11 @@
     document.getElementById("price").addEventListener("change", autoUpdateInterest);
     document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
     document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit for non-admins
+    document.getElementById("customEmi").addEventListener("input", () => {
+        if (document.getElementById("results").style.display !== "none") {
+            calculate();
+        }
+    });
 
 
     function formatCurrency(num) {
@@ -1079,11 +1084,11 @@
         let emiDisplayText = formatCurrency(emi);
         let finalMonthEmi = emi;
         
-        const customEmiInput = document.getElementById("customEmi").value;
+        const customEmiInput = document.getElementById("customEmi").value.trim();
         let isCustomEmi = false;
         let customEmi = 0;
         
-        if (userRole === "Admin" && customEmiInput && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+        if (userRole === "Admin" && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
             customEmi = parseFloat(customEmiInput);
             const deficitPerMonth = emi - customEmi;
             
@@ -1097,9 +1102,13 @@
                 
                 finalMonthEmi = emi + totalDeficit + extraInterest;
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
+            } else if (deficitPerMonth < 0) {
+                isCustomEmi = true;
+                const totalSurplus = Math.abs(deficitPerMonth) * (months - 1);
+                finalMonthEmi = Math.max(0, emi - totalSurplus);
+                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else {
-                // If custom EMI is equal or greater, no extra interest logic applies currently,
-                // just default to normal string
+                isCustomEmi = false;
                 emiDisplayText = formatCurrency(emi);
             }
         }
@@ -2370,7 +2379,7 @@
         }
     }
 
-                function switchOfferMode(mode) {
+                    function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
