@@ -1018,8 +1018,8 @@
         if (event && event.target && event.target.id === "duration") {
             interestInput.value = requiredRate;
         } 
-        // For non-admin users, enforce minimum required rate on manual edit or DP change
-        else if (userRole !== "Admin") {
+        // For field users, enforce minimum required rate on manual edit or DP change
+        else if (userRole !== "Admin" && userRole !== "Division") {
             if (isNaN(currentInterest) || currentInterest < requiredRate) {
                 interestInput.value = requiredRate;
             }
@@ -1029,7 +1029,7 @@
     document.getElementById("duration").addEventListener("input", autoUpdateInterest);
     document.getElementById("price").addEventListener("change", autoUpdateInterest);
     document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
-    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit for non-admins
+    document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit for field users
     document.getElementById("customEmi").addEventListener("input", () => {
         if (document.getElementById("results").style.display !== "none") {
             calculate();
@@ -1053,7 +1053,7 @@
         const data = modelData[price.toString()];
         const minDp = (data && data.dp) ? data.dp : 0;
         
-        if (userRole !== "Admin" && minDp > 0 && dpAmount < minDp) {
+        if (userRole !== "Admin" && userRole !== "Division" && minDp > 0 && dpAmount < minDp) {
             const shortfall = minDp - dpAmount;
             if (shortfall > 100000) {
                 alert(`Downpayment cannot be reduced by more than 100,000 Tk. Minimum allowed is ${formatCurrency(minDp - 100000)}`);
@@ -1068,7 +1068,7 @@
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
-        if (userRole !== "Admin" && interestRate < requiredRate) {
+        if (userRole !== "Admin" && userRole !== "Division" && interestRate < requiredRate) {
             interestRate = requiredRate;
             document.getElementById("interest").value = requiredRate.toString();
             alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
@@ -1260,35 +1260,31 @@
         document.getElementById("resInterest").innerText = formatCurrency(totalInterest);
         document.getElementById("explanation").innerHTML = explanationHTML;
         
-        if (userRole === "Admin" || userRole === "Division") {
-            document.getElementById("buyerFormBtnContainer").style.display = "flex";
-            const btnOffer = document.getElementById("btnGenerateOfferLetter");
-            if (btnOffer) {
-                btnOffer.style.display = (userRole === "Admin") ? "inline-flex" : "none";
-            }
-            globalCalcData = {
-                price: price,
-                totalInterest: totalInterest,
-                totalPrice: totalPrice,
-                dpAmount: dpAmount,
-                months: months,
-                emi: emi,
-                isCustomEmi: isCustomEmi,
-                customEmi: customEmi,
-                finalMonthEmi: finalMonthEmi,
-                selectedRegOption: selectedRegOption,
-                regCost: regCost,
-                processingFee: processingFee,
-                effectiveEmi: effectiveEmi,
-                effectiveFinalMonthEmi: effectiveFinalMonthEmi,
-                initialPayment: initialPayment,
-                regNote: regNote,
-                regPkgNote1: regPkgNote1,
-                regPkgNote2: regPkgNote2
-            };
-        } else {
-            document.getElementById("buyerFormBtnContainer").style.display = "none";
+        document.getElementById("buyerFormBtnContainer").style.display = "flex";
+        const btnOffer = document.getElementById("btnGenerateOfferLetter");
+        if (btnOffer) {
+            btnOffer.style.display = (userRole === "Admin") ? "inline-flex" : "none";
         }
+        globalCalcData = {
+            price: price,
+            totalInterest: totalInterest,
+            totalPrice: totalPrice,
+            dpAmount: dpAmount,
+            months: months,
+            emi: emi,
+            isCustomEmi: isCustomEmi,
+            customEmi: customEmi,
+            finalMonthEmi: finalMonthEmi,
+            selectedRegOption: selectedRegOption,
+            regCost: regCost,
+            processingFee: processingFee,
+            effectiveEmi: effectiveEmi,
+            effectiveFinalMonthEmi: effectiveFinalMonthEmi,
+            initialPayment: initialPayment,
+            regNote: regNote,
+            regPkgNote1: regPkgNote1,
+            regPkgNote2: regPkgNote2
+        };
     }
 
     // Register Service Worker for PWA
@@ -2379,7 +2375,7 @@
         }
     }
 
-                    function switchOfferMode(mode) {
+                            function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
