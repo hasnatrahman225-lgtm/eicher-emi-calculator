@@ -934,7 +934,7 @@
     // ==========================================
     // CALCULATOR LOGIC (UNCHANGED)
     // ==========================================
-                                        const modelData = {
+    const modelData = {
         "2450000": { cp12: 2548000, cp24: 2645000, cp29: 2780000, cp35: 3019000, dp: 500000, regCost: 66496, processingFee: 14185, cashPrice: 2150000 },
         "2500000": { cp12: 2600000, cp24: 2700000, cp29: 2838000, cp35: 3083000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2200000 },
         "2525000": { cp12: 2626000, cp24: 2728000, cp29: 2868000, cp35: 3116000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2225000 },
@@ -950,13 +950,13 @@
         "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPrice: 3160000 },
         "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPrice: 3330000 },
         "3760000": { cp12: 3911000, cp24: 4061000, cp29: 4269000, cp35: 4638000, dp: 750000, regCost: 154719, processingFee: 14185, cashPrice: 3400000 },
-        "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 123227, processingFee: 14185, cashPrice: 3250000 },
-        "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPrice: 4450000 },
-        "5750000": { cp12: 5963000, cp24: 6175000, cp29: 6469000, cp35: 6990000, dp: 1500000, regCost: 196608, processingFee: 14185, cashPrice: 5500000 },
-        "6350000": { cp12: 6568000, cp24: 6785000, cp29: 7086000, cp35: 7619000, dp: 2000000, regCost: 173726, processingFee: 14185, cashPrice: 6100000 },
-        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0, regCost: 186363, processingFee: 14185, cashPrice: 4400000 },
-        "6550000": { cp12: 6764000, cp24: 6977000, cp29: 7272000, cp35: 7795000, dp: 2280000, regCost: 196608, processingFee: 14185, cashPrice: 6300000 },
-        "4350000": { cp12: 4518000, cp24: 4685000, cp29: 4917000, cp35: 5327000, dp: 1000000, regCost: 155247, processingFee: 14185, cashPrice: 4100000 },
+        "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 95652, processingFee: 14185, cashPrice: 3250000 },
+        "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPrice: 4350000 },
+        "5750000": { cp12: 5963000, cp24: 6175000, cp29: 6469000, cp35: 6990000, dp: 1500000, regCost: 216608, processingFee: 14185, cashPrice: 5500000 },
+        "6350000": { cp12: 6568000, cp24: 6785000, cp29: 7086000, cp35: 7619000, dp: 2000000, regCost: 173726, processingFee: 14185, cashPrice: 6050000 },
+        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0, regCost: 186363, processingFee: 14185, cashPrice: 4350000 },
+        "6550000": { cp12: 6764000, cp24: 6977000, cp29: 7272000, cp35: 7795000, dp: 2280000, regCost: 216608, processingFee: 14185, cashPrice: 5550000 },
+        "4350000": { cp12: 4518000, cp24: 4685000, cp29: 4917000, cp35: 5327000, dp: 1000000, regCost: 155247, processingFee: 14185, cashPrice: 4000000 },
     };
 
     function updatePrice() {
@@ -2375,7 +2375,7 @@
         }
     }
 
-                            function switchOfferMode(mode) {
+                                function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
