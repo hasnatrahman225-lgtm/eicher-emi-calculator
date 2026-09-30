@@ -752,12 +752,16 @@
             document.getElementById("cashPriceGroup").style.display = "none";
         }
 
-        if (role === "Admin") {
-            document.getElementById("btnOpenAdmin").style.display = "block";
+        if (role === "Admin" || role === "Division") {
             document.getElementById("customEmiGroup").style.display = "block";
         } else {
-            document.getElementById("btnOpenAdmin").style.display = "none";
             document.getElementById("customEmiGroup").style.display = "none";
+        }
+
+        if (role === "Admin") {
+            document.getElementById("btnOpenAdmin").style.display = "block";
+        } else {
+            document.getElementById("btnOpenAdmin").style.display = "none";
         }
     }
 
@@ -1088,7 +1092,7 @@
         let isCustomEmi = false;
         let customEmi = 0;
         
-        if (userRole === "Admin" && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+        if ((userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
             customEmi = parseFloat(customEmiInput);
             const deficitPerMonth = emi - customEmi;
             
@@ -1263,7 +1267,7 @@
         document.getElementById("buyerFormBtnContainer").style.display = "flex";
         const btnOffer = document.getElementById("btnGenerateOfferLetter");
         if (btnOffer) {
-            btnOffer.style.display = (userRole === "Admin") ? "inline-flex" : "none";
+            btnOffer.style.display = "none";
         }
         globalCalcData = {
             price: price,
@@ -2375,7 +2379,7 @@
         }
     }
 
-                                    function switchOfferMode(mode) {
+                                            function switchOfferMode(mode) {
         currentOfferMode = mode;
         const btnCash = document.getElementById("btnOfferTabCash");
         const btnCredit = document.getElementById("btnOfferTabCredit");
