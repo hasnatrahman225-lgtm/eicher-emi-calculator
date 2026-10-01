@@ -1026,6 +1026,18 @@
                 document.getElementById("dpAmount").value = data.dp;
                 updateDpPercent();
             }
+
+            // Sales Unit default: 29 Months base
+            if (userRole === "Sales Unit") {
+                const durationInput = document.getElementById("duration");
+                if (durationInput) {
+                    durationInput.value = "29";
+                }
+                const interestInput = document.getElementById("interest");
+                if (interestInput) {
+                    interestInput.value = "7";
+                }
+            }
         }
     }
 
@@ -1227,12 +1239,19 @@
         }
 
         let creditPriceExcel = 0;
+        let baseStandardLabel = "";
         if (data) {
-            if (months <= 12 && data.cp12) creditPriceExcel = data.cp12;
-            else if (months <= 24 && data.cp24) creditPriceExcel = data.cp24;
-            else if (months <= 29 && data.cp29) creditPriceExcel = data.cp29;
-            else if (months <= 35 && data.cp35) creditPriceExcel = data.cp35;
-            else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
+            if (userRole === "Sales Unit") {
+                creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
+                baseStandardLabel = "29 Months Standard CP";
+            } else {
+                if (months <= 12 && data.cp12) creditPriceExcel = data.cp12;
+                else if (months <= 24 && data.cp24) creditPriceExcel = data.cp24;
+                else if (months <= 29 && data.cp29) creditPriceExcel = data.cp29;
+                else if (months <= 35 && data.cp35) creditPriceExcel = data.cp35;
+                else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
+                baseStandardLabel = `${months} Months Standard CP`;
+            }
         }
 
         const approvedStandardCreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
@@ -1241,11 +1260,12 @@
         let deviationNote = "";
         let deviationEmiNote = "Includes Tk. 500 VTS";
         if (creditPriceExcel > 0 && deviation !== 0) {
+            const tenureLabel = userRole === 'Sales Unit' ? '29 Mos Base' : months + ' Mos';
             if (deviation < 0) {
-                deviationNote = `Standard CP: ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit)`;
+                deviationNote = `Standard CP (${tenureLabel}): ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit)`;
                 deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
             } else {
-                deviationNote = `Standard CP: ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment)`;
+                deviationNote = `Standard CP (${tenureLabel}): ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment)`;
                 deviationEmiNote = `EMI Adjusted (+${formatCurrency(diffPerMonth)}/Mo Surcharge)`;
             }
         }
@@ -1253,13 +1273,14 @@
         let comparisonHTML = "";
         if (creditPriceExcel > 0) {
             const diff = totalPrice - creditPriceExcel;
+            const standardText = userRole === "Sales Unit" ? `স্ট্যান্ডার্ড ক্রেডিট প্রাইস (২৯ মাস বেস): <strong>${formatCurrency(creditPriceExcel)}</strong>` : `স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong>`;
             if (diff > 0) {
                 comparisonHTML = `
                     <div style="margin-top:10px; padding:12px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:15px;">
                         <strong>⚠️ অতিরিক্ত সমন্বয় (Surcharge): ${formatCurrency(diff)}</strong><br>
                         <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> ডাউনপেমেন্ট কম বা ডিউরেশন পরিবর্তনের কারণে অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                            • ${standardText} | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> ${userRole === "Sales Unit" ? "২৯ মাসের স্ট্যান্ডার্ডের তুলনায় " : ""}ডাউনপেমেন্ট বা ডিউরেশন পরিবর্তনের কারণে অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
                         </span>
                     </div>
                 `;
@@ -1268,13 +1289,13 @@
                     <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
                         <strong>🎉 কাস্টমার বেনিফিট / ছাড় (Rebate): ${formatCurrency(Math.abs(diff))}</strong><br>
                         <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> বেশি ডাউনপেমেন্ট বা কম ডিউরেশনের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                            • ${standardText} | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> ${userRole === "Sales Unit" ? "২৯ মাসের স্ট্যান্ডার্ডের তুলনায় " : ""}বেশি ডাউনপেমেন্ট বা কম ডিউরেশনের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
                         </span>
                     </div>
                 `;
             } else {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches ${userRole === 'Sales Unit' ? '29 Months Base ' : ''}Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
         }
 
