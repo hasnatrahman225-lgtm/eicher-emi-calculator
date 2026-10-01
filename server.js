@@ -58,7 +58,7 @@ app.use(async (req, res, next) => {
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, default: null }, // Null if password not set yet
-    role: { type: String, enum: ['Admin', 'Division', 'Field'], default: 'Field' },
+    role: { type: String, enum: ['Admin', 'Division', 'Area Manager', 'Field', 'Sales Unit'], default: 'Area Manager' },
     devices: [{ type: String }] // Store up to 2 unique device IDs
 });
 
