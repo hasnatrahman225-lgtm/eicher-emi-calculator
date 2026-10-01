@@ -764,31 +764,18 @@
             interestGroup.style.display = (role === "Sales Unit") ? "none" : "block";
         }
 
-        // Downpayment: Fixed / Readonly for Sales Unit
+        // Downpayment: Sales Unit can increase DP, but cannot reduce below minDp
         const dpPercentInput = document.getElementById("dpPercent");
         const dpAmountInput = document.getElementById("dpAmount");
-        if (role === "Sales Unit") {
-            if (dpPercentInput) {
-                dpPercentInput.readOnly = true;
-                dpPercentInput.style.backgroundColor = "#f1f5f9";
-                dpPercentInput.style.cursor = "not-allowed";
-            }
-            if (dpAmountInput) {
-                dpAmountInput.readOnly = true;
-                dpAmountInput.style.backgroundColor = "#f1f5f9";
-                dpAmountInput.style.cursor = "not-allowed";
-            }
-        } else {
-            if (dpPercentInput) {
-                dpPercentInput.readOnly = false;
-                dpPercentInput.style.backgroundColor = "";
-                dpPercentInput.style.cursor = "";
-            }
-            if (dpAmountInput) {
-                dpAmountInput.readOnly = false;
-                dpAmountInput.style.backgroundColor = "";
-                dpAmountInput.style.cursor = "";
-            }
+        if (dpPercentInput) {
+            dpPercentInput.readOnly = false;
+            dpPercentInput.style.backgroundColor = "";
+            dpPercentInput.style.cursor = "";
+        }
+        if (dpAmountInput) {
+            dpAmountInput.readOnly = false;
+            dpAmountInput.style.backgroundColor = "";
+            dpAmountInput.style.cursor = "";
         }
 
         // Custom EMI: Admin & Division
@@ -1174,7 +1161,12 @@
 
         const minDp = (data && data.dp) ? data.dp : 0;
         
-        if (userRole !== "Admin" && userRole !== "Division" && minDp > 0 && dpAmount < minDp) {
+        if (userRole === "Sales Unit" && minDp > 0 && dpAmount < minDp) {
+            alert(`Sales Unit ডাউনপেমেন্ট কমাতে পারবেন না। সর্বনিম্ন নির্ধারিত ডাউনপেমেন্ট ${formatCurrency(minDp)} (আপনি চাইলে বাড়াতে পারবেন)।`);
+            dpAmount = minDp;
+            document.getElementById("dpAmount").value = dpAmount;
+            updateDpPercent();
+        } else if (userRole !== "Admin" && userRole !== "Division" && userRole !== "Sales Unit" && minDp > 0 && dpAmount < minDp) {
             const shortfall = minDp - dpAmount;
             if (shortfall > 100000) {
                 alert(`Downpayment cannot be reduced by more than 100,000 Tk. Minimum allowed is ${formatCurrency(minDp - 100000)}`);
@@ -1245,25 +1237,44 @@
 
         const approvedStandardCreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
         const deviation = totalPrice - approvedStandardCreditPrice;
+        const diffPerMonth = months > 0 ? Math.round(Math.abs(deviation) / months) : 0;
         let deviationNote = "";
+        let deviationEmiNote = "Includes Tk. 500 VTS";
         if (creditPriceExcel > 0 && deviation !== 0) {
             if (deviation < 0) {
-                deviationNote = "Customer Rebate / Discount: " + formatCurrency(Math.abs(deviation)) + " (due to DP / rate adjustment)";
+                deviationNote = `Standard CP: ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit)`;
+                deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
             } else {
-                deviationNote = "Additional Surcharge / Adjustment: " + formatCurrency(deviation) + " (due to DP / duration adjustment)";
+                deviationNote = `Standard CP: ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment)`;
+                deviationEmiNote = `EMI Adjusted (+${formatCurrency(diffPerMonth)}/Mo Surcharge)`;
             }
         }
 
         let comparisonHTML = "";
         if (creditPriceExcel > 0) {
             const diff = totalPrice - creditPriceExcel;
-            const diffPerMonth = Math.round(Math.abs(diff) / months);
             if (diff > 0) {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:16px;"><strong>Loss / Surcharge: ${formatCurrency(diff)}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})<br><em style="color:#991b1b;">* DP কম বা ডিউরেশনের কারণে অতিরিক্ত ${formatCurrency(diff)} টাকা সরাসরি কিস্তিতে যোগ হয়েছে (+${formatCurrency(diffPerMonth)}/মাস)।</em></span></div>`;
+                comparisonHTML = `
+                    <div style="margin-top:10px; padding:12px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:15px;">
+                        <strong>⚠️ অতিরিক্ত সমন্বয় (Surcharge): ${formatCurrency(diff)}</strong><br>
+                        <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                            • স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> ডাউনপেমেন্ট কম বা ডিউরেশন পরিবর্তনের কারণে অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                        </span>
+                    </div>
+                `;
             } else if (diff < 0) {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:16px;"><strong>Benefit / Discount: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})<br><em style="color:#065f46;">* বেশি DP বা কম ডিউরেশনের কারণে ডিসকাউন্ট ${formatCurrency(Math.abs(diff))} টাকা সরাসরি কিস্তি থেকে বিয়োগ হয়েছে (-${formatCurrency(diffPerMonth)}/মাস)।</em></span></div>`;
+                comparisonHTML = `
+                    <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
+                        <strong>🎉 কাস্টমার বেনিফিট / ছাড় (Rebate): ${formatCurrency(Math.abs(diff))}</strong><br>
+                        <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                            • স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> বেশি ডাউনপেমেন্ট বা কম ডিউরেশনের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                        </span>
+                    </div>
+                `;
             } else {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:16px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
         }
 
@@ -1294,7 +1305,7 @@
 
         if (selectedRegOption === "dp") {
             initialPayment += regCost;
-            regNote = "Included with DP: " + formatCurrency(regCost);
+            regNote = formatCurrency(regCost);
             if (isCustomEmi) {
                 regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
             }
@@ -1417,7 +1428,8 @@
             regPkgNote1: regPkgNote1,
             regPkgNote2: regPkgNote2,
             deviation: deviation,
-            deviationNote: deviationNote
+            deviationNote: deviationNote,
+            deviationEmiNote: deviationEmiNote
         };
     }
 
@@ -1713,12 +1725,33 @@
         border-bottom: 1.5px dotted black;
         margin-left: 4px;
     }
-    .print-table th, .print-table td {
-        border: 1px solid black;
-        padding: 4px 6px;
+    .print-table th {
+        background-color: #f1f5f9 !important;
+        color: #000000 !important;
+        border: 1px solid #000000 !important;
+        font-weight: bold;
+        text-align: center;
+        background-image: none !important;
     }
-    
-    
+    .print-table td {
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+    }
+    #buyerFormModal table th {
+        background: #f1f5f9 !important;
+        background-color: #f1f5f9 !important;
+        color: #000000 !important;
+        background-image: none !important;
+        border: 1px solid #000000 !important;
+    }
+    #buyerFormModal table td {
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+    }
 </style>
 
 <script>
@@ -1783,22 +1816,23 @@
                 // Direct equal installment without interest charge
                 const cashEmi = Math.round(outstandingVal / globalCalcData.months);
                 setVal("bfEmi", formatCurrency(cashEmi));
-                setVal("bfProcessingNotes", globalCalcData.processingFee > 0 ? ("Included: Tk. " + globalCalcData.processingFee) : "N/A");
+                setVal("bfProcessingNotes", globalCalcData.processingFee > 0 ? ("Included: Tk. " + globalCalcData.processingFee) : "");
                 
                 // Special required note for Short-Term Cash deals
                 setVal("bfPkgRow1", `Short-Term Cash Deal (${globalCalcData.months} Mos @ 0% Profit)`);
-                setVal("bfVtsNote", "0% Interest (No Interest Charged)");
+                setVal("bfVtsNote", "0% Interest");
                 setVal("bfPkgRow2", "Special Note: Short-Term Cash Sale (0% Profit - Special Approval Attached)");
                 setVal("bfFinalEmiNote", "Special Approval Required");
             } else {
                 // If duration is NOT given, Down Payment is NOT added to buyer form (Full 100% Cash)
-                setVal("bfFinalDp", "Tk. 0");
-                setVal("bfOutstanding", "Tk. 0 (Full Cash Deal)");
-                setVal("bfEmi", "N/A");
-                setVal("bfEmiMonths", "Cash Sale");
-                setVal("bfProcessingNotes", "N/A (Cash Sale)");
-                setVal("bfPkgRow1", "Full Cash Sales Agreement (100% Payment)");
-                setVal("bfVtsNote", "No EMI / Financing");
+                // All unnecessary comments are removed completely
+                setVal("bfFinalDp", "");
+                setVal("bfOutstanding", "");
+                setVal("bfEmi", "");
+                setVal("bfEmiMonths", "");
+                setVal("bfProcessingNotes", "");
+                setVal("bfPkgRow1", "");
+                setVal("bfVtsNote", "");
                 setVal("bfPkgRow2", "");
                 setVal("bfFinalEmiNote", "");
             }
@@ -1813,26 +1847,28 @@
             setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
             setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
             
+            const vtsNoteText = globalCalcData.deviationEmiNote || "Includes Tk. 500 VTS";
+            
             if (globalCalcData.isCustomEmi) {
                 const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
                 setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
                 setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else if (globalCalcData.selectedRegOption === 'last_emi') {
                 setVal("bfEmi", formatCurrency(globalCalcData.emi));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
                 setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else {
                 setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
                 setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
                 setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard Credit Price: ${formatCurrency(standardCp)}`);
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
             }
@@ -2571,7 +2607,7 @@
                 }
             }
 
-            safeSetValue("olCreditRegNote", globalCalcData.regNote || "Included with DP");
+            safeSetValue("olCreditRegNote", globalCalcData.regNote || (globalCalcData.regCost ? formatCurrency(globalCalcData.regCost) : "Not Included"));
 
             switchOfferMode(mode);
             const modal = document.getElementById("offerLetterModal");
