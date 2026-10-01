@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rml-calculator-v43';
+const CACHE_NAME = 'rml-calculator-v47';
 const urlsToCache = [
   '/',
   '/index.html',

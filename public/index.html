@@ -397,7 +397,8 @@
             <div style="display:flex; gap:10px;">
                 <input type="text" id="adminNewPhone" placeholder="Phone Number">
                 <select id="adminNewRole">
-                    <option value="Field">Field</option>
+                    <option value="Area Manager">Area Manager</option>
+                    <option value="Sales Unit">Sales Unit</option>
                     <option value="Division">Division</option>
                     <option value="Admin">Admin</option>
                 </select>
@@ -503,7 +504,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="interestGroup">
                 <label for="interest">Profit Rate (%)</label>
                 <input type="number" id="interest" placeholder="e.g. 5" step="0.1">
             </div>
@@ -739,29 +740,73 @@
 
     function grantAccess(phone, role) {
         currentUserPhone = phone;
+        // Map legacy "Field" to "Area Manager"
+        if (role === "Field") role = "Area Manager";
         userRole = role;
+        
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("mainApp").style.display = "block";
         document.getElementById("displayRole").innerText = role;
 
+        // Credit Price (MRP): Visible for Admin & Division
         if (role === "Admin" || role === "Division") {
             document.getElementById("priceGroup").style.display = "block";
-            document.getElementById("cashPriceGroup").style.display = "block";
         } else {
             document.getElementById("priceGroup").style.display = "none";
-            document.getElementById("cashPriceGroup").style.display = "none";
         }
 
+        // Cash Price: Visible for ALL roles (Admin, Division, Area Manager, Sales Unit)
+        document.getElementById("cashPriceGroup").style.display = "block";
+
+        // Interest Rate % field: Hidden for Sales Unit, Visible for others
+        const interestGroup = document.getElementById("interestGroup");
+        if (interestGroup) {
+            interestGroup.style.display = (role === "Sales Unit") ? "none" : "block";
+        }
+
+        // Downpayment: Fixed / Readonly for Sales Unit
+        const dpPercentInput = document.getElementById("dpPercent");
+        const dpAmountInput = document.getElementById("dpAmount");
+        if (role === "Sales Unit") {
+            if (dpPercentInput) {
+                dpPercentInput.readOnly = true;
+                dpPercentInput.style.backgroundColor = "#f1f5f9";
+                dpPercentInput.style.cursor = "not-allowed";
+            }
+            if (dpAmountInput) {
+                dpAmountInput.readOnly = true;
+                dpAmountInput.style.backgroundColor = "#f1f5f9";
+                dpAmountInput.style.cursor = "not-allowed";
+            }
+        } else {
+            if (dpPercentInput) {
+                dpPercentInput.readOnly = false;
+                dpPercentInput.style.backgroundColor = "";
+                dpPercentInput.style.cursor = "";
+            }
+            if (dpAmountInput) {
+                dpAmountInput.readOnly = false;
+                dpAmountInput.style.backgroundColor = "";
+                dpAmountInput.style.cursor = "";
+            }
+        }
+
+        // Custom EMI: Admin & Division
         if (role === "Admin" || role === "Division") {
             document.getElementById("customEmiGroup").style.display = "block";
         } else {
             document.getElementById("customEmiGroup").style.display = "none";
         }
 
+        // Admin Dashboard: Admin only
         if (role === "Admin") {
             document.getElementById("btnOpenAdmin").style.display = "block";
         } else {
             document.getElementById("btnOpenAdmin").style.display = "none";
+        }
+
+        if (document.getElementById("model") && document.getElementById("model").value) {
+            updatePrice();
         }
     }
 
@@ -938,30 +983,39 @@
     // ==========================================
     // CALCULATOR LOGIC (UNCHANGED)
     // ==========================================
-        const modelData = {
-        "2450000": { cp12: 2548000, cp24: 2645000, cp29: 2780000, cp35: 3019000, dp: 500000, regCost: 66496, processingFee: 14185, cashPrice: 2150000 },
-        "2500000": { cp12: 2600000, cp24: 2700000, cp29: 2838000, cp35: 3083000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2200000 },
-        "2525000": { cp12: 2626000, cp24: 2728000, cp29: 2868000, cp35: 3116000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2225000 },
-        "2550000": { cp12: 2653000, cp24: 2755000, cp29: 2897000, cp35: 3148000, dp: 500000, regCost: 66850, processingFee: 14185, cashPrice: 2225000 },
-        "2980000": { cp12: 3099000, cp24: 3218000, cp29: 3383000, cp35: 3674000, dp: 600000, regCost: 98268, processingFee: 14185, cashPrice: 2655000 },
-        "2990000": { cp12: 3110000, cp24: 3229000, cp29: 3394000, cp35: 3687000, dp: 600000, regCost: 100297, processingFee: 14185, cashPrice: 2665000 },
-        "3000000": { cp12: 3120000, cp24: 3240000, cp29: 3406000, cp35: 3700000, dp: 600000, regCost: 100769, processingFee: 14185, cashPrice: 2675000 },
-        "3025000": { cp12: 3146000, cp24: 3268000, cp29: 3435000, cp35: 3732000, dp: 600000, regCost: 98976, processingFee: 14185, cashPrice: 2775000 },
-        "3150000": { cp12: 3275000, cp24: 3400000, cp29: 3573000, cp35: 3879000, dp: 650000, regCost: 100439, processingFee: 14185, cashPrice: 2900000 },
-        "3250000": { cp12: 3380000, cp24: 3510000, cp29: 3690000, cp35: 4008000, dp: 650000, regCost: 130843, processingFee: 14185, cashPrice: 2900000 },
-        "3300000": { cp12: 3433000, cp24: 3565000, cp29: 3748000, cp35: 4073000, dp: 650000, regCost: 131961, processingFee: 14185, cashPrice: 2950000 },
-        "3325000": { cp12: 3459000, cp24: 3593000, cp29: 3778000, cp35: 4105000, dp: 650000, regCost: 136633, processingFee: 14185, cashPrice: 2975000 },
-        "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPrice: 3160000 },
-        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPrice: 3330000 },
-        "3760000": { cp12: 3911000, cp24: 4061000, cp29: 4269000, cp35: 4638000, dp: 750000, regCost: 154719, processingFee: 14185, cashPrice: 3400000 },
-        "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 95652, processingFee: 14185, cashPrice: 3250000 },
-        "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPrice: 4400000 },
-        "5750000": { cp12: 5963000, cp24: 6175000, cp29: 6469000, cp35: 6990000, dp: 1500000, regCost: 216608, processingFee: 14185, cashPrice: 5500000 },
-        "6350000": { cp12: 6568000, cp24: 6785000, cp29: 7086000, cp35: 7619000, dp: 2000000, regCost: 173726, processingFee: 14185, cashPrice: 6050000 },
-        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0, regCost: 186363, processingFee: 14185, cashPrice: 4350000 },
-        "6550000": { cp12: 6764000, cp24: 6977000, cp29: 7272000, cp35: 7795000, dp: 2280000, regCost: 216608, processingFee: 14185, cashPrice: 5550000 },
-        "4350000": { cp12: 4518000, cp24: 4685000, cp29: 4917000, cp35: 5327000, dp: 1000000, regCost: 155247, processingFee: 14185, cashPrice: 4000000 },
+    const modelData = {
+        "2450000": { cp12: 2548000, cp24: 2645000, cp29: 2780000, cp35: 3019000, dp: 500000, regCost: 66496, processingFee: 14185, cashPriceDiv: 2150000, cashPriceArea: 2250000, cashPrice: 2150000 },
+        "2500000": { cp12: 2600000, cp24: 2700000, cp29: 2838000, cp35: 3083000, dp: 500000, regCost: 66850, processingFee: 14185, cashPriceDiv: 2200000, cashPriceArea: 2300000, cashPrice: 2200000 },
+        "2525000": { cp12: 2626000, cp24: 2728000, cp29: 2868000, cp35: 3116000, dp: 500000, regCost: 66850, processingFee: 14185, cashPriceDiv: 2225000, cashPriceArea: 2325000, cashPrice: 2225000 },
+        "2550000": { cp12: 2653000, cp24: 2755000, cp29: 2897000, cp35: 3148000, dp: 500000, regCost: 66850, processingFee: 14185, cashPriceDiv: 2225000, cashPriceArea: 2350000, cashPrice: 2225000 },
+        "2980000": { cp12: 3099000, cp24: 3218000, cp29: 3383000, cp35: 3674000, dp: 600000, regCost: 98268, processingFee: 14185, cashPriceDiv: 2655000, cashPriceArea: 2730000, cashPrice: 2655000 },
+        "2990000": { cp12: 3110000, cp24: 3229000, cp29: 3394000, cp35: 3687000, dp: 600000, regCost: 100297, processingFee: 14185, cashPriceDiv: 2665000, cashPriceArea: 2740000, cashPrice: 2665000 },
+        "3000000": { cp12: 3120000, cp24: 3240000, cp29: 3406000, cp35: 3700000, dp: 600000, regCost: 100769, processingFee: 14185, cashPriceDiv: 2675000, cashPriceArea: 2750000, cashPrice: 2675000 },
+        "3025000": { cp12: 3146000, cp24: 3268000, cp29: 3435000, cp35: 3732000, dp: 600000, regCost: 98976, processingFee: 14185, cashPriceDiv: 2775000, cashPriceArea: 2775000, cashPrice: 2775000 },
+        "3150000": { cp12: 3275000, cp24: 3400000, cp29: 3573000, cp35: 3879000, dp: 650000, regCost: 100439, processingFee: 14185, cashPriceDiv: 2900000, cashPriceArea: 3250000, cashPrice: 2900000 },
+        "3250000": { cp12: 3380000, cp24: 3510000, cp29: 3690000, cp35: 4008000, dp: 650000, regCost: 130843, processingFee: 14185, cashPriceDiv: 2900000, cashPriceArea: 2900000, cashPrice: 2900000 },
+        "3300000": { cp12: 3433000, cp24: 3565000, cp29: 3748000, cp35: 4073000, dp: 650000, regCost: 131961, processingFee: 14185, cashPriceDiv: 2950000, cashPriceArea: 3000000, cashPrice: 2950000 },
+        "3325000": { cp12: 3459000, cp24: 3593000, cp29: 3778000, cp35: 4105000, dp: 650000, regCost: 136633, processingFee: 14185, cashPriceDiv: 2975000, cashPriceArea: 3050000, cashPrice: 2975000 },
+        "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPriceDiv: 3160000, cashPriceArea: 3075000, cashPrice: 3160000 },
+        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPriceDiv: 3330000, cashPriceArea: 3225000, cashPrice: 3330000 },
+        "3760000": { cp12: 3911000, cp24: 4061000, cp29: 4269000, cp35: 4638000, dp: 750000, regCost: 154719, processingFee: 14185, cashPriceDiv: 3400000, cashPriceArea: 3400000, cashPrice: 3400000 },
+        "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 95652, processingFee: 14185, cashPriceDiv: 3250000, cashPriceArea: 3475000, cashPrice: 3250000 },
+        "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPriceDiv: 4400000, cashPriceArea: 4450000, cashPrice: 4400000 },
+        "5750000": { cp12: 5963000, cp24: 6175000, cp29: 6469000, cp35: 6990000, dp: 1500000, regCost: 216608, processingFee: 14185, cashPriceDiv: 5500000, cashPriceArea: 5550000, cashPrice: 5500000 },
+        "6350000": { cp12: 6568000, cp24: 6785000, cp29: 7086000, cp35: 7619000, dp: 2000000, regCost: 173726, processingFee: 14185, cashPriceDiv: 6050000, cashPriceArea: 6100000, cashPrice: 6050000 },
+        "4650000": { cp12: null, cp24: null, cp29: null, cp35: null, dp: 0, regCost: 186363, processingFee: 14185, cashPriceDiv: 4350000, cashPriceArea: 4400000, cashPrice: 4350000 },
+        "6550000": { cp12: 6764000, cp24: 6977000, cp29: 7272000, cp35: 7795000, dp: 2280000, regCost: 216608, processingFee: 14185, cashPriceDiv: 5550000, cashPriceArea: 5600000, cashPrice: 5550000 },
+        "4350000": { cp12: 4518000, cp24: 4685000, cp29: 4917000, cp35: 5327000, dp: 1000000, regCost: 155247, processingFee: 14185, cashPriceDiv: 4000000, cashPriceArea: 4050000, cashPrice: 4000000 },
     };
+
+    function getApplicableCashPrice(data) {
+        if (!data) return 0;
+        if (userRole === "Admin" || userRole === "Division") {
+            return data.cashPriceDiv || data.cashPrice || 0;
+        } else {
+            return data.cashPriceArea || data.cashPriceDiv || data.cashPrice || 0;
+        }
+    }
 
     function updatePrice() {
         const modelSelect = document.getElementById("model");
@@ -973,8 +1027,9 @@
             const data = modelData[modelSelect.value];
             
             if (data && cashPriceInput) {
-                if (data.cashPrice) {
-                    cashPriceInput.value = formatCurrency(data.cashPrice);
+                const applicableCashPrice = getApplicableCashPrice(data);
+                if (applicableCashPrice) {
+                    cashPriceInput.value = formatCurrency(applicableCashPrice);
                 } else {
                     cashPriceInput.value = "N/A";
                 }
@@ -1049,12 +1104,74 @@
         const price = parseFloat(document.getElementById("price").value);
         let dpAmount = parseFloat(document.getElementById("dpAmount").value);
         let interestRate = parseFloat(document.getElementById("interest").value);
-        const months = parseInt(document.getElementById("duration").value);
+        const durationInput = document.getElementById("duration").value.trim();
+        const months = durationInput ? parseInt(durationInput) : 0;
 
         if (isNaN(price) || price <= 0) { alert("Please select a valid product model."); return; }
-        if (isNaN(dpAmount) || dpAmount <= 0) { alert("Please enter a valid downpayment."); return; }
 
         const data = modelData[price.toString()];
+        const applicableCashPrice = getApplicableCashPrice(data) || price;
+
+        // If no duration is entered (months === 0 or isNaN), treat as Cash Sale:
+        if (!months || months <= 0) {
+            const totalPrice = applicableCashPrice;
+            const totalInterest = 0;
+            const emi = 0;
+            const emiDisplayText = "Tk. 0 (Cash Deal)";
+            const finalMonthEmi = 0;
+            const isCustomEmi = false;
+            const customEmi = 0;
+            const approvedStandardCreditPrice = applicableCashPrice;
+            const deviationNote = "Cash Sale Deal (100% Payment)";
+            
+            let regCost = (data && data.regCost) ? data.regCost : 0;
+            let processingFee = (data && data.processingFee) ? data.processingFee : 0;
+            
+            let explanationHTML = `
+                <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px; text-align:center;">
+                    <strong>💵 Cash Price Deal: ${formatCurrency(applicableCashPrice)}</strong><br>
+                    <span style="font-size:13px; font-weight:normal; color:#065f46;">(কোনো কিস্তির ডিউরেশন দেওয়া হয়নি। ফুল ক্যাশ সেল - বায়ার ফর্মে ডাউন পেমেন্ট যোগ হবে না)।</span>
+                </div>
+            `;
+            
+            document.getElementById("results").style.display = "block";
+            document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
+            document.getElementById("resEmi").innerHTML = emiDisplayText;
+            document.getElementById("resInterest").innerText = formatCurrency(0);
+            document.getElementById("explanation").innerHTML = explanationHTML;
+            document.getElementById("buyerFormBtnContainer").style.display = "flex";
+
+            globalCalcData = {
+                price: price,
+                cashPrice: applicableCashPrice,
+                standardCreditPrice: applicableCashPrice,
+                calculatedTotalPrice: totalPrice,
+                totalInterest: 0,
+                totalPrice: totalPrice,
+                dpAmount: 0,
+                months: 0,
+                emi: 0,
+                isCustomEmi: false,
+                customEmi: 0,
+                finalMonthEmi: 0,
+                selectedRegOption: "none",
+                regCost: regCost,
+                processingFee: processingFee,
+                effectiveEmi: 0,
+                effectiveFinalMonthEmi: 0,
+                initialPayment: applicableCashPrice,
+                regNote: "Not Included",
+                regPkgNote1: "",
+                regPkgNote2: "",
+                deviationNote: deviationNote,
+                profitRate: 0,
+                isCashOnly: true
+            };
+            return;
+        }
+
+        if (isNaN(dpAmount) || dpAmount <= 0) { alert("Please enter a valid downpayment."); return; }
+
         const minDp = (data && data.dp) ? data.dp : 0;
         
         if (userRole !== "Admin" && userRole !== "Division" && minDp > 0 && dpAmount < minDp) {
@@ -1126,13 +1243,25 @@
             else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
         }
 
+        const approvedStandardCreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
+        const deviation = totalPrice - approvedStandardCreditPrice;
+        let deviationNote = "";
+        if (creditPriceExcel > 0 && deviation !== 0) {
+            if (deviation < 0) {
+                deviationNote = "Customer Rebate / Discount: " + formatCurrency(Math.abs(deviation)) + " (due to DP / rate adjustment)";
+            } else {
+                deviationNote = "Additional Surcharge / Adjustment: " + formatCurrency(deviation) + " (due to DP / duration adjustment)";
+            }
+        }
+
         let comparisonHTML = "";
         if (creditPriceExcel > 0) {
             const diff = totalPrice - creditPriceExcel;
+            const diffPerMonth = Math.round(Math.abs(diff) / months);
             if (diff > 0) {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:16px;"><strong>Loss compared to Credit Price: ${formatCurrency(diff)}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:16px;"><strong>Loss / Surcharge: ${formatCurrency(diff)}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})<br><em style="color:#991b1b;">* DP কম বা ডিউরেশনের কারণে অতিরিক্ত ${formatCurrency(diff)} টাকা সরাসরি কিস্তিতে যোগ হয়েছে (+${formatCurrency(diffPerMonth)}/মাস)।</em></span></div>`;
             } else if (diff < 0) {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:16px;"><strong>Benefit compared to Credit Price: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:16px;"><strong>Benefit / Discount: ${formatCurrency(Math.abs(diff))}</strong><br><span style="font-size:13px; font-weight:normal;">(Calculated: ${formatCurrency(totalPrice)} | Standard CP: ${formatCurrency(creditPriceExcel)})<br><em style="color:#065f46;">* বেশি DP বা কম ডিউরেশনের কারণে ডিসকাউন্ট ${formatCurrency(Math.abs(diff))} টাকা সরাসরি কিস্তি থেকে বিয়োগ হয়েছে (-${formatCurrency(diffPerMonth)}/মাস)।</em></span></div>`;
             } else {
                 comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:16px;"><strong>Matches Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
@@ -1199,7 +1328,6 @@
             regPkgNote1 = isCustomEmi ? ("Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi)) : "Registration Free / Waived";
             regPkgNote2 = isCustomEmi ? "Registration Free / Waived" : "";
         } else {
-            // None
             if (isCustomEmi) {
                 regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
             }
@@ -1208,21 +1336,18 @@
         if (regCost > 0 || processingFee > 0) {
             explanationHTML += `
                 <div class="results-grid" style="gap: 10px; margin-top: 10px;">
-                    <!-- Registration Box -->
                     <div style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Reg. Cost</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(regCost)}</div>
                         <div style="font-size: 10.5px; color: rgba(255,255,255,0.9); font-weight: 500;">${selectedRegOption === 'free' ? 'FREE OFFER' : selectedRegOption === 'dp' ? 'IN INITIAL DP' : selectedRegOption === 'emi' ? 'IN MONTHLY EMI' : selectedRegOption === 'last_emi' ? 'IN LAST EMI' : 'STANDARD'}</div>
                     </div>
 
-                    <!-- Processing Fee Box -->
                     <div style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Process Fee</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(processingFee)}</div>
                         <div style="font-size: 10.5px; color: rgba(255,255,255,0.8);">Standard</div>
                     </div>
 
-                    <!-- Total Initial Payment Box -->
                     <div style="background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%); padding: 12px 5px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         <div style="font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.9); text-transform: uppercase;">Initial Pay</div>
                         <div style="font-size: 18px; font-weight: bold; margin: 4px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">${formatCurrency(initialPayment)}</div>
@@ -1243,15 +1368,15 @@
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
                             <input type="radio" name="regOption" value="emi" onchange="calculate()" ${selectedRegOption === 'emi' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
-                            <span>2. Pay with Installment (Monthly)</span>
+                            <span>2. Pay with Monthly EMI</span>
                         </label>
                         <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
                             <input type="radio" name="regOption" value="last_emi" onchange="calculate()" ${selectedRegOption === 'last_emi' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
                             <span>3. Pay with Last Installment</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
+                        <label id="regOptionFreeLabel" style="display: ${userRole === 'Sales Unit' ? 'none' : 'flex'}; align-items: center; gap: 6px; cursor: pointer; background: white; padding: 7px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500;">
                             <input type="radio" name="regOption" value="free" onchange="calculate()" ${selectedRegOption === 'free' ? 'checked' : ''} style="accent-color: #6d28d9; width: 15px; height: 15px;">
-                            <span>4. Registration Free (Offer)</span>
+                            <span>4. Registration FREE</span>
                         </label>
                     </div>
                 </div>
@@ -1271,6 +1396,9 @@
         }
         globalCalcData = {
             price: price,
+            cashPrice: getApplicableCashPrice(data) || price,
+            standardCreditPrice: approvedStandardCreditPrice,
+            calculatedTotalPrice: totalPrice,
             totalInterest: totalInterest,
             totalPrice: totalPrice,
             dpAmount: dpAmount,
@@ -1287,7 +1415,9 @@
             initialPayment: initialPayment,
             regNote: regNote,
             regPkgNote1: regPkgNote1,
-            regPkgNote2: regPkgNote2
+            regPkgNote2: regPkgNote2,
+            deviation: deviation,
+            deviationNote: deviationNote
         };
     }
 
@@ -1306,16 +1436,25 @@
 <div id="buyerFormModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow-y: auto; padding: 20px; box-sizing: border-box;">
     <div style="background: white; max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; position: relative;" id="printableFormArea">
         <!-- TOP ACTION BAR (NO PRINT) -->
-        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button type="button" onclick="printBuyerFormDoc()" style="background: var(--teal); color: white; border: none; padding: 9px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" onclick="printBuyerFormDoc()" style="background: #0f172a; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px;">
                     🖨️ Print / Save PDF
                 </button>
-                <button type="button" onclick="openNidScanModal()" style="background: #2563eb; color: white; border: none; padding: 9px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                <button type="button" onclick="openNidScanModal()" style="background: #2563eb; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px;">
                     📷 Scan / Upload NID
                 </button>
+                <div style="display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <span style="font-weight: bold; font-size: 13px; color: #334155;">Deal Mode:</span>
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        <input type="radio" name="bfDealType" value="credit" id="bfTypeCredit" checked onchange="switchBfDealType('credit')"> Credit
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        <input type="radio" name="bfDealType" value="cash" id="bfTypeCash" onchange="switchBfDealType('cash')"> Cash
+                    </label>
+                </div>
             </div>
-            <button type="button" onclick="closeBuyerForm()" style="background: #ef4444; color: white; border: none; padding: 9px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+            <button type="button" onclick="closeBuyerForm()" style="background: #ef4444; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13.5px;">
                 ✕ Close
             </button>
         </div>
@@ -1408,7 +1547,7 @@
             </div>
 
             <!-- MODEL INFO -->
-            <div style="border: 1px solid #22c55e; padding: 5px 8px; margin-bottom: 10px; display: flex; align-items: center; font-size: 13.5px;">
+            <div style="border: 1px solid black; padding: 5px 8px; margin-bottom: 10px; display: flex; align-items: center; font-size: 13.5px;">
                 <div>Model: </div><input type="text" class="print-input dotted-input" id="bfModel" style="flex: 1;">
                 <div style="margin-left: 8px;">WB:</div><input type="text" class="print-input dotted-input" style="width: 90px;">
                 <div style="margin-left: 8px;">Color:</div><input type="text" class="print-input dotted-input" style="width: 90px;">
@@ -1462,7 +1601,13 @@
                         <td><input type="text" class="print-input" id="bfEmiMonths" placeholder="Months" style="width: 95%; text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Registration</td>
+                        <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">
+                            Registration:
+                            <select id="bfRegCoveredType" onchange="updateBfRegNote()" style="font-size: 12px; font-family: inherit; border: 1px solid black; border-radius: 3px; padding: 1px 4px; margin-left: 6px; font-weight: bold;">
+                                <option value="Covered">Covered</option>
+                                <option value="Open">Open</option>
+                            </select>
+                        </td>
                         <td colspan="2"><input type="text" class="print-input" id="bfRegNotes" style="width: 95%;"></td>
                         <td style="text-align: left; padding-left: 6px; font-weight: 500;">Location</td>
                         <td><input type="text" class="print-input" style="width: 95%;"></td>
@@ -1603,6 +1748,106 @@
         openOfferLetter(mode);
     }
 
+    let currentBfDealType = "credit";
+
+    function updateBfRegNote() {
+        const regType = document.getElementById("bfRegCoveredType")?.value || "Covered";
+        const baseNote = globalCalcData.regNote || "Not Included";
+        const el = document.getElementById("bfRegNotes");
+        if (el) {
+            el.value = `${baseNote} (${regType})`;
+        }
+    }
+
+    function switchBfDealType(type) {
+        currentBfDealType = type;
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        };
+
+        if (type === "cash") {
+            const cashPriceVal = globalCalcData.cashPrice || globalCalcData.price;
+            setVal("bfCompanyTotal", formatCurrency(cashPriceVal));
+            setVal("bfFinalTotal", formatCurrency(cashPriceVal));
+            
+            const hasDuration = globalCalcData.months && globalCalcData.months > 0;
+            if (hasDuration) {
+                // Short-Term Cash Deal: No interest charged (0% profit rate)
+                const dpVal = globalCalcData.dpAmount || 0;
+                setVal("bfFinalDp", formatCurrency(dpVal));
+                const outstandingVal = Math.max(0, cashPriceVal - dpVal);
+                setVal("bfOutstanding", formatCurrency(outstandingVal));
+                setVal("bfEmiMonths", globalCalcData.months + " Months");
+                
+                // Direct equal installment without interest charge
+                const cashEmi = Math.round(outstandingVal / globalCalcData.months);
+                setVal("bfEmi", formatCurrency(cashEmi));
+                setVal("bfProcessingNotes", globalCalcData.processingFee > 0 ? ("Included: Tk. " + globalCalcData.processingFee) : "N/A");
+                
+                // Special required note for Short-Term Cash deals
+                setVal("bfPkgRow1", `Short-Term Cash Deal (${globalCalcData.months} Mos @ 0% Profit)`);
+                setVal("bfVtsNote", "0% Interest (No Interest Charged)");
+                setVal("bfPkgRow2", "Special Note: Short-Term Cash Sale (0% Profit - Special Approval Attached)");
+                setVal("bfFinalEmiNote", "Special Approval Required");
+            } else {
+                // If duration is NOT given, Down Payment is NOT added to buyer form (Full 100% Cash)
+                setVal("bfFinalDp", "Tk. 0");
+                setVal("bfOutstanding", "Tk. 0 (Full Cash Deal)");
+                setVal("bfEmi", "N/A");
+                setVal("bfEmiMonths", "Cash Sale");
+                setVal("bfProcessingNotes", "N/A (Cash Sale)");
+                setVal("bfPkgRow1", "Full Cash Sales Agreement (100% Payment)");
+                setVal("bfVtsNote", "No EMI / Financing");
+                setVal("bfPkgRow2", "");
+                setVal("bfFinalEmiNote", "");
+            }
+            setVal("bfPkgRow3", "");
+            setVal("bfNoteRow3", "");
+            updateBfRegNote();
+        } else {
+            // Credit Mode - Use Standard Credit Price & Deviations
+            const standardCp = globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
+            setVal("bfCompanyTotal", formatCurrency(standardCp));
+            setVal("bfFinalTotal", formatCurrency(standardCp));
+            setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+            setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
+            
+            if (globalCalcData.isCustomEmi) {
+                const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
+                setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
+                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
+                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
+                setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
+            } else if (globalCalcData.selectedRegOption === 'last_emi') {
+                setVal("bfEmi", formatCurrency(globalCalcData.emi));
+                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
+                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
+                setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
+            } else {
+                setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
+                setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard Credit Price: ${formatCurrency(standardCp)}`);
+                setVal("bfVtsNote", "Includes Tk. 500 VTS");
+                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
+                setVal("bfFinalEmiNote", "");
+            }
+            setVal("bfPkgRow3", "");
+            setVal("bfNoteRow3", "");
+            updateBfRegNote();
+
+            let processNote = "";
+            if (globalCalcData.processingFee > 0) {
+                processNote = "Included: Tk. " + globalCalcData.processingFee;
+            }
+            setVal("bfProcessingNotes", processNote);
+        }
+    }
+
     function openBuyerForm() {
         try {
             if (!globalCalcData || !globalCalcData.price) {
@@ -1617,59 +1862,16 @@
             
             const bfModelEl = document.getElementById("bfModel");
             if (bfModelEl) bfModelEl.value = modelName;
-            
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val;
-            };
 
-            setVal("bfCompanyPrice", formatCurrency(globalCalcData.price));
-            setVal("bfFinalPrice", formatCurrency(globalCalcData.price));
-            
-            setVal("bfCompanyProfit", formatCurrency(globalCalcData.totalInterest));
-            setVal("bfFinalProfit", formatCurrency(globalCalcData.totalInterest));
-            
-            setVal("bfCompanyTotal", formatCurrency(globalCalcData.totalPrice));
-            setVal("bfFinalTotal", formatCurrency(globalCalcData.totalPrice));
-            
-            setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
-            
-            setVal("bfOutstanding", formatCurrency(globalCalcData.totalPrice - globalCalcData.dpAmount));
-            
-            // Installment & Package Notes
-            if (globalCalcData.isCustomEmi) {
-                const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
-                setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
-                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || ("Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi)));
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
-                setVal("bfFinalEmiNote", "");
-            } else if (globalCalcData.selectedRegOption === 'last_emi') {
-                setVal("bfEmi", formatCurrency(globalCalcData.emi));
-                setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || ("Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi)));
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
-                setVal("bfFinalEmiNote", "");
+            if (!globalCalcData.months || globalCalcData.months <= 0) {
+                const radioCash = document.getElementById("bfTypeCash");
+                if (radioCash) radioCash.checked = true;
+                switchBfDealType('cash');
             } else {
-                setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
-                setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
-                setVal("bfPkgRow1", globalCalcData.regPkgNote1 || "");
-                setVal("bfVtsNote", "Includes Tk. 500 VTS");
-                setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
-                setVal("bfFinalEmiNote", "");
+                const radioCredit = document.getElementById("bfTypeCredit");
+                if (radioCredit) radioCredit.checked = true;
+                switchBfDealType('credit');
             }
-            setVal("bfPkgRow3", "");
-            setVal("bfNoteRow3", "");
-            
-            setVal("bfRegNotes", globalCalcData.regNote || "Not Included");
-            
-            let processNote = "";
-            if (globalCalcData.processingFee > 0) {
-                processNote = "Included: Tk. " + globalCalcData.processingFee;
-            }
-            setVal("bfProcessingNotes", processNote);
             
             document.getElementById("buyerFormModal").style.display = "block";
         } catch (err) {
@@ -1677,6 +1879,7 @@
             alert("Error opening buyer form: " + err.message);
         }
     }
+
     function closeBuyerForm() {
         const modal = document.getElementById("buyerFormModal");
         if (modal) modal.style.display = "none";
@@ -2334,7 +2537,7 @@
             // Cash Mode Values
             const data = modelData[modelPriceKey];
             const unitPrice = globalCalcData.price;
-            const cashPrice = (data && data.cashPrice) ? data.cashPrice : unitPrice;
+            const cashPrice = getApplicableCashPrice(data) || unitPrice;
             const regCost = (data && data.regCost) ? data.regCost : 0;
 
             safeSetText("olCashModelLabel", spec.name);
