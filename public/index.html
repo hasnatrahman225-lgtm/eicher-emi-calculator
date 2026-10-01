@@ -485,6 +485,11 @@
                 <input type="number" id="price" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed;">
             </div>
 
+            <div class="form-group" id="credit29PriceGroup" style="display: block;">
+                <label for="credit29Price">29 Months Credit Price - Tk.</label>
+                <input type="text" id="credit29Price" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed; color: #2563eb; font-weight: bold;">
+            </div>
+
             <div class="form-group" id="cashPriceGroup" style="display: none;">
                 <label for="cashPrice">Cash Price - Tk.</label>
                 <input type="text" id="cashPrice" placeholder="Select model" readonly style="background-color: #f1f5f9; cursor: not-allowed; color: #059669; font-weight: bold;">
@@ -983,8 +988,8 @@
         "3250000": { cp12: 3380000, cp24: 3510000, cp29: 3690000, cp35: 4008000, dp: 650000, regCost: 130843, processingFee: 14185, cashPriceDiv: 2900000, cashPriceArea: 2900000, cashPrice: 2900000 },
         "3300000": { cp12: 3433000, cp24: 3565000, cp29: 3748000, cp35: 4073000, dp: 650000, regCost: 131961, processingFee: 14185, cashPriceDiv: 2950000, cashPriceArea: 3000000, cashPrice: 2950000 },
         "3325000": { cp12: 3459000, cp24: 3593000, cp29: 3778000, cp35: 4105000, dp: 650000, regCost: 136633, processingFee: 14185, cashPriceDiv: 2975000, cashPriceArea: 3050000, cashPrice: 2975000 },
-        "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPriceDiv: 3160000, cashPriceArea: 3075000, cashPrice: 3160000 },
-        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPriceDiv: 3330000, cashPriceArea: 3225000, cashPrice: 3330000 },
+        "3510000": { cp12: 3648000, cp24: 3786000, cp29: 3977000, cp35: 4315000, dp: 750000, regCost: 133227, processingFee: 14185, cashPriceDiv: 3160000, cashPriceArea: 3160000, cashPrice: 3160000 },
+        "3690000": { cp12: 3837000, cp24: 3984000, cp29: 4187000, cp35: 4548000, dp: 750000, regCost: 135169, processingFee: 14185, cashPriceDiv: 3330000, cashPriceArea: 3330000, cashPrice: 3330000 },
         "3760000": { cp12: 3911000, cp24: 4061000, cp29: 4269000, cp35: 4638000, dp: 750000, regCost: 154719, processingFee: 14185, cashPriceDiv: 3400000, cashPriceArea: 3400000, cashPrice: 3400000 },
         "3500000": { cp12: 3638000, cp24: 3775000, cp29: 3965000, cp35: 4302000, dp: 750000, regCost: 95652, processingFee: 14185, cashPriceDiv: 3250000, cashPriceArea: 3475000, cashPrice: 3250000 },
         "4700000": { cp12: 4875000, cp24: 5050000, cp29: 5292000, cp35: 5721000, dp: 1200000, regCost: 182539, processingFee: 14185, cashPriceDiv: 4400000, cashPriceArea: 4450000, cashPrice: 4400000 },
@@ -1008,11 +1013,20 @@
         const modelSelect = document.getElementById("model");
         const priceInput = document.getElementById("price");
         const cashPriceInput = document.getElementById("cashPrice");
+        const credit29Input = document.getElementById("credit29Price");
         
         if (modelSelect.value) {
             priceInput.value = modelSelect.value;
             const data = modelData[modelSelect.value];
             
+            if (credit29Input) {
+                if (data && data.cp29) {
+                    credit29Input.value = formatCurrency(data.cp29);
+                } else {
+                    credit29Input.value = "N/A";
+                }
+            }
+
             if (data && cashPriceInput) {
                 const applicableCashPrice = getApplicableCashPrice(data);
                 if (applicableCashPrice) {
@@ -1038,6 +1052,10 @@
                     interestInput.value = "7";
                 }
             }
+        } else {
+            priceInput.value = "";
+            if (credit29Input) credit29Input.value = "";
+            if (cashPriceInput) cashPriceInput.value = "";
         }
     }
 
