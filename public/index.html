@@ -256,11 +256,13 @@
             font-size: 13px;
         }
         .admin-table th {
-            background-color: #f1f5f9;
-            color: #334155;
-            font-weight: 600;
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            background-image: none !important;
+            color: #1e293b !important;
+            font-weight: 700;
             padding: 9px 10px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #cbd5e1 !important;
             text-align: left;
             position: sticky;
             top: 0;
@@ -271,6 +273,7 @@
             border: 1px solid #e2e8f0;
             text-align: left;
             vertical-align: middle;
+            color: #1e293b;
         }
         .admin-table tr:nth-child(even) {
             background-color: #f8fafc;
@@ -301,6 +304,49 @@
         }
         .device-badge.ok { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
         .device-badge.full { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+        /* Dark Mode for Admin Overlay */
+        body.dark-mode #adminOverlay .card-box {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border: 1px solid #334155 !important;
+        }
+        body.dark-mode #adminOverlay div[style*="background:#f8fafc"] {
+            background-color: #0f172a !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode #adminOverlay label {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode #adminOverlay input,
+        body.dark-mode #adminOverlay select {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
+        body.dark-mode .admin-table th {
+            background: #334155 !important;
+            background-color: #334155 !important;
+            background-image: none !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
+        body.dark-mode .admin-table td {
+            border-color: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+        body.dark-mode .admin-table td strong {
+            color: #ffffff !important;
+        }
+        body.dark-mode .admin-table tr:nth-child(even) {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .admin-table tr:nth-child(odd) {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .admin-table tr:hover {
+            background-color: #2e3e55 !important;
+        }
     </style>
 <style>
     @media print {
@@ -1480,19 +1526,10 @@
         }
 
         let creditPriceExcel = 0;
-        let baseStandardLabel = "";
+        let baseStandardLabel = "29 Months Standard CP";
         if (data) {
-            if (userRole === "Sales Unit") {
-                creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
-                baseStandardLabel = "29 Months Standard CP";
-            } else {
-                if (months <= 12 && data.cp12) creditPriceExcel = data.cp12;
-                else if (months <= 24 && data.cp24) creditPriceExcel = data.cp24;
-                else if (months <= 29 && data.cp29) creditPriceExcel = data.cp29;
-                else if (months <= 35 && data.cp35) creditPriceExcel = data.cp35;
-                else if (months > 35 && data.cp35) creditPriceExcel = data.cp35;
-                baseStandardLabel = `${months} Months Standard CP`;
-            }
+            // FOR ALL ROLES: Base comparison is ALWAYS the 29 Months Credit Price (data.cp29)
+            creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
         }
 
         const approvedStandardCreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
@@ -1501,12 +1538,12 @@
         let deviationNote = "";
         let deviationEmiNote = "Includes Tk. 500 VTS";
         if (creditPriceExcel > 0 && deviation !== 0) {
-            const tenureLabel = userRole === 'Sales Unit' ? '29 Mos Base' : months + ' Mos';
+            const tenureLabel = '29M Base';
             if (deviation < 0) {
-                deviationNote = `Standard CP (${tenureLabel}): ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit)`;
+                deviationNote = `29M Base CP: ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
                 deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
             } else {
-                deviationNote = `Standard CP (${tenureLabel}): ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment)`;
+                deviationNote = `29M Base CP: ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment: +${formatCurrency(diffPerMonth)}/Mo)`;
                 deviationEmiNote = `EMI Adjusted (+${formatCurrency(diffPerMonth)}/Mo Surcharge)`;
             }
         }
@@ -1514,29 +1551,29 @@
         let comparisonHTML = "";
         if (creditPriceExcel > 0) {
             const diff = totalPrice - creditPriceExcel;
-            const standardText = userRole === "Sales Unit" ? `স্ট্যান্ডার্ড ক্রেডিট প্রাইস (২৯ মাস বেস): <strong>${formatCurrency(creditPriceExcel)}</strong>` : `স্ট্যান্ডার্ড ক্রেডিট প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong>`;
+            const standardText = `স্ট্যান্ডার্ড ক্রেডিট প্রাইস (২৯ মাস বেস): <strong>${formatCurrency(creditPriceExcel)}</strong>`;
             if (diff > 0) {
                 comparisonHTML = `
                     <div style="margin-top:10px; padding:12px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:15px;">
-                        <strong>⚠️ অতিরিক্ত সমন্বয় (Surcharge): ${formatCurrency(diff)}</strong><br>
+                        <strong>⚠️ অতিরিক্ত সমন্বয় (Surcharge / লস সমন্বয়): +${formatCurrency(diff)}</strong><br>
                         <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • ${standardText} | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> ${userRole === "Sales Unit" ? "২৯ মাসের স্ট্যান্ডার্ডের তুলনায় " : ""}ডাউনপেমেন্ট বা ডিউরেশন পরিবর্তনের কারণে অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                            • ${standardText} | মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় ডাউনপেমেন্ট কম বা মেয়াদ বেশি হওয়ায় অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে সমন্বয়/যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
                         </span>
                     </div>
                 `;
             } else if (diff < 0) {
                 comparisonHTML = `
                     <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
-                        <strong>🎉 কাস্টমার বেনিফিট / ছাড় (Rebate): ${formatCurrency(Math.abs(diff))}</strong><br>
+                        <strong>🎉 কাস্টমার বেনিফিট / লাভ / ছাড় (Rebate): -${formatCurrency(Math.abs(diff))}</strong><br>
                         <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • ${standardText} | ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> ${userRole === "Sales Unit" ? "২৯ মাসের স্ট্যান্ডার্ডের তুলনায় " : ""}বেশি ডাউনপেমেন্ট বা কম ডিউরেশনের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                            • ${standardText} | মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                            • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় বেশি ডাউনপেমেন্ট বা কম মেয়াদের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে সমন্বয়/বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
                         </span>
                     </div>
                 `;
             } else {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches ${userRole === 'Sales Unit' ? '29 Months Base ' : ''}Credit Price exactly.</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches 29 Months Base Credit Price exactly (Tk. ${formatCurrency(creditPriceExcel)}).</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
             }
         }
 
@@ -2102,7 +2139,7 @@
             setVal("bfNoteRow3", "");
             updateBfRegNote();
         } else {
-            // Credit Mode - Use Standard Credit Price & Deviations
+            // Credit Mode - Use 29-Month Standard Credit Price & Deviations for ALL roles
             const standardCp = globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
             setVal("bfCompanyTotal", formatCurrency(standardCp));
             setVal("bfFinalTotal", formatCurrency(standardCp));
@@ -2110,26 +2147,27 @@
             setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
             
             const vtsNoteText = globalCalcData.deviationEmiNote || "Includes Tk. 500 VTS";
+            const pkgRow1Text = globalCalcData.deviationNote || `29M Base Credit Price: ${formatCurrency(standardCp)} (Standard Deal)`;
             
             if (globalCalcData.isCustomEmi) {
                 const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
                 setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
+                setVal("bfPkgRow1", pkgRow1Text);
                 setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else if (globalCalcData.selectedRegOption === 'last_emi') {
                 setVal("bfEmi", formatCurrency(globalCalcData.emi));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
-                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard CP: ${formatCurrency(standardCp)}`);
+                setVal("bfPkgRow1", pkgRow1Text);
                 setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else {
                 setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
                 setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
-                setVal("bfPkgRow1", globalCalcData.deviationNote || `Standard Credit Price: ${formatCurrency(standardCp)}`);
+                setVal("bfPkgRow1", pkgRow1Text);
                 setVal("bfVtsNote", vtsNoteText);
                 setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
