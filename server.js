@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,7 @@ async function connectToDatabase() {
         });
         cachedDb = db;
         console.log('Connected to MongoDB');
-        await initDefaultAdmin();
+        await initDatabaseUsers();
         return db;
     } catch (err) {
         console.error('MongoDB connection error:', err);
@@ -56,7 +57,10 @@ app.use(async (req, res, next) => {
 
 // MongoDB Schemas
 const userSchema = new mongoose.Schema({
+    empId: { type: String, default: '' },
+    name: { type: String, default: '' },
     phone: { type: String, required: true, unique: true },
+    areaName: { type: String, default: '' },
     password: { type: String, default: null }, // Null if password not set yet
     role: { type: String, enum: ['Admin', 'Division', 'Area Manager', 'Field', 'Sales Unit'], default: 'Area Manager' },
     devices: [{ type: String }] // Store up to 2 unique device IDs
@@ -93,12 +97,47 @@ async function logFailedAttempt(req, phone, deviceId) {
     }
 }
 
-// Create default admin on startup if it doesn't exist
-async function initDefaultAdmin() {
-    const adminExists = await User.findOne({ phone: '01700000000' });
-    if (!adminExists) {
-        await User.create({ phone: '01700000000', password: 'admin', role: 'Admin' });
-        console.log("Default Admin Created (01700000000 / admin)");
+// Sync and seed employees & master admin
+async function initDatabaseUsers() {
+    try {
+        // 1. Default Master Admin
+        const masterAdmin = await User.findOne({ phone: '01700000000' });
+        if (!masterAdmin) {
+            await User.create({ 
+                empId: '0000', 
+                name: 'Master Admin', 
+                phone: '01700000000', 
+                areaName: 'HQ', 
+                password: 'admin', 
+                role: 'Admin' 
+            });
+            console.log("Default Master Admin Created (01700000000 / admin)");
+        }
+
+        // 2. Load employees from file
+        const jsonPath = path.join(__dirname, 'employees_data.json');
+        if (fs.existsSync(jsonPath)) {
+            const employees = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+            if (employees && employees.length > 0) {
+                for (const emp of employees) {
+                    await User.findOneAndUpdate(
+                        { phone: emp.phone },
+                        {
+                            $set: {
+                                empId: emp.empId || '',
+                                name: emp.name || '',
+                                areaName: emp.areaName || '',
+                                role: emp.role || 'Area Manager'
+                            }
+                        },
+                        { upsert: true, new: true }
+                    );
+                }
+                console.log(`Synced ${employees.length} employees into MongoDB.`);
+            }
+        }
+    } catch (e) {
+        console.error("Error during initDatabaseUsers:", e);
     }
 }
 
@@ -191,7 +230,15 @@ app.post('/api/verify-otp', async (req, res) => {
             }
         }
 
-        res.json({ success: true, role: user.role, hasPassword: !!user.password });
+        res.json({ 
+            success: true, 
+            role: user.role, 
+            name: user.name || '', 
+            empId: user.empId || '', 
+            areaName: user.areaName || '', 
+            phone: user.phone,
+            hasPassword: !!user.password 
+        });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }
@@ -236,7 +283,14 @@ app.post('/api/login', async (req, res) => {
             }
         }
 
-        res.json({ success: true, role: user.role });
+        res.json({ 
+            success: true, 
+            role: user.role, 
+            name: user.name || '', 
+            empId: user.empId || '', 
+            areaName: user.areaName || '', 
+            phone: user.phone 
+        });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }
@@ -262,7 +316,7 @@ app.post('/api/admin/users', async (req, res) => {
     if (!(await verifyAdmin(adminPhone))) return res.status(403).json({ error: 'Forbidden' });
 
     try {
-        const users = await User.find({}, '-password'); // exclude password
+        const users = await User.find({}, '-password').sort({ empId: 1, phone: 1 });
         res.json({ success: true, users });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
@@ -271,19 +325,37 @@ app.post('/api/admin/users', async (req, res) => {
 
 // Add or Update User
 app.post('/api/admin/add-user', async (req, res) => {
-    const { adminPhone, targetPhone, role } = req.body;
+    const { adminPhone, empId, name, targetPhone, areaName, role } = req.body;
     if (!(await verifyAdmin(adminPhone))) return res.status(403).json({ error: 'Forbidden' });
-    if (!targetPhone || !role) return res.status(400).json({ error: 'Missing parameters' });
+    if (!targetPhone || !role) return res.status(400).json({ error: 'Phone number and role are required' });
 
     try {
         await User.findOneAndUpdate(
             { phone: targetPhone },
-            { role: role },
+            { 
+                empId: empId || '',
+                name: name || '',
+                areaName: areaName || '',
+                role: role 
+            },
             { upsert: true, new: true }
         );
         res.json({ success: true, message: 'User added/updated successfully' });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Sync all employees from dataset
+app.post('/api/admin/sync-employees', async (req, res) => {
+    const { adminPhone } = req.body;
+    if (!(await verifyAdmin(adminPhone))) return res.status(403).json({ error: 'Forbidden' });
+
+    try {
+        await initDatabaseUsers();
+        res.json({ success: true, message: 'Employees re-synced successfully!' });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error: ' + e.message });
     }
 });
 
