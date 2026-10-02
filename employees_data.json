@@ -1,0 +1,882 @@
+[
+  {
+    "sl": 1,
+    "empId": "32282",
+    "name": "BISSHAWJIT",
+    "phone": "01313056335",
+    "areaName": "A1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 2,
+    "empId": "31495",
+    "name": "MD. BAEZID HOSSAIN",
+    "phone": "01730406802",
+    "areaName": "A1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 3,
+    "empId": "30921",
+    "name": "MD. ALI MAMUN",
+    "phone": "01730405852",
+    "areaName": "A1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 4,
+    "empId": "30241",
+    "name": "MOHAMMAD SALAH UDDIN",
+    "phone": "01730405611",
+    "areaName": "A-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 5,
+    "empId": "30680",
+    "name": "ABDUL MANNAN",
+    "phone": "01730407895",
+    "areaName": "A2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 6,
+    "empId": "32316",
+    "name": "MD. YAMAN ESRAT SAFOLLO (10/05/2026)",
+    "phone": "01313056299",
+    "areaName": "A2-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 7,
+    "empId": "32315",
+    "name": "MD. NAHIDUL ISLAM (10/05/2026)",
+    "phone": "01313056313",
+    "areaName": "A2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 8,
+    "empId": "31498",
+    "name": "A.S.M. MAHBUBUR RAHMAN",
+    "phone": "01730406800",
+    "areaName": "A-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 9,
+    "empId": "31435",
+    "name": "S. M. MAMINUR RASHID",
+    "phone": "01730405760",
+    "areaName": "A3-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 10,
+    "empId": "32275",
+    "name": "MD. SHAH ALAM (07/12/2025)",
+    "phone": "01313056303",
+    "areaName": "A3-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 11,
+    "empId": "32273",
+    "name": "MISKATUL JAN (18/01/2026)",
+    "phone": "01313056331",
+    "areaName": "A3-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 12,
+    "empId": "32218",
+    "name": "HASAN ALI KHAN",
+    "phone": "01730405781",
+    "areaName": "A-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 13,
+    "empId": "32295",
+    "name": "MD. SAGOR MIHA (01/02/2026)",
+    "phone": "01313056314",
+    "areaName": "A4-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 14,
+    "empId": "31907",
+    "name": "MD. TOZAMMEL HOQUE",
+    "phone": "01730407629",
+    "areaName": "A4-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 15,
+    "empId": "32253",
+    "name": "KAMRUL HASAN",
+    "phone": "01730405731",
+    "areaName": "A-4",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 16,
+    "empId": "32235",
+    "name": "MEHDI HASAN",
+    "phone": "01730407898",
+    "areaName": "A5-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 17,
+    "empId": "32210",
+    "name": "MD. ABDUL ALIM",
+    "phone": "01730407626",
+    "areaName": "A5-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 18,
+    "empId": "32267",
+    "name": "MD. ASHIK HOSSAIN (23/11/2025)",
+    "phone": "01313056302",
+    "areaName": "A5-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 19,
+    "empId": "31529",
+    "name": "MD. SHAHIDUL ISLAM",
+    "phone": "01730406863",
+    "areaName": "A-5",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 20,
+    "empId": "32236",
+    "name": "SHIMUN BARI LEION",
+    "phone": "01730407897",
+    "areaName": "A6-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 21,
+    "empId": "32266",
+    "name": "ABDUR ROUF (16-11-2025)",
+    "phone": "01313056301",
+    "areaName": "A6-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 22,
+    "empId": "32219",
+    "name": "MD. SHAMIM REZA",
+    "phone": "01730407699",
+    "areaName": "A-6",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 23,
+    "empId": "32302",
+    "name": "Golam Rabbani (01/03/2026)",
+    "phone": "01313056334",
+    "areaName": "A7-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 23,
+    "empId": "32302",
+    "name": "Golam Rabbani (01/03/2026)",
+    "phone": "01730405045",
+    "areaName": "A7-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 24,
+    "empId": "31949",
+    "name": "MD. MANIK MIA",
+    "phone": "01313056420",
+    "areaName": "A7-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 25,
+    "empId": "31350",
+    "name": "TUTUL AHMED",
+    "phone": "01730405808",
+    "areaName": "A-7",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 26,
+    "empId": "32274",
+    "name": "SHAHAB UDDIN (07/12/2025)",
+    "phone": "01730406057",
+    "areaName": "C1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 27,
+    "empId": "31925",
+    "name": "MD. ASHIQUR RAHMAN",
+    "phone": "01313056226",
+    "areaName": "C1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 28,
+    "empId": "30646",
+    "name": "MD. NUR ALAM",
+    "phone": "01730405619",
+    "areaName": "C-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 29,
+    "empId": "32192",
+    "name": "MD LITU MOLLAH",
+    "phone": "01313056230",
+    "areaName": "M1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 30,
+    "empId": "31436",
+    "name": "ZAHIDUL ISLAM",
+    "phone": "01730405621",
+    "areaName": "M1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 31,
+    "empId": "32020",
+    "name": "MD. SIRAJUL ISLAM",
+    "phone": "01313056282",
+    "areaName": "M1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 32,
+    "empId": "32303",
+    "name": "Md. Ataul Hai",
+    "phone": "01313056332",
+    "areaName": "M-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 33,
+    "empId": "32183",
+    "name": "NYMUR HASAN",
+    "phone": "01730405702",
+    "areaName": "M4-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 34,
+    "empId": "32237",
+    "name": "AR FERDOUS",
+    "phone": "01730405638",
+    "areaName": "M4-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 35,
+    "empId": "31282",
+    "name": "MD.SADRIL SEAM",
+    "phone": "01730405815",
+    "areaName": "M4-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 36,
+    "empId": "31910",
+    "name": "MD INZAMAMUL",
+    "phone": "01730405787",
+    "areaName": "M4-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 37,
+    "empId": "30470",
+    "name": "MD MAHMUDUL HASAN",
+    "phone": "01730405649",
+    "areaName": "M-4",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 38,
+    "empId": "30010",
+    "name": "MD. FAISAL HOSSAIN",
+    "phone": "01730405616",
+    "areaName": "DIV-1",
+    "role": "Division"
+  },
+  {
+    "sl": 39,
+    "empId": "32268",
+    "name": "GOLAM MOSTAFA",
+    "phone": "01730407692",
+    "areaName": "B1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 40,
+    "empId": "32279",
+    "name": "MD. SHAKAWATH HOSSAIN(10/12/2025)",
+    "phone": "01730406859",
+    "areaName": "B1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 41,
+    "empId": "31536",
+    "name": "MD. SHAHID HOSSEN",
+    "phone": "01730406885",
+    "areaName": "B1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 42,
+    "empId": "30753",
+    "name": "MD. ABDUR RAHIM MONDAL",
+    "phone": "01730405765",
+    "areaName": "B-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 43,
+    "empId": "32209",
+    "name": "MD. AL AMIN",
+    "phone": "01711729993",
+    "areaName": "B2-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 43,
+    "empId": "32209",
+    "name": "MD. AL AMIN",
+    "phone": "01730405809",
+    "areaName": "B2-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 44,
+    "empId": "32323",
+    "name": "MD ARMAN HASAN ASIF (15/06/2026)",
+    "phone": "01732495270",
+    "areaName": "B2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 44,
+    "empId": "32323",
+    "name": "MD ARMAN HASAN ASIF (15/06/2026)",
+    "phone": "01313056379",
+    "areaName": "B2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 45,
+    "empId": "31703",
+    "name": "MD. SOFIKUR RAHMAN",
+    "phone": "01730407687",
+    "areaName": "B2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 46,
+    "empId": "32243",
+    "name": "SYED MUHABUB HOSSAIN",
+    "phone": "01730405786",
+    "areaName": "B-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 47,
+    "empId": "32262",
+    "name": "MD EMRAN HOSSAIN BAPPI (20/10/2025)",
+    "phone": "01730406807",
+    "areaName": "B3-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 48,
+    "empId": "32206",
+    "name": "MD SUMON MUNSHI",
+    "phone": "01313056256",
+    "areaName": "B3-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 49,
+    "empId": "32326",
+    "name": "MD AZIZUR RAHMAN (15/06/2026)/SOHEL MAHMUD",
+    "phone": "01711069077",
+    "areaName": "B3-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 50,
+    "empId": "32272",
+    "name": "ASHIKUR RAHMAN (07/12/2025)",
+    "phone": "01313056304",
+    "areaName": "B3-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 51,
+    "empId": "30832",
+    "name": "MD. JILLUR RAHIM MIA",
+    "phone": "01730405524",
+    "areaName": "B3-5",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 52,
+    "empId": "30758",
+    "name": "MD .ABDUL KAYUM",
+    "phone": "01730405632",
+    "areaName": "B-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 53,
+    "empId": "32257",
+    "name": "MD RUBEL ISLAM (13/10/2025)",
+    "phone": "01730407894",
+    "areaName": "B4-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 54,
+    "empId": "32213",
+    "name": "MD. IBRAHIM HOSSAIN",
+    "phone": "01713906304",
+    "areaName": "B4-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 55,
+    "empId": "32255",
+    "name": "MD. RQFIQUL ALAM(28/09/2025)",
+    "phone": "01730405612",
+    "areaName": "B-4",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 56,
+    "empId": "32240",
+    "name": "MOHAMMAD OMAR FAROQ",
+    "phone": "01730405817",
+    "areaName": "D1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 57,
+    "empId": "31516",
+    "name": "MD SAIFUL ISLAM",
+    "phone": "01730406865",
+    "areaName": "D1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 58,
+    "empId": "32234",
+    "name": "MD. HASAN TAREQ",
+    "phone": "01730406808",
+    "areaName": "D1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 59,
+    "empId": "32046",
+    "name": "MD. RUBEL",
+    "phone": "01313056409",
+    "areaName": "D1-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 60,
+    "empId": "31019",
+    "name": "A. B. SIDDIQUE",
+    "phone": "01730405647",
+    "areaName": "D-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 61,
+    "empId": "32238",
+    "name": "MD. MOHI UDDIN",
+    "phone": "01730406816",
+    "areaName": "D2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 62,
+    "empId": "31688",
+    "name": "AL- AMIN",
+    "phone": "01730407678",
+    "areaName": "D2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 63,
+    "empId": "30497",
+    "name": "MD. ROKNUZZAMAN",
+    "phone": "01730405622",
+    "areaName": "D-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 64,
+    "empId": "32057",
+    "name": "MD. NUR ISLAM NAHID",
+    "phone": "01730407854",
+    "areaName": "D3-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 65,
+    "empId": "32324",
+    "name": "KAMRUL HASSAN (15/06/2026)",
+    "phone": "01833049266",
+    "areaName": "D3-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 66,
+    "empId": "31727",
+    "name": "MD. NAZRUL ISLAM",
+    "phone": "01730407619",
+    "areaName": "D-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 67,
+    "empId": "31400",
+    "name": "MD. ASHRAFUL KARIM",
+    "phone": "01730405879",
+    "areaName": "M3-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 68,
+    "empId": "32241",
+    "name": "MD. SOHEL RANA",
+    "phone": "01730405637",
+    "areaName": "M3-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 69,
+    "empId": "31765",
+    "name": "MD. AMINUL ISLAM",
+    "phone": "01730407620",
+    "areaName": "M-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 70,
+    "empId": "31296",
+    "name": "SADIA AFRIN",
+    "phone": "01730405023",
+    "areaName": "M5-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 71,
+    "empId": "31945",
+    "name": "MD. UZZOL MIA",
+    "phone": "01313056247",
+    "areaName": "M5-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 72,
+    "empId": "31723",
+    "name": "MITHUN BISWAS",
+    "phone": "01730406829",
+    "areaName": "M-5",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 73,
+    "empId": "30018",
+    "name": "FARUK AHAMMED AKANDA",
+    "phone": "01730405620",
+    "areaName": "DIV-2",
+    "role": "Division"
+  },
+  {
+    "sl": 74,
+    "empId": "32190",
+    "name": "ARAFAT HOSSAIN KHAN",
+    "phone": "01313056231",
+    "areaName": "N1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 75,
+    "empId": "31211",
+    "name": "MOHAMMAD SHAMSUR RAHMAN",
+    "phone": "01730405645",
+    "areaName": "N1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 76,
+    "empId": "32175",
+    "name": "MD. MUAJ IBNA HUDA",
+    "phone": "01313056252",
+    "areaName": "N1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 77,
+    "empId": "32229",
+    "name": "NAHID HASAN NION",
+    "phone": "01730405644",
+    "areaName": "N1-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 78,
+    "empId": "30676",
+    "name": "MD. NAZMUL HOSSAIN",
+    "phone": "01730405642",
+    "areaName": "N-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 79,
+    "empId": "32217",
+    "name": "MD. ZUBAIR HASAN",
+    "phone": "01684179137",
+    "areaName": "N2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 80,
+    "empId": "32332",
+    "name": "Zahidul Islam",
+    "phone": "01313056413",
+    "areaName": "N2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 81,
+    "empId": "32335",
+    "name": "A. S. M. Nayeem Uddin",
+    "phone": "01730405677",
+    "areaName": "N2-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 82,
+    "empId": "32297",
+    "name": "MD NAZMUL HASAN",
+    "phone": "01313056225",
+    "areaName": "N2-KAM",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 83,
+    "empId": "30512",
+    "name": "ARIFUL ISLAM KHAN",
+    "phone": "01730405641",
+    "areaName": "N-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 84,
+    "empId": "31065",
+    "name": "MD. MOMINUL HAQUE",
+    "phone": "01730405609",
+    "areaName": "N-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 85,
+    "empId": "30694",
+    "name": "K M ABU HENA SHOHEL",
+    "phone": "01730405624",
+    "areaName": "M2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 86,
+    "empId": "32244",
+    "name": "MD. ABDULLAH AL FARHAD (15/05/2025)",
+    "phone": "01762809832",
+    "areaName": "M2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 87,
+    "empId": "30655",
+    "name": "MD. DELJAR HOSSAIN",
+    "phone": "01730405634",
+    "areaName": "M2-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 88,
+    "empId": "31514",
+    "name": "MUHAMMAD MAMRUL HASAN AKANDA",
+    "phone": "01730406864",
+    "areaName": "M2-4",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 89,
+    "empId": "30090",
+    "name": "MAHMUD HASAN (TUSHAR)",
+    "phone": "01730405626",
+    "areaName": "M-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 90,
+    "empId": "30023",
+    "name": "KHONDAKAR SALAHDIN AL OSMAN",
+    "phone": "01730405640",
+    "areaName": "DIV-3",
+    "role": "Division"
+  },
+  {
+    "sl": 91,
+    "empId": "31861",
+    "name": "SHAHADAT HOSSAIN",
+    "phone": "01730407862",
+    "areaName": "COC1-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 92,
+    "empId": "31466",
+    "name": "ALOMGIR HOSSAIN",
+    "phone": "01730406811",
+    "areaName": "COC1-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 93,
+    "empId": "31315",
+    "name": "BIPLOB HOSSAIN",
+    "phone": "01730405780",
+    "areaName": "COC1-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 94,
+    "empId": "31312",
+    "name": "M A MOBIN HOSSAIN KHAN",
+    "phone": "01730405614",
+    "areaName": "COC-1",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 95,
+    "empId": "31879",
+    "name": "MD. NAIM HOSSAIN",
+    "phone": "01730405623",
+    "areaName": "COC2-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 96,
+    "empId": "31970",
+    "name": "SHAJJADUL ISLAM",
+    "phone": "01313056258",
+    "areaName": "COC2-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 97,
+    "empId": "31535",
+    "name": "MD.OMAR FARUK",
+    "phone": "01313056237",
+    "areaName": "COC2-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 98,
+    "empId": "30445",
+    "name": "MD. AMIN JAN FOYSAL",
+    "phone": "01730405763",
+    "areaName": "COC-2",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 99,
+    "empId": "30454",
+    "name": "LALMOHON CHANDRA ROY",
+    "phone": "01730405858",
+    "areaName": "COC3-1",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 100,
+    "empId": "32208",
+    "name": "BAREK MIA",
+    "phone": "01730405854",
+    "areaName": "COC3-2",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 101,
+    "empId": "32327",
+    "name": "PROVASH SARKER",
+    "phone": "01737155580",
+    "areaName": "COC3-3",
+    "role": "Sales Unit"
+  },
+  {
+    "sl": 102,
+    "empId": "30751",
+    "name": "MD. MIRAJUL AHSAN",
+    "phone": "01730405737",
+    "areaName": "COC-3",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 103,
+    "empId": "31434",
+    "name": "ASHRAFUZZAMAN",
+    "phone": "01730405801",
+    "areaName": "DIV-4",
+    "role": "Division"
+  },
+  {
+    "sl": 104,
+    "empId": "30006",
+    "name": "MD. FEROZ KABIR",
+    "phone": "01730405610",
+    "areaName": "HOD",
+    "role": "Division"
+  },
+  {
+    "sl": 105,
+    "empId": "30333",
+    "name": "MD MOTIUR RAHMAN",
+    "phone": "01730405636",
+    "areaName": "MKT",
+    "role": "Admin"
+  },
+  {
+    "sl": 106,
+    "empId": "30333",
+    "name": "MD MOTIUR RAHMAN",
+    "phone": "01711992776",
+    "areaName": "MKT",
+    "role": "Area Manager"
+  },
+  {
+    "sl": 107,
+    "empId": "30333",
+    "name": "MD MOTIUR RAHMAN",
+    "phone": "01841992776",
+    "areaName": "MKT",
+    "role": "Sales Unit"
+  }
+]
