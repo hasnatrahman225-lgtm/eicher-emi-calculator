@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rml-calculator-v56';
+const CACHE_NAME = 'rml-calculator-v59';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -36,7 +36,23 @@ self.addEventListener('fetch', event => {
     return event.respondWith(fetch(event.request));
   }
 
-  // Static Assets: Stale-While-Revalidate for 0ms instant load
+  // HTML navigation & Main page: Network-First (with instant offline cache fallback)
+  if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request).then(cached => cached || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // Static Assets: Stale-While-Revalidate
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
@@ -52,3 +68,4 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+

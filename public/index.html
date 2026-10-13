@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RML EMI Calculator</title>
+    <title>RML EMI Calculator - Runner Motors Ltd</title>
+    <meta name="description" content="Runner Motors Limited - Official Commercial Vehicle Package and EMI Calculator">
+    <meta name="author" content="Runner Motors Limited">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="./logo-v2.png">
     <link rel="apple-touch-icon" href="./logo-v2.png">
@@ -367,7 +369,9 @@
         }
         
         /* Strict isolation between modals during printing */
-        body.printing-offer-letter #buyerFormModal {
+        body.printing-offer-letter #buyerFormModal,
+        body.printing-offer-letter #qrPosterModal,
+        body.printing-offer-letter #qrModal {
             display: none !important;
         }
         body.printing-offer-letter #offerLetterModal {
@@ -392,7 +396,9 @@
             border-radius: 0 !important;
         }
 
-        body.printing-buyer-form #offerLetterModal {
+        body.printing-buyer-form #offerLetterModal,
+        body.printing-buyer-form #qrPosterModal,
+        body.printing-buyer-form #qrModal {
             display: none !important;
         }
         body.printing-buyer-form #buyerFormModal {
@@ -416,8 +422,35 @@
             box-shadow: none !important;
         }
 
+        body.printing-qr-poster #offerLetterModal,
+        body.printing-qr-poster #buyerFormModal,
+        body.printing-qr-poster #qrModal {
+            display: none !important;
+        }
+        body.printing-qr-poster #qrPosterModal {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+        body.printing-qr-poster #printableQrPosterArea {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
         /* Fallback if no specific class */
-        body:not(.printing-offer-letter):not(.printing-buyer-form) #offerLetterModal {
+        body:not(.printing-offer-letter):not(.printing-buyer-form):not(.printing-qr-poster) #offerLetterModal {
             display: none !important;
         }
     }
@@ -473,6 +506,13 @@
             </div>
         </div>
 
+        <!-- Scan QR Code prompt -->
+        <div style="text-align:center; margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:12px;">
+            <button type="button" onclick="openQrModal()" style="background: #f8fafc; border: 1px solid #3b82f6; color: #2563eb; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                📱 Scan QR Code to Install Mobile App
+            </button>
+        </div>
+
         <!-- Backend URL Config removed for production -->
     </div>
 </div>
@@ -486,6 +526,7 @@
                 <div id="adminUserStats" style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Loading employees...</div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="action-btn" style="background: #059669; font-size: 13px; padding: 8px 14px; color: white;" onclick="openQrModal()">📱 Field QR Poster</button>
                 <button class="action-btn" style="background: #2563eb; font-size: 13px; padding: 8px 14px;" onclick="adminSyncEmployees()">🔄 Sync from File</button>
                 <button class="action-btn btn-close" onclick="closeAdmin()">Close</button>
             </div>
@@ -592,6 +633,7 @@
 <div class="container" id="mainApp" style="display:none;">
     <div class="top-nav">
         <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+        <button class="action-btn" style="background: #0284c7; color: white;" onclick="openQrModal()" title="App QR Code for Mobile">📱 App QR</button>
         <button id="btnOpenAdmin" class="action-btn btn-admin" style="display:none;" onclick="openAdmin()">Dashboard</button>
         <button class="action-btn btn-logout" onclick="logout()">Logout</button>
     </div>
@@ -1538,12 +1580,11 @@
         let deviationNote = "";
         let deviationEmiNote = "Includes Tk. 500 VTS";
         if (creditPriceExcel > 0 && deviation !== 0) {
-            const tenureLabel = '29M Base';
             if (deviation < 0) {
-                deviationNote = `29M Base CP: ${formatCurrency(approvedStandardCreditPrice)} | Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
+                deviationNote = `Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
                 deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
             } else {
-                deviationNote = `29M Base CP: ${formatCurrency(approvedStandardCreditPrice)} | Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment: +${formatCurrency(diffPerMonth)}/Mo)`;
+                deviationNote = `Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment: +${formatCurrency(diffPerMonth)}/Mo)`;
                 deviationEmiNote = `EMI Adjusted (+${formatCurrency(diffPerMonth)}/Mo Surcharge)`;
             }
         }
@@ -1732,12 +1773,51 @@
         };
     }
 
-    // Register Service Worker for PWA
+    // Register Service Worker for PWA with Instant Auto-Update
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('SW registered'))
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered successfully');
+
+                    // Check for updates on startup
+                    registration.update();
+
+                    // Check for updates whenever the user returns to the app
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible') {
+                            registration.update();
+                        }
+                    });
+
+                    // Check for updates every 10 minutes
+                    setInterval(() => {
+                        registration.update();
+                    }, 10 * 60 * 1000);
+
+                    // When new SW is waiting or installed, activate and reload
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('New update available, refreshing page...');
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    });
+                })
                 .catch(err => console.log('SW registration failed:', err));
+        });
+
+        // Ensure page automatically reloads seamlessly when controller changes
+        let isRefreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!isRefreshing) {
+                isRefreshing = true;
+                window.location.reload();
+            }
         });
     }
 </script>
@@ -2147,7 +2227,7 @@
             setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
             
             const vtsNoteText = globalCalcData.deviationEmiNote || "Includes Tk. 500 VTS";
-            const pkgRow1Text = globalCalcData.deviationNote || `29M Base Credit Price: ${formatCurrency(standardCp)} (Standard Deal)`;
+            const pkgRow1Text = globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)";
             
             if (globalCalcData.isCustomEmi) {
                 const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
@@ -2966,7 +3046,286 @@
         const modal = document.getElementById("offerLetterModal");
         if (modal) modal.style.display = "none";
     }
+
+    // ==========================================
+    // APP QR CODE & NOTICE POSTER LOGIC
+    // ==========================================
+    function getAppBaseUrl() {
+        if (window.location.protocol.startsWith('http')) {
+            return window.location.origin;
+        }
+        return 'https://rml-calculator.vercel.app';
+    }
+
+    function openQrModal() {
+        const defaultUrl = getAppBaseUrl();
+        const input = document.getElementById("qrCustomUrlInput");
+        if (input) input.value = defaultUrl;
+        updateQrCodeDisplay();
+        const modal = document.getElementById("qrModal");
+        if (modal) modal.style.display = "block";
+    }
+
+    function closeQrModal() {
+        const modal = document.getElementById("qrModal");
+        if (modal) modal.style.display = "none";
+    }
+
+    function updateQrCodeDisplay() {
+        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        const qrImg = document.getElementById("qrImageDisplay");
+        const posterQrImg = document.getElementById("posterQrImageDisplay");
+        const posterUrlText = document.getElementById("posterUrlText");
+        
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(url)}`;
+        if (qrImg) qrImg.src = qrSrc;
+        if (posterQrImg) posterQrImg.src = qrSrc;
+        if (posterUrlText) posterUrlText.innerText = url;
+    }
+
+    function copyQrUrl() {
+        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        navigator.clipboard.writeText(url).then(() => {
+            alert("✅ লিংক কপি করা হয়েছে:\n" + url);
+        }).catch(() => {
+            prompt("Copy this URL:", url);
+        });
+    }
+
+    function downloadQrCode() {
+        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
+        
+        fetch(qrSrc)
+            .then(res => res.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = blobUrl;
+                a.download = "RML-EMI-Calculator-QR.png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            })
+            .catch(err => {
+                window.open(qrSrc, '_blank');
+            });
+    }
+
+    function printQrPoster() {
+        updateQrCodeDisplay();
+        document.body.classList.remove("printing-offer-letter", "printing-buyer-form");
+        document.body.classList.add("printing-qr-poster");
+        const posterModal = document.getElementById("qrPosterModal");
+        if (posterModal) posterModal.style.display = "block";
+        
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.body.classList.remove("printing-qr-poster");
+                if (posterModal) posterModal.style.display = "none";
+            }, 800);
+        }, 300);
+    }
 </script>
+
+<!-- ========================================== -->
+<!-- APP QR CODE MODAL & DOWNLOADER -->
+<!-- ========================================== -->
+<div id="qrModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 99999; overflow-y: auto; padding: 15px; box-sizing: border-box;">
+    <div style="background: var(--card-bg, #ffffff); max-width: 580px; margin: 30px auto; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3); overflow: hidden; border: 1px solid var(--border-color, #cbd5e1);">
+        
+        <!-- Modal Header -->
+        <div style="background: #004b87; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 22px;">📱</span>
+                <div>
+                    <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: white;">Mobile App QR Code</h3>
+                    <div style="font-size: 11.5px; color: #bae6fd;">Runner Motors EMI Calculator & Sales System</div>
+                </div>
+            </div>
+            <button type="button" onclick="closeQrModal()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 22px; color: var(--text-main, #1e293b);">
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div style="display: inline-block; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); border: 2px solid #0284c7;">
+                    <img id="qrImageDisplay" src="" alt="App QR Code" style="width: 220px; height: 220px; display: block; image-rendering: pixelated;">
+                </div>
+                <p style="margin: 8px 0 0 0; font-size: 13px; font-weight: bold; color: #0284c7;">
+                    📷 মোবাইলের Camera বা Google Lens দিয়ে স্ক্যান করুন
+                </p>
+            </div>
+
+            <!-- URL input box -->
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px;">
+                <label style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 4px; display: block;">Web App Link / URL:</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="qrCustomUrlInput" oninput="updateQrCodeDisplay()" style="flex: 1; padding: 8px 10px; font-size: 13px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #0f172a;" readonly>
+                    <button type="button" onclick="copyQrUrl()" style="background: #0284c7; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">📋 Copy</button>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <button type="button" onclick="downloadQrCode()" style="background: #10b981; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    📥 Download QR Image
+                </button>
+                <button type="button" onclick="printQrPoster()" style="background: #004b87; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    🖨️ Print Notice Poster (A4)
+                </button>
+            </div>
+
+            <!-- Installation Instructions -->
+            <div style="background: #f1f5f9; border-radius: 10px; padding: 14px 16px; border-left: 4px solid #004b87;">
+                <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                    <span>📲</span> ফিল্ড অফিসারদের জন্য মোবাইল ইনস্টলেশন গাইড:
+                </h4>
+                
+                <div style="font-size: 12.5px; line-height: 1.5; color: #334155; margin-bottom: 8px;">
+                    <strong style="color: #0284c7;">🤖 Android মোবাইলে (Google Chrome):</strong>
+                    <ol style="margin: 4px 0 6px 18px; padding: 0;">
+                        <li>QR Code স্ক্যান করে Chrome ব্রাউজারে লিংকটি খুলুন।</li>
+                        <li>ব্রাউজারের উপরে ডানদিকের <strong>3 Dots (⋮)</strong> মেনুতে চাপ দিন।</li>
+                        <li><strong>"Install app"</strong> অথবা <strong>"Add to Home screen"</strong> চাপুন।</li>
+                    </ol>
+                </div>
+
+                <div style="font-size: 12.5px; line-height: 1.5; color: #334155;">
+                    <strong style="color: #ea580c;">🍏 iPhone মোবাইলে (Safari):</strong>
+                    <ol style="margin: 4px 0 0 18px; padding: 0;">
+                        <li>QR Code স্ক্যান করে Safari ব্রাউজারে লিংকটি খুলুন।</li>
+                        <li>নিচে থাকা <strong>Share (⎋)</strong> বাটনে ট্যাপ করে <strong>"Add to Home Screen"</strong> চাপুন।</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="background: #f8fafc; padding: 12px 20px; border-top: 1px solid #e2e8f0; text-align: right;">
+            <button type="button" onclick="closeQrModal()" style="background: #64748b; color: white; border: none; padding: 7px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================================== -->
+<!-- PRINTABLE A4 NOTICE POSTER MODAL -->
+<!-- ========================================== -->
+<div id="qrPosterModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999999; overflow-y: auto; padding: 15px; box-sizing: border-box;">
+    <div style="background: #ffffff; max-width: 800px; margin: 0 auto; position: relative; box-shadow: 0 8px 30px rgba(0,0,0,0.35); border-left: 10px solid #004b87; border-right: 10px solid #004b87;" id="printableQrPosterArea">
+        
+        <!-- Top Action Bar (No Print) -->
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 2px solid #e2e8f0; background: #f8fafc;">
+            <button type="button" onclick="window.print()" style="background: #004b87; color: white; border: none; padding: 8px 22px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+                🖨️ Print Poster / Save PDF
+            </button>
+            <button type="button" onclick="document.getElementById('qrPosterModal').style.display='none'" style="background: #dc2626; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                ✕ Close
+            </button>
+        </div>
+
+        <!-- Poster Printable Sheet -->
+        <div style="padding: 25px 30px 20px 30px; font-family: Calibri, 'Segoe UI', Arial, sans-serif; color: #000000; background: #ffffff;">
+            
+            <!-- Poster Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #004b87; padding-bottom: 12px; margin-bottom: 18px;">
+                <div>
+                    <svg width="190" height="40" viewBox="0 0 170 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.5 5.5L16.5 18L4.5 30.5H11.5L23.5 18L11.5 5.5H4.5Z" fill="#E11D48"/>
+                        <path d="M14.5 5.5L26.5 18L14.5 30.5H21.5L33.5 18L21.5 5.5H14.5Z" fill="#004B87"/>
+                        <text x="38" y="27" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="24" fill="#004B87" letter-spacing="1.5">RUNNER</text>
+                    </svg>
+                    <div style="font-size: 12px; font-weight: bold; color: #004b87; letter-spacing: 0.5px; margin-top: 3px;">RUNNER MOTORS LIMITED</div>
+                    <div style="font-size: 10px; color: #475569;">Commercial Vehicle Sales Division | 138/1 Tejgaon I/A, Dhaka-1208</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="background: #e11d48; color: white; font-weight: 900; font-size: 13px; padding: 4px 12px; border-radius: 4px; display: inline-block; letter-spacing: 1px;">OFFICIAL NOTICE</div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">For All Sales Units, Area Managers & Divisions</div>
+                </div>
+            </div>
+
+            <!-- Notice Title -->
+            <div style="text-align: center; margin-bottom: 18px;">
+                <h1 style="margin: 0; font-size: 22px; color: #004b87; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">Eicher Commercial Vehicle EMI Calculator</h1>
+                <h3 style="margin: 4px 0 0 0; font-size: 15px; color: #ea580c; font-weight: 700;">ফিল্ড অফিসার ও সেলস টিমের জন্য মোবাইল অ্যাপ ব্যবহার ও ইনস্টলেশন নির্দেশিকা</h3>
+            </div>
+
+            <!-- Central QR Frame -->
+            <div style="background: #f8fafc; border: 2px dashed #004b87; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 13px; font-weight: 900; color: #004b87; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">
+                    👇 ফোনের ক্যামেরা দিয়ে স্ক্যান করে সরাসরি অ্যাপ ওপেন করুন 👇
+                </div>
+                <div style="display: inline-block; padding: 12px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #004b87;">
+                    <img id="posterQrImageDisplay" src="" alt="App QR Code" style="width: 210px; height: 210px; display: block; image-rendering: pixelated;">
+                </div>
+                <div style="margin-top: 10px; font-size: 14px; font-weight: bold; color: #0f172a;">
+                    ওয়েব অ্যাপ লিংক: <span id="posterUrlText" style="color: #0284c7; text-decoration: underline;">https://rml-calculator.vercel.app</span>
+                </div>
+            </div>
+
+            <!-- Two-Column Installation Steps -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px; table-layout: fixed;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                        <div style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 12px; height: 100%; box-sizing: border-box;">
+                            <div style="font-size: 13.5px; font-weight: bold; color: #1d4ed8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span>🤖</span> অ্যান্ড্রয়েড মোবাইলে (Google Chrome):
+                            </div>
+                            <ol style="margin: 0; padding-left: 18px; font-size: 11.5px; line-height: 1.55; color: #1e293b;">
+                                <li>ফোনের <strong>Camera</strong> বা <strong>Google Lens</strong> দিয়ে ওপরের QR কোডটি স্ক্যান করুন (বা Chrome এ লিংকটি টাইপ করুন)।</li>
+                                <li>Chrome ব্রাউজারের উপরে ডানদিকের <strong>3 Dots (⋮)</strong> মেনু বাটনে ট্যাপ করুন।</li>
+                                <li>তালিকা থেকে <strong>"Install app"</strong> অথবা <strong>"Add to Home screen"</strong> চাপুন।</li>
+                                <li>অ্যাপটি আপনার ফোনের হোম স্ক্রিনে ইনস্টল হয়ে যাবে এবং সরাসরি একটি ক্লিক করেই ব্যবহার করতে পারবেন।</li>
+                            </ol>
+                        </div>
+                    </td>
+                    <td style="width: 50%; vertical-align: top; padding-left: 10px;">
+                        <div style="background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 12px; height: 100%; box-sizing: border-box;">
+                            <div style="font-size: 13.5px; font-weight: bold; color: #c2410c; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span>🍏</span> আইফোন মোবাইলে (Apple Safari):
+                            </div>
+                            <ol style="margin: 0; padding-left: 18px; font-size: 11.5px; line-height: 1.55; color: #1e293b;">
+                                <li>ফোনের ক্যামেরা দিয়ে QR কোড স্ক্যান করে <strong>Safari</strong> ব্রাউজারে লিংকটি খুলুন।</li>
+                                <li>Safari এর নিচের মাঝখানে থাকা <strong>Share আইকন (⎋)</strong> এ ট্যাপ করুন।</li>
+                                <li>নিচে স্ক্রল করে <strong>"Add to Home Screen"</strong> অপশনে চাপ দিন এবং ওপরে ডানদিকে <strong>'Add'</strong> চাপুন।</li>
+                                <li>অ্যাপটি আপনার আইফোনের হোম স্ক্রিনে যুক্ত হয়ে যাবে।</li>
+                            </ol>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Key Features / Value Props -->
+            <div style="background: #f1f5f9; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px;">
+                <div style="font-size: 12.5px; font-weight: bold; color: #0f172a; margin-bottom: 6px;">🌟 অ্যাপটির মূল সুবিধাসমূহ:</div>
+                <table style="width: 100%; font-size: 11px; color: #334155; line-height: 1.4;">
+                    <tr>
+                        <td style="width: 50%; padding: 2px 0;">⚡ <strong>রিয়েল-টাইম হিসাব:</strong> ডাউন পেমেন্ট ও টেনিউর পরিবর্তনে তাৎক্ষণিক কিস্তি ও প্রফিট।</td>
+                        <td style="width: 50%; padding: 2px 0;">📊 <strong>২৯ মাসের স্ট্যান্ডার্ড বেস:</strong> সার্বজনীন সঠিক প্রফিট সমন্বয় ও নোটিং।</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; padding: 2px 0;">📄 <strong>অটো বায়ার ফর্ম জেনারেশন:</strong> ফিল্ড থেকে ১ ক্লিকে ক্রেতার ফর্ম প্রস্তুত ও প্রিন্ট।</td>
+                        <td style="width: 50%; padding: 2px 0;">📝 <strong>অফিশিয়াল কোটেশন / অফার লেটার:</strong> ক্যাশ ও ক্রেডিট উভয় প্রস্তাবের লেটারহেড প্যাড।</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div style="border-top: 2px solid #004b87; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b;">
+                <div>
+                    <strong>Runner Motors Limited</strong> | IT & Sales Coordination Support
+                </div>
+                <div>
+                    📞 Central Service: <strong>+88 017 3040 7689</strong> | Hotline: <strong>16273</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
