@@ -14,7 +14,7 @@ app.use(express.urlencoded({ limit: '25mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); // Serve the frontend from the public folder
 
 // Gemini AI Config
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || Buffer.from('QVEuQWI4Uk42Sm90NE96dy1xd3pMRkthY1dDNTd0S0YtNkpOMVI3Z2NxOEhPZU5yZWpaend=', 'base64').toString('utf-8');
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || Buffer.from('QVEuQWI4Uk42SlhfN2pnbS10aFMtX2NlM0w3bWhtMFBUaGhjTG5vVDZ1ZjNlV01ZeEFfSWc=', 'base64').toString('utf-8');
 // Config
 const SMS_API_URL = 'http://api.greenweb.com.bd/api.php?json';
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN || '110630013241785089604183b4b70f7c815a934e72e50dc5f2acd';
@@ -474,10 +474,35 @@ Rules:
         if (imageFront) addImagePart(imageFront);
         if (imageBack) addImagePart(imageBack);
 
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
-        const response = await axios.post(geminiUrl, {
-            contents: [{ parts }]
-        }, { headers: { 'Content-Type': 'application/json' }, timeout: 30000 });
+        // Multi-model fallback list in order of efficiency & availability
+        const candidateModels = [
+            'gemini-3.5-flash-lite',
+            'gemini-flash-lite-latest',
+            'gemini-3.1-flash-lite',
+            'gemini-3.6-flash'
+        ];
+
+        let response = null;
+        let lastError = null;
+
+        for (const modelName of candidateModels) {
+            try {
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+                response = await axios.post(geminiUrl, {
+                    contents: [{ parts }]
+                }, { headers: { 'Content-Type': 'application/json' }, timeout: 35000 });
+                if (response && response.data) {
+                    break; // Success
+                }
+            } catch (err) {
+                lastError = err;
+                console.warn(`Model ${modelName} failed (${err.response?.status}): ${err.response?.data?.error?.message || err.message}. Trying next fallback model...`);
+            }
+        }
+
+        if (!response) {
+            throw lastError || new Error('All Gemini OCR models are currently busy or unavailable');
+        }
 
         const candidateText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
         let cleaned = candidateText.replace(/```json/gi, '').replace(/```/g, '').trim();
