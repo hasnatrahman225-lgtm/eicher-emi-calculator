@@ -403,51 +403,63 @@ app.post('/api/admin/blocked-logins', async (req, res) => {
 });
 
 
-// Gemini AI NID Scanner API
+// Gemini AI NID / TIN Scanner API (Single Image, Two-Sided NID, or Corporate TIN Certificate)
 app.post('/api/scan-nid', async (req, res) => {
-    const { imageFront, imageBack } = req.body;
+    const { imageFront, imageBack, docType } = req.body;
     if (!imageFront && !imageBack) {
-        return res.status(400).json({ error: 'At least one NID image (Front or Back) is required' });
+        return res.status(400).json({ error: 'At least one document image (NID Front/Both sides or TIN Certificate) is required' });
     }
 
     try {
         const parts = [
             {
-                text: `You are an expert OCR, translation, and verification parser for Bangladeshi National ID (NID) cards.
-Analyze the provided NID image(s) (Front and/or Back side of Smart NID or Old laminated NID).
+                text: `You are an expert AI OCR, entity extractor, transliterator, and verification parser for Bangladeshi Official Identification Documents (National ID Cards and e-TIN / Taxpayer Identification Number Certificates).
 
-CRITICAL REQUIREMENT:
+The uploaded image(s) may contain:
+1. Bangladeshi Smart NID Card or Laminated NID (Front side, Back side, OR BOTH SIDES COMBINED IN A SINGLE PHOTO / PAGE).
+2. Bangladeshi e-TIN Certificate (Taxpayer Identification Number certificate for Corporate / Proprietorship / Individual customers issued by NBR - National Board of Revenue).
+
+CRITICAL REQUIREMENTS:
 1. This is for an ENGLISH Buyer Form. ALL EXTRACTED TEXT MUST BE IN ENGLISH (LATIN SCRIPT).
-2. Transliterate all Bengali names into standard English spelling:
+2. Transliterate all Bengali names and text into standard clean English:
    - "মোঃ আবুল কাশেম" -> "Md. Abul Kashem"
    - "খাতুনে জান্নাত" -> "Khatune Jannat"
-   - "মোঃ মতিউর রহমান" -> "Md. Motiur Rahman"
-3. Translate and format Bengali addresses into standard English postal address format:
-   - E.g. "House/Holding: 38, Vill/Road: Chhoto Bazar, PO: Mymensingh - 2200, PS: Mymensingh Sadar, Dist: Mymensingh"
-4. Perform NID Authenticity & Verification Checks:
-   - Identify Card Type (Smart NID or Laminated NID).
-   - Check if the NID number matches the standard format (10-digit Smart NID or 17/13-digit legacy NID).
-   - Check if 2D Barcode (PDF417) / Government Seal / Hologram are visible.
+   - "মেসার্স ট্রেডার্স" -> "Messrs Traders"
+3. Translate and format addresses into standard clean postal format:
+   - E.g. "House: 38, Road: Chhoto Bazar, PO: Mymensingh-2200, PS: Kotwali, Dist: Mymensingh"
+4. If this is a TIN Certificate:
+   - "nidNumber" -> Extract the 12-digit e-TIN Number (or 10-digit TIN).
+   - "name" -> Extract Taxpayer Name / Company Name.
+   - "fatherOrHusbandName" -> Extract Father's/Husband's name or Directors/Authorized Person name.
+   - "proprietor" -> If proprietorship / business name exists (e.g. "Trade Name / Business Name"), extract here.
+   - "presentAddress" -> Current Address from TIN certificate.
+   - "permanentAddress" -> Permanent / Registered Address from TIN certificate.
+   - "cardType" -> "e-TIN Certificate".
+   - "verificationNotes" -> "12-Digit NBR e-TIN Certificate Verified".
+5. If this is a combined NID page (Both Front & Back on one image):
+   - Extract the front information (Name, Father, Mother, NID, DOB) AND the back information (Address, Blood Group) from the single image.
 
 Extract and output ONLY a valid raw JSON object with these exact keys:
 {
-  "nidNumber": "clean digits only (e.g. 5530927648)",
-  "name": "Customer Name in English",
-  "fatherOrHusbandName": "Father's or Husband's name in English",
-  "motherName": "Mother's name in English",
+  "nidNumber": "10-digit Smart NID, 17/13-digit NID, or 12-digit TIN number",
+  "name": "Customer Name or Company Name in English",
+  "fatherOrHusbandName": "Father's / Husband's / Representative name in English",
+  "motherName": "Mother's name in English if available",
+  "proprietor": "Business / Trade name if available on TIN/NID",
   "presentAddress": "Present Address in English",
   "permanentAddress": "Permanent Address in English",
-  "dob": "Date of Birth (e.g. 18 Aug 1981)",
-  "bloodGroup": "Blood Group if visible (e.g. O+)",
-  "cardType": "Smart NID Card",
+  "dob": "Date of Birth or Incorporation Date",
+  "bloodGroup": "Blood Group if visible",
+  "docType": "NID" or "TIN",
+  "cardType": "Smart NID Card" / "Classic NID" / "e-TIN Certificate",
   "isVerified": true,
-  "verificationNotes": "10-Digit Smart NID Verified with Security Seal & 2D Barcode"
+  "verificationNotes": "Document Verified with Seal/Barcode/Security features"
 }
 
 Rules:
 - Strict English output for every field.
-- Do NOT wrap in markdown code blocks.
-- If any field is not found or unclear, set its value to "".`
+- Do NOT wrap in markdown code blocks (\`\`\`json).
+- If any field is not found or not applicable, set its value to "".`
             }
         ];
 
@@ -515,9 +527,12 @@ Rules:
                 name: (cleaned.match(/"name"\s*:\s*"([^"]+)"/) || [])[1] || "",
                 fatherOrHusbandName: (cleaned.match(/"fatherOrHusbandName"\s*:\s*"([^"]+)"/) || [])[1] || "",
                 motherName: (cleaned.match(/"motherName"\s*:\s*"([^"]+)"/) || [])[1] || "",
+                proprietor: (cleaned.match(/"proprietor"\s*:\s*"([^"]+)"/) || [])[1] || "",
                 presentAddress: (cleaned.match(/"presentAddress"\s*:\s*"([^"]+)"/) || [])[1] || "",
                 permanentAddress: (cleaned.match(/"permanentAddress"\s*:\s*"([^"]+)"/) || [])[1] || "",
-                dob: (cleaned.match(/"dob"\s*:\s*"([^"]+)"/) || [])[1] || ""
+                dob: (cleaned.match(/"dob"\s*:\s*"([^"]+)"/) || [])[1] || "",
+                docType: (cleaned.match(/"docType"\s*:\s*"([^"]+)"/) || [])[1] || "NID",
+                cardType: (cleaned.match(/"cardType"\s*:\s*"([^"]+)"/) || [])[1] || "Document"
             };
         }
 
