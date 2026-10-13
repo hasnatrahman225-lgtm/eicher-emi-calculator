@@ -2226,29 +2226,37 @@
             setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
             setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
             
-            const vtsNoteText = globalCalcData.deviationEmiNote || "Includes Tk. 500 VTS";
+            // Credit Remarks/Notes logic:
+            // 1. Remove duplicate rebate note from bfVtsNote (Remarks/Notes column)
+            // 2. Clear breakdown of VTS and Registration monthly addition
+            let remarksNoteRow1 = "Includes Tk. 500 VTS/Mo";
             const pkgRow1Text = globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)";
+            
+            if (globalCalcData.selectedRegOption === 'emi' && globalCalcData.regCost > 0) {
+                const regPerMo = globalCalcData.months > 0 ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
+                remarksNoteRow1 = `Includes VTS: Tk. 500/Mo + Reg: Tk. ${formatNumberOnly(regPerMo)}/Mo`;
+            }
             
             if (globalCalcData.isCustomEmi) {
                 const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
                 setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
                 setVal("bfPkgRow1", pkgRow1Text);
-                setVal("bfVtsNote", vtsNoteText);
+                setVal("bfVtsNote", remarksNoteRow1);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else if (globalCalcData.selectedRegOption === 'last_emi') {
                 setVal("bfEmi", formatCurrency(globalCalcData.emi));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
                 setVal("bfPkgRow1", pkgRow1Text);
-                setVal("bfVtsNote", vtsNoteText);
+                setVal("bfVtsNote", remarksNoteRow1);
                 setVal("bfPkgRow2", "Last (" + globalCalcData.months + "th) Installment: " + formatCurrency(globalCalcData.effectiveFinalMonthEmi));
                 setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
             } else {
                 setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
                 setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
                 setVal("bfPkgRow1", pkgRow1Text);
-                setVal("bfVtsNote", vtsNoteText);
+                setVal("bfVtsNote", remarksNoteRow1);
                 setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
             }
