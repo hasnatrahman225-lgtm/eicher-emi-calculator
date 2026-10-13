@@ -1833,7 +1833,7 @@
                     🖨️ Print / Save PDF
                 </button>
                 <button type="button" onclick="openNidScanModal()" style="background: #2563eb; color: white; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px;">
-                    📷 Scan / Upload NID
+                    📷 Scan NID / TIN Certificate
                 </button>
                 <div style="display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
                     <span style="font-weight: bold; font-size: 13px; color: #334155;">Deal Mode:</span>
@@ -2309,12 +2309,63 @@
         if (modal) modal.style.display = "none";
     }
 
-    // --- NID SCANNER & GEMINI AI OCR ---
+    // --- NID & TIN SCANNER WITH GEMINI AI OCR ---
     let nidFrontBase64 = null;
     let nidBackBase64 = null;
+    let currentDocScanType = 'single'; // 'single' (combined/front), 'two_sides', or 'tin'
+
+    function setDocScanMode(mode) {
+        currentDocScanType = mode;
+        const btnSingle = document.getElementById("btnDocModeSingle");
+        const btnTwo = document.getElementById("btnDocModeTwo");
+        const btnTin = document.getElementById("btnDocModeTin");
+        const singleBox = document.getElementById("docScanSingleBox");
+        const twoBox = document.getElementById("docScanTwoSidesBox");
+        const descText = document.getElementById("docScanDescText");
+
+        [btnSingle, btnTwo, btnTin].forEach(b => {
+            if (b) {
+                b.style.background = "#f1f5f9";
+                b.style.color = "#334155";
+                b.style.borderColor = "#cbd5e1";
+            }
+        });
+
+        if (mode === 'single') {
+            if (btnSingle) {
+                btnSingle.style.background = "#2563eb";
+                btnSingle.style.color = "#ffffff";
+                btnSingle.style.borderColor = "#2563eb";
+            }
+            if (singleBox) singleBox.style.display = "block";
+            if (twoBox) twoBox.style.display = "none";
+            document.getElementById("singleDocLabel").innerText = "NID Card (এক পেজ / Combined বা Front)";
+            if (descText) descText.innerText = "কাস্টমার যদি ১টি ছবিতেই এনআইডির এপিঠ-ওপিঠ বা সামনের পাতা পাঠায়, এখানে আপলোড করুন। জেমিনি এআই স্বয়ংক্রিয়ভাবে উভয় পাশের সব তথ্য রিড করে নেবে।";
+        } else if (mode === 'two_sides') {
+            if (btnTwo) {
+                btnTwo.style.background = "#2563eb";
+                btnTwo.style.color = "#ffffff";
+                btnTwo.style.borderColor = "#2563eb";
+            }
+            if (singleBox) singleBox.style.display = "none";
+            if (twoBox) twoBox.style.display = "grid";
+            if (descText) descText.innerText = "এনআইডি কার্ডের সামনের ও পেছনের পাতার আলাদা ছবি থাকলে যথাক্রমে উভয় ঘরে আপলোড করুন।";
+        } else if (mode === 'tin') {
+            if (btnTin) {
+                btnTin.style.background = "#059669";
+                btnTin.style.color = "#ffffff";
+                btnTin.style.borderColor = "#059669";
+            }
+            if (singleBox) singleBox.style.display = "block";
+            if (twoBox) twoBox.style.display = "none";
+            document.getElementById("singleDocLabel").innerText = "e-TIN Certificate (টিন সার্টিফিকেট)";
+            if (descText) descText.innerText = "কর্পোরেট বা প্রাতিষ্ঠানিক কাস্টমারের e-TIN সার্টিফিকেট আপলোড করুন। প্রতিষ্ঠান/মালিকের নাম, টিন নম্বর ও ঠিকানা সরাসরি ফর্মে বসে যাবে।";
+        }
+    }
 
     function openNidScanModal() {
         document.getElementById("nidScannerModal").style.display = "block";
+        setDocScanMode('single');
     }
 
     function closeNidScanModal() {
@@ -2330,7 +2381,7 @@
                 const canvas = document.createElement("canvas");
                 let width = img.width;
                 let height = img.height;
-                const maxDim = 1400;
+                const maxDim = 1600;
                 if (width > maxDim || height > maxDim) {
                     if (width > height) {
                         height = Math.round((height * maxDim) / width);
@@ -2344,7 +2395,7 @@
                 canvas.height = height;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, width, height);
-                const compressedData = canvas.toDataURL("image/jpeg", 0.85);
+                const compressedData = canvas.toDataURL("image/jpeg", 0.88);
                 callback(compressedData);
             };
             img.src = e.target.result;
@@ -2352,11 +2403,17 @@
         reader.readAsDataURL(file);
     }
 
-    function handleNidUpload(side, input) {
+    function handleDocUpload(side, input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
         compressAndReadImage(file, function(base64Data) {
-            if (side === 'front') {
+            if (side === 'single') {
+                nidFrontBase64 = base64Data;
+                nidBackBase64 = null;
+                document.getElementById('nidSinglePreview').src = base64Data;
+                document.getElementById('nidSinglePreview').style.display = 'block';
+                document.getElementById('nidSinglePlaceholder').style.display = 'none';
+            } else if (side === 'front') {
                 nidFrontBase64 = base64Data;
                 document.getElementById('nidFrontPreview').src = base64Data;
                 document.getElementById('nidFrontPreview').style.display = 'block';
@@ -2372,7 +2429,7 @@
 
     async function processNidWithGemini() {
         if (!nidFrontBase64 && !nidBackBase64) {
-            alert("Please take a photo or upload at least the Front side of the NID card.");
+            alert("Please select or snap a photo of the NID / TIN document first.");
             return;
         }
 
@@ -2380,7 +2437,7 @@
         const statusEl = document.getElementById("nidScanStatus");
         btn.disabled = true;
         btn.innerHTML = "⏳ Scanning with Gemini AI...";
-        statusEl.innerText = "Analyzing NID Card with Gemini AI Vision...";
+        statusEl.innerText = "Analyzing Document with Gemini AI Vision...";
         statusEl.style.display = "block";
 
         try {
@@ -2389,12 +2446,13 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     imageFront: nidFrontBase64,
-                    imageBack: nidBackBase64
+                    imageBack: nidBackBase64,
+                    docType: currentDocScanType
                 })
             });
             const result = await res.json();
             if (!result.success || !result.data) {
-                throw new Error(result.error || "Could not extract NID details");
+                throw new Error(result.error || "Could not extract document details");
             }
 
             const data = result.data;
@@ -2403,7 +2461,17 @@
             if (data.name) document.getElementById("bfCustName").value = data.name;
             if (data.fatherOrHusbandName) document.getElementById("bfCustFather").value = data.fatherOrHusbandName;
             if (data.motherName) document.getElementById("bfCustMother").value = data.motherName;
-            if (data.nidNumber) document.getElementById("bfCustNid").value = data.nidNumber;
+            if (data.proprietor) document.getElementById("bfCustProprietor").value = data.proprietor;
+            
+            // NID or TIN number
+            if (data.nidNumber) {
+                const nidField = document.getElementById("bfCustNid");
+                if (data.cardType === "e-TIN Certificate" || currentDocScanType === 'tin') {
+                    nidField.value = data.nidNumber + " (TIN)";
+                } else {
+                    nidField.value = data.nidNumber;
+                }
+            }
 
             // Address splitting across lines for clean printing
             if (data.presentAddress) {
@@ -2430,7 +2498,7 @@
                 }
             }
 
-            // Set Photo Proof in form header (Front & Back)
+            // Set Photo Proof in form header
             if (nidFrontBase64) {
                 const frontImg = document.getElementById("bfNidFrontImg");
                 const frontPh = document.getElementById("bfNidFrontPlaceholder");
@@ -2457,14 +2525,18 @@
 
             // Verification Badge
             const badge = document.getElementById("bfVerifiedBadge");
-            if (badge) badge.style.display = "block";
+            if (badge) {
+                badge.innerText = (data.cardType === "e-TIN Certificate" || currentDocScanType === 'tin') ? "✓ TIN Verified" : "✓ NID Verified";
+                badge.style.display = "block";
+            }
 
-            const verifyMsg = data.verificationNotes || "Smart NID Authenticity Checked";
-            alert("✅ NID Card scanned & translated successfully!\n• Status: " + verifyMsg + "\n• Customer details have been auto-filled in English.");
+            const docName = (data.cardType === "e-TIN Certificate" || currentDocScanType === 'tin') ? "e-TIN Certificate" : "NID Card";
+            const verifyMsg = data.verificationNotes || "Document Verified Successfully";
+            alert(`✅ ${docName} scanned & translated successfully!\n• Status: ${verifyMsg}\n• Customer details have been auto-filled in English.`);
             closeNidScanModal();
         } catch (err) {
-            console.error("NID scan error:", err);
-            alert("Failed to scan NID: " + err.message);
+            console.error("Document scan error:", err);
+            alert("Failed to scan document: " + err.message);
         } finally {
             btn.disabled = false;
             btn.innerHTML = "🚀 Extract & Auto-Fill Form";
@@ -2473,57 +2545,79 @@
     }
 </script>
 
-<!-- NID SCANNER MODAL -->
+<!-- NID & TIN SCANNER MODAL -->
 <div id="nidScannerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; overflow-y: auto; padding: 20px; box-sizing: border-box;">
-    <div style="background: white; max-width: 580px; margin: 30px auto; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-family: 'Segoe UI', sans-serif;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
+    <div style="background: white; max-width: 600px; margin: 25px auto; padding: 22px 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-family: 'Segoe UI', sans-serif;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 15px;">
             <h3 style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                📷 Smart NID Scanner (Gemini AI)
+                📷 Smart Document Scanner (NID & TIN)
             </h3>
             <button type="button" onclick="closeNidScanModal()" style="background: #f1f5f9; border: none; font-size: 18px; color: #64748b; cursor: pointer; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">✕</button>
         </div>
 
-        <p style="margin: 0 0 18px; font-size: 13.5px; color: #475569;">
-            এনআইডি কার্ডের সামনের ও পেছনের পাতার ছবি তুলুন বা গ্যালারি থেকে আপলোড করুন। জেমিনি এআই স্বয়ংক্রিয়ভাবে তথ্যগুলো ফর্মে বসিয়ে দেবে।
+        <!-- DOCUMENT TYPE TABS -->
+        <div style="display: flex; gap: 8px; margin-bottom: 14px; background: #f8fafc; padding: 6px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <button type="button" id="btnDocModeSingle" onclick="setDocScanMode('single')" style="flex: 1; padding: 8px 6px; font-size: 12.5px; font-weight: bold; border-radius: 6px; border: 1px solid #2563eb; background: #2563eb; color: white; cursor: pointer; transition: all 0.2s;">
+                📄 1 ছবিতে NID (Combined)
+            </button>
+            <button type="button" id="btnDocModeTwo" onclick="setDocScanMode('two_sides')" style="flex: 1; padding: 8px 6px; font-size: 12.5px; font-weight: bold; border-radius: 6px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #334155; cursor: pointer; transition: all 0.2s;">
+                🪪 ২ ছবিতে NID (Front/Back)
+            </button>
+            <button type="button" id="btnDocModeTin" onclick="setDocScanMode('tin')" style="flex: 1; padding: 8px 6px; font-size: 12.5px; font-weight: bold; border-radius: 6px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #334155; cursor: pointer; transition: all 0.2s;">
+                🏢 Corporate TIN
+            </button>
+        </div>
+
+        <p id="docScanDescText" style="margin: 0 0 16px; font-size: 13px; color: #475569; line-height: 1.45;">
+            কাস্টমার যদি ১টি ছবিতেই এনআইডির এপিঠ-ওপিঠ বা সামনের পাতা পাঠায়, এখানে আপলোড করুন। জেমিনি এআই স্বয়ংক্রিয়ভাবে সব তথ্য রিড করে নেবে।
         </p>
 
-        <!-- UPLOAD CONTAINERS -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        <!-- SINGLE IMAGE UPLOAD CONTAINER -->
+        <div id="docScanSingleBox" style="border: 2px dashed #3b82f6; border-radius: 10px; padding: 16px; text-align: center; background: #eff6ff; margin-bottom: 18px;">
+            <div id="singleDocLabel" style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1d4ed8;">NID Card (এক পেজ / Combined বা Front)</div>
+            <div style="height: 140px; border-radius: 8px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; border: 1px solid #cbd5e1;">
+                <span id="nidSinglePlaceholder" style="font-size: 12.5px; color: #64748b;">No Image Uploaded</span>
+                <img id="nidSinglePreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain; background: white;">
+            </div>
+            <label style="background: #2563eb; color: white; padding: 8px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(37,99,235,0.25);">
+                📸 Snap Photo / Upload File
+                <input type="file" accept="image/*" onchange="handleDocUpload('single', this)" style="display: none;">
+            </label>
+        </div>
+
+        <!-- TWO SIDES UPLOAD CONTAINER -->
+        <div id="docScanTwoSidesBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
             <!-- FRONT SIDE -->
             <div style="border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; background: #f8fafc;">
-                <div style="font-weight: bold; font-size: 13.5px; margin-bottom: 8px; color: #0f172a;">Front Side (সামনের পাতা)</div>
-                <div style="height: 120px; border-radius: 6px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; position: relative;">
-                    <span id="nidFrontPlaceholder" style="font-size: 12px; color: #64748b;">No Image</span>
-                    <img id="nidFrontPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                <div style="font-weight: bold; font-size: 13px; margin-bottom: 6px; color: #0f172a;">Front Side (সামনের পাতা)</div>
+                <div style="height: 110px; border-radius: 6px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; position: relative;">
+                    <span id="nidFrontPlaceholder" style="font-size: 11.5px; color: #64748b;">No Image</span>
+                    <img id="nidFrontPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain; background: white;">
                 </div>
-                <div style="display: flex; gap: 6px; justify-content: center;">
-                    <label style="background: #2563eb; color: white; padding: 6px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
-                        📸 Snap / Pick
-                        <input type="file" accept="image/*" onchange="handleNidUpload('front', this)" style="display: none;">
-                    </label>
-                </div>
+                <label style="background: #2563eb; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; display: inline-block;">
+                    📸 Snap / Pick
+                    <input type="file" accept="image/*" onchange="handleDocUpload('front', this)" style="display: none;">
+                </label>
             </div>
 
             <!-- BACK SIDE -->
             <div style="border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; background: #f8fafc;">
-                <div style="font-weight: bold; font-size: 13.5px; margin-bottom: 8px; color: #0f172a;">Back Side (পেছনের পাতা)</div>
-                <div style="height: 120px; border-radius: 6px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; position: relative;">
-                    <span id="nidBackPlaceholder" style="font-size: 12px; color: #64748b;">Optional (ঠিকানা)</span>
-                    <img id="nidBackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                <div style="font-weight: bold; font-size: 13px; margin-bottom: 6px; color: #0f172a;">Back Side (পেছনের পাতা)</div>
+                <div style="height: 110px; border-radius: 6px; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; position: relative;">
+                    <span id="nidBackPlaceholder" style="font-size: 11.5px; color: #64748b;">Optional (ঠিকানা)</span>
+                    <img id="nidBackPreview" src="" style="display: none; width: 100%; height: 100%; object-fit: contain; background: white;">
                 </div>
-                <div style="display: flex; gap: 6px; justify-content: center;">
-                    <label style="background: #475569; color: white; padding: 6px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
-                        📸 Snap / Pick
-                        <input type="file" accept="image/*" onchange="handleNidUpload('back', this)" style="display: none;">
-                    </label>
-                </div>
+                <label style="background: #475569; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; display: inline-block;">
+                    📸 Snap / Pick
+                    <input type="file" accept="image/*" onchange="handleDocUpload('back', this)" style="display: none;">
+                </label>
             </div>
         </div>
 
-        <div id="nidScanStatus" style="display: none; text-align: center; margin-bottom: 15px; font-weight: bold; color: #2563eb; font-size: 13.5px;"></div>
+        <div id="nidScanStatus" style="display: none; text-align: center; margin-bottom: 14px; font-weight: bold; color: #2563eb; font-size: 13.5px;"></div>
 
         <!-- FOOTER BUTTONS -->
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 14px;">
             <button type="button" onclick="closeNidScanModal()" style="background: #e2e8f0; color: #334155; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13.5px;">
                 Cancel
             </button>
@@ -3056,8 +3150,10 @@
     }
 
     // ==========================================
-    // APP QR CODE & NOTICE POSTER LOGIC
+    // APP QR CODE & NOTICE POSTER LOGIC (EDGE DIRECT SUPPORT)
     // ==========================================
+    let currentQrMode = 'edge'; // 'edge' (default) or 'universal'
+
     function getAppBaseUrl() {
         if (window.location.protocol.startsWith('http')) {
             return window.location.origin;
@@ -3065,11 +3161,35 @@
         return 'https://rml-calculator.vercel.app';
     }
 
-    function openQrModal() {
-        const defaultUrl = getAppBaseUrl();
-        const input = document.getElementById("qrCustomUrlInput");
-        if (input) input.value = defaultUrl;
+    function getEdgeIntentUrl(rawUrl) {
+        const raw = rawUrl || getAppBaseUrl();
+        const clean = raw.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+        return `intent://${clean}/#Intent;scheme=https;package=com.microsoft.emmx;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.microsoft.emmx;end`;
+    }
+
+    function switchQrMode(mode) {
+        currentQrMode = mode;
+        const tabEdge = document.getElementById("qrTabEdgeBtn");
+        const tabUni = document.getElementById("qrTabUniBtn");
+        const edgeBanner = document.getElementById("qrEdgeBanner");
+        const uniBanner = document.getElementById("qrUniBanner");
+        
+        if (mode === 'edge') {
+            if (tabEdge) { tabEdge.style.background = '#2563eb'; tabEdge.style.color = '#ffffff'; tabEdge.style.boxShadow = '0 2px 6px rgba(37,99,235,0.3)'; }
+            if (tabUni) { tabUni.style.background = '#f1f5f9'; tabUni.style.color = '#64748b'; tabUni.style.boxShadow = 'none'; }
+            if (edgeBanner) edgeBanner.style.display = 'block';
+            if (uniBanner) uniBanner.style.display = 'none';
+        } else {
+            if (tabEdge) { tabEdge.style.background = '#f1f5f9'; tabEdge.style.color = '#64748b'; tabEdge.style.boxShadow = 'none'; }
+            if (tabUni) { tabUni.style.background = '#0284c7'; tabUni.style.color = '#ffffff'; tabUni.style.boxShadow = '0 2px 6px rgba(2,132,199,0.3)'; }
+            if (edgeBanner) edgeBanner.style.display = 'none';
+            if (uniBanner) uniBanner.style.display = 'block';
+        }
         updateQrCodeDisplay();
+    }
+
+    function openQrModal() {
+        switchQrMode('edge');
         const modal = document.getElementById("qrModal");
         if (modal) modal.style.display = "block";
     }
@@ -3080,19 +3200,47 @@
     }
 
     function updateQrCodeDisplay() {
-        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        const baseUrl = getAppBaseUrl();
+        const edgeUrl = getEdgeIntentUrl(baseUrl);
+        const activeUrl = (currentQrMode === 'edge') ? edgeUrl : baseUrl;
+        
         const qrImg = document.getElementById("qrImageDisplay");
-        const posterQrImg = document.getElementById("posterQrImageDisplay");
+        const input = document.getElementById("qrCustomUrlInput");
+        if (input) input.value = activeUrl;
+        
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(activeUrl)}`;
+        if (qrImg) qrImg.src = qrSrc;
+
+        // Poster dual QR elements
+        const posterEdgeImg = document.getElementById("posterEdgeQrDisplay");
+        const posterUniImg = document.getElementById("posterUniversalQrDisplay");
         const posterUrlText = document.getElementById("posterUrlText");
         
-        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(url)}`;
-        if (qrImg) qrImg.src = qrSrc;
-        if (posterQrImg) posterQrImg.src = qrSrc;
-        if (posterUrlText) posterUrlText.innerText = url;
+        if (posterEdgeImg) {
+            posterEdgeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(edgeUrl)}`;
+        }
+        if (posterUniImg) {
+            posterUniImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(baseUrl)}`;
+        }
+        if (posterUrlText) {
+            posterUrlText.innerText = baseUrl;
+        }
+    }
+
+    function launchEdge() {
+        const baseUrl = getAppBaseUrl();
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        if (isAndroid) {
+            window.location.href = getEdgeIntentUrl(baseUrl);
+        } else {
+            // Windows desktop or fallback
+            window.location.href = 'microsoft-edge:' + baseUrl;
+        }
     }
 
     function copyQrUrl() {
-        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        const baseUrl = getAppBaseUrl();
+        const url = (currentQrMode === 'edge') ? getEdgeIntentUrl(baseUrl) : baseUrl;
         navigator.clipboard.writeText(url).then(() => {
             alert("✅ লিংক কপি করা হয়েছে:\n" + url);
         }).catch(() => {
@@ -3101,8 +3249,10 @@
     }
 
     function downloadQrCode() {
-        const url = document.getElementById("qrCustomUrlInput")?.value?.trim() || getAppBaseUrl();
+        const baseUrl = getAppBaseUrl();
+        const url = (currentQrMode === 'edge') ? getEdgeIntentUrl(baseUrl) : baseUrl;
         const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
+        const filename = (currentQrMode === 'edge') ? "RML-Edge-Direct-QR.png" : "RML-Universal-QR.png";
         
         fetch(qrSrc)
             .then(res => res.blob())
@@ -3110,7 +3260,7 @@
                 const blobUrl = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = blobUrl;
-                a.download = "RML-EMI-Calculator-QR.png";
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -3156,11 +3306,42 @@
             <button type="button" onclick="closeQrModal()" style="background: rgba(255,255,255,0.15); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">✕</button>
         </div>
 
+        <!-- Mode Selector Tabs -->
+        <div style="display: flex; border-bottom: 2px solid #e2e8f0; background: #f8fafc; padding: 10px 14px 0 14px; gap: 8px;">
+            <button type="button" id="qrTabEdgeBtn" onclick="switchQrMode('edge')" style="padding: 9px 16px; font-size: 13px; font-weight: 700; border: none; border-radius: 8px 8px 0 0; cursor: pointer; background: #2563eb; color: white; box-shadow: 0 2px 6px rgba(37,99,235,0.3); display: flex; align-items: center; gap: 6px;">
+                ⚡ Microsoft Edge QR (নো-ওয়ার্নিং)
+            </button>
+            <button type="button" id="qrTabUniBtn" onclick="switchQrMode('universal')" style="padding: 9px 16px; font-size: 13px; font-weight: 700; border: none; border-radius: 8px 8px 0 0; cursor: pointer; background: #f1f5f9; color: #64748b; display: flex; align-items: center; gap: 6px;">
+                🌐 Universal Web QR (সকল ব্রাউজার)
+            </button>
+        </div>
+
         <!-- Modal Body -->
-        <div style="padding: 22px; color: var(--text-main, #1e293b);">
-            <div style="text-align: center; margin-bottom: 18px;">
+        <div style="padding: 20px; color: var(--text-main, #1e293b);">
+            
+            <!-- Edge Mode Banner -->
+            <div id="qrEdgeBanner" style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                <div style="font-size: 12.5px; font-weight: bold; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                    <span>🛡️</span> 100% সেফ & নো-ওয়ার্নিং (Android রিকমেন্ডেড):
+                </div>
+                <div style="font-size: 11.5px; color: #334155; margin-top: 3px; line-height: 1.45;">
+                    এই QR কোডটি স্ক্যান করলে গুগল ক্রোমের বদলে <strong>সরাসরি Microsoft Edge</strong> ব্রাউজারে অ্যাপ ওপেন হবে। কোনো "Deceptive Site" বা লাল ভাইরাস স্ক্রিন আসবে না।
+                </div>
+            </div>
+
+            <!-- Universal Mode Banner -->
+            <div id="qrUniBanner" style="display: none; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                <div style="font-size: 12.5px; font-weight: bold; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                    <span>🌐</span> সাধারণ ওয়েব লিংক QR (Universal):
+                </div>
+                <div style="font-size: 11.5px; color: #475569; margin-top: 3px; line-height: 1.45;">
+                    আইফোন (iPhone Safari), কম্পিউটার বা যে কোনো স্ট্যান্ডার্ড ওয়েব ব্রাউজারে লিংকটি ওপেন করার জন্য।
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 16px;">
                 <div style="display: inline-block; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); border: 2px solid #0284c7;">
-                    <img id="qrImageDisplay" src="" alt="App QR Code" style="width: 220px; height: 220px; display: block; image-rendering: pixelated;">
+                    <img id="qrImageDisplay" src="" alt="App QR Code" style="width: 210px; height: 210px; display: block; image-rendering: pixelated;">
                 </div>
                 <p style="margin: 8px 0 0 0; font-size: 13px; font-weight: bold; color: #0284c7;">
                     📷 মোবাইলের Camera বা Google Lens দিয়ে স্ক্যান করুন
@@ -3169,43 +3350,55 @@
 
             <!-- URL input box -->
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px;">
-                <label style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 4px; display: block;">Web App Link / URL:</label>
+                <label style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 4px; display: block;">QR Code Target URL:</label>
                 <div style="display: flex; gap: 8px;">
-                    <input type="text" id="qrCustomUrlInput" oninput="updateQrCodeDisplay()" style="flex: 1; padding: 8px 10px; font-size: 13px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #0f172a;" readonly>
-                    <button type="button" onclick="copyQrUrl()" style="background: #0284c7; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; white-space: nowrap;">📋 Copy</button>
+                    <input type="text" id="qrCustomUrlInput" oninput="updateQrCodeDisplay()" style="flex: 1; padding: 8px 10px; font-size: 12.5px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #0f172a;" readonly>
+                    <button type="button" onclick="copyQrUrl()" style="background: #0284c7; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12.5px; white-space: nowrap;">📋 Copy</button>
                 </div>
             </div>
 
             <!-- Action buttons -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                <button type="button" onclick="downloadQrCode()" style="background: #10b981; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    📥 Download QR Image
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px;">
+                <button type="button" onclick="launchEdge()" style="background: #2563eb; color: white; border: none; padding: 10px 8px; border-radius: 8px; font-weight: bold; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;" title="সরাসরি Edge এ চালু করুন">
+                    🚀 Open in Edge
                 </button>
-                <button type="button" onclick="printQrPoster()" style="background: #004b87; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                    🖨️ Print Notice Poster (A4)
+                <button type="button" onclick="downloadQrCode()" style="background: #10b981; color: white; border: none; padding: 10px 8px; border-radius: 8px; font-weight: bold; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    📥 Download QR
+                </button>
+                <button type="button" onclick="printQrPoster()" style="background: #004b87; color: white; border: none; padding: 10px 8px; border-radius: 8px; font-weight: bold; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    🖨️ Print Poster
                 </button>
             </div>
 
             <!-- Installation Instructions -->
             <div style="background: #f1f5f9; border-radius: 10px; padding: 14px 16px; border-left: 4px solid #004b87;">
                 <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                    <span>📲</span> ফিল্ড অফিসারদের জন্য মোবাইল ইনস্টলেশন গাইড:
+                    <span>📲</span> মোবাইলে ইনস্টলেশন ও ব্যবহারের নির্দেশিকা:
                 </h4>
                 
-                <div style="font-size: 12.5px; line-height: 1.5; color: #334155; margin-bottom: 8px;">
-                    <strong style="color: #0284c7;">🤖 Android মোবাইলে (Google Chrome):</strong>
-                    <ol style="margin: 4px 0 6px 18px; padding: 0;">
-                        <li>QR Code স্ক্যান করে Chrome ব্রাউজারে লিংকটি খুলুন।</li>
-                        <li>ব্রাউজারের উপরে ডানদিকের <strong>3 Dots (⋮)</strong> মেনুতে চাপ দিন।</li>
-                        <li><strong>"Install app"</strong> অথবা <strong>"Add to Home screen"</strong> চাপুন।</li>
+                <div style="font-size: 12px; line-height: 1.5; color: #334155; margin-bottom: 10px; background: #eff6ff; padding: 10px; border-radius: 6px; border: 1px solid #93c5fd;">
+                    <strong style="color: #0284c7;">⚡ Microsoft Edge ব্রাউজারে (সুপার ফাস্ট & নো-ওয়ার্নিং):</strong>
+                    <ol style="margin: 4px 0 0 18px; padding: 0;">
+                        <li>ক্যামেরা দিয়ে QR স্ক্যান করলেই সরাসরি <strong>Microsoft Edge</strong> ওপেন হবে।</li>
+                        <li>Edge-এর নিচে থাকা <strong>3 Lines / 3 Dots (⋯)</strong> মেনুতে চাপ দিন।</li>
+                        <li><strong>"Add to phone"</strong> অথবা <strong>"Install app"</strong> চাপুন—কোনো ওয়ার্নিং ছাড়াই পুরো মোবাইল অ্যাপ আকারে সেভ হয়ে যাবে।</li>
                     </ol>
                 </div>
 
-                <div style="font-size: 12.5px; line-height: 1.5; color: #334155;">
+                <div style="font-size: 12px; line-height: 1.5; color: #334155; margin-bottom: 8px;">
+                    <strong style="color: #475569;">🤖 Google Chrome ব্রাউজারে (যদি লাল স্ক্রিন আসে):</strong>
+                    <ol style="margin: 4px 0 0 18px; padding: 0;">
+                        <li>Chrome-এ লাল স্ক্রিন দেখালে নিচে <strong>"Details"</strong> বা <strong>"Advanced"</strong> এ চাপ দিন।</li>
+                        <li>এরপর <strong>"visit this unsafe site"</strong> বা <strong>"Proceed to site"</strong> চাপলে সাইটটি নিরাপদে খুলে যাবে।</li>
+                        <li>এরপর <strong>3 Dots (⋮)</strong> মেনু থেকে <strong>"Install app"</strong> চাপুন।</li>
+                    </ol>
+                </div>
+
+                <div style="font-size: 12px; line-height: 1.5; color: #334155;">
                     <strong style="color: #ea580c;">🍏 iPhone মোবাইলে (Safari):</strong>
                     <ol style="margin: 4px 0 0 18px; padding: 0;">
-                        <li>QR Code স্ক্যান করে Safari ব্রাউজারে লিংকটি খুলুন।</li>
-                        <li>নিচে থাকা <strong>Share (⎋)</strong> বাটনে ট্যাপ করে <strong>"Add to Home Screen"</strong> চাপুন।</li>
+                        <li>Safari তে লিংকটি খুলে নিচে <strong>Share (⎋)</strong> বাটনে ট্যাপ করুন।</li>
+                        <li><strong>"Add to Home Screen"</strong> চাপলে আইফোনের হোমস্ক্রিনে অ্যাপ তৈরি হবে।</li>
                     </ol>
                 </div>
             </div>
@@ -3236,93 +3429,110 @@
         </div>
 
         <!-- Poster Printable Sheet -->
-        <div style="padding: 25px 30px 20px 30px; font-family: Calibri, 'Segoe UI', Arial, sans-serif; color: #000000; background: #ffffff;">
+        <div style="padding: 22px 28px 18px 28px; font-family: Calibri, 'Segoe UI', Arial, sans-serif; color: #000000; background: #ffffff;">
             
             <!-- Poster Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #004b87; padding-bottom: 12px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #004b87; padding-bottom: 10px; margin-bottom: 14px;">
                 <div>
-                    <svg width="190" height="40" viewBox="0 0 170 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="180" height="38" viewBox="0 0 170 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4.5 5.5L16.5 18L4.5 30.5H11.5L23.5 18L11.5 5.5H4.5Z" fill="#E11D48"/>
                         <path d="M14.5 5.5L26.5 18L14.5 30.5H21.5L33.5 18L21.5 5.5H14.5Z" fill="#004B87"/>
                         <text x="38" y="27" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="24" fill="#004B87" letter-spacing="1.5">RUNNER</text>
                     </svg>
-                    <div style="font-size: 12px; font-weight: bold; color: #004b87; letter-spacing: 0.5px; margin-top: 3px;">RUNNER MOTORS LIMITED</div>
-                    <div style="font-size: 10px; color: #475569;">Commercial Vehicle Sales Division | 138/1 Tejgaon I/A, Dhaka-1208</div>
+                    <div style="font-size: 11.5px; font-weight: bold; color: #004b87; letter-spacing: 0.5px; margin-top: 2px;">RUNNER MOTORS LIMITED</div>
+                    <div style="font-size: 9.5px; color: #475569;">Commercial Vehicle Sales Division | 138/1 Tejgaon I/A, Dhaka-1208</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="background: #e11d48; color: white; font-weight: 900; font-size: 13px; padding: 4px 12px; border-radius: 4px; display: inline-block; letter-spacing: 1px;">OFFICIAL NOTICE</div>
-                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;">For All Sales Units, Area Managers & Divisions</div>
+                    <div style="background: #e11d48; color: white; font-weight: 900; font-size: 12px; padding: 3px 10px; border-radius: 4px; display: inline-block; letter-spacing: 1px;">OFFICIAL NOTICE</div>
+                    <div style="font-size: 10.5px; color: #64748b; margin-top: 3px;">For All Sales Units, Area Managers & Divisions</div>
                 </div>
             </div>
 
             <!-- Notice Title -->
-            <div style="text-align: center; margin-bottom: 18px;">
-                <h1 style="margin: 0; font-size: 22px; color: #004b87; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">Eicher Commercial Vehicle EMI Calculator</h1>
-                <h3 style="margin: 4px 0 0 0; font-size: 15px; color: #ea580c; font-weight: 700;">ফিল্ড অফিসার ও সেলস টিমের জন্য মোবাইল অ্যাপ ব্যবহার ও ইনস্টলেশন নির্দেশিকা</h3>
+            <div style="text-align: center; margin-bottom: 14px;">
+                <h1 style="margin: 0; font-size: 20px; color: #004b87; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">Eicher Commercial Vehicle EMI Calculator</h1>
+                <h3 style="margin: 3px 0 0 0; font-size: 14px; color: #ea580c; font-weight: 700;">ফিল্ড অফিসার ও সেলস টিমের জন্য মোবাইল অ্যাপ ব্যবহার ও ইনস্টলেশন নির্দেশিকা</h3>
             </div>
 
-            <!-- Central QR Frame -->
-            <div style="background: #f8fafc; border: 2px dashed #004b87; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 13px; font-weight: 900; color: #004b87; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">
-                    👇 ফোনের ক্যামেরা দিয়ে স্ক্যান করে সরাসরি অ্যাপ ওপেন করুন 👇
+            <!-- Dual QR Section -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                
+                <!-- Card 1: Edge Direct QR (Recommended) -->
+                <div style="background: #eff6ff; border: 2px solid #2563eb; border-radius: 10px; padding: 12px; text-align: center;">
+                    <div style="display: inline-block; background: #1d4ed8; color: white; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 20px; margin-bottom: 6px;">
+                        ⚡ রিকমেন্ডেড (Android)
+                    </div>
+                    <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; margin-bottom: 6px;">
+                        Microsoft Edge Direct QR
+                    </div>
+                    <div style="display: inline-block; padding: 8px; background: #ffffff; border-radius: 8px; border: 1.5px solid #93c5fd; box-shadow: 0 2px 8px rgba(37,99,235,0.15);">
+                        <img id="posterEdgeQrDisplay" src="" alt="Edge QR Code" style="width: 150px; height: 150px; display: block; image-rendering: pixelated;">
+                    </div>
+                    <div style="margin-top: 6px; font-size: 11px; font-weight: 700; color: #1e40af; line-height: 1.35;">
+                        🛡️ সরাসরি Edge ব্রাউজারে খুলবে<br><span style="color: #15803d;">(কোনো ভাইরাস বা লাল ওয়ার্নিং নেই)</span>
+                    </div>
                 </div>
-                <div style="display: inline-block; padding: 12px; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 2px solid #004b87;">
-                    <img id="posterQrImageDisplay" src="" alt="App QR Code" style="width: 210px; height: 210px; display: block; image-rendering: pixelated;">
+
+                <!-- Card 2: Universal Web Link QR -->
+                <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center;">
+                    <div style="display: inline-block; background: #475569; color: white; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 20px; margin-bottom: 6px;">
+                        🌐 ইউনিভার্সাল (iPhone / PC)
+                    </div>
+                    <div style="font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 6px;">
+                        General Web Link QR
+                    </div>
+                    <div style="display: inline-block; padding: 8px; background: #ffffff; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <img id="posterUniversalQrDisplay" src="" alt="Universal QR Code" style="width: 150px; height: 150px; display: block; image-rendering: pixelated;">
+                    </div>
+                    <div style="margin-top: 6px; font-size: 11px; font-weight: 700; color: #475569; line-height: 1.35;">
+                        আইফোন Safari বা যে কোনো ব্রাউজার<br><span id="posterUrlText" style="color: #0284c7; text-decoration: underline;">https://rml-calculator.vercel.app</span>
+                    </div>
                 </div>
-                <div style="margin-top: 10px; font-size: 14px; font-weight: bold; color: #0f172a;">
-                    ওয়েব অ্যাপ লিংক: <span id="posterUrlText" style="color: #0284c7; text-decoration: underline;">https://rml-calculator.vercel.app</span>
-                </div>
+
             </div>
 
-            <!-- Two-Column Installation Steps -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px; table-layout: fixed;">
-                <tr>
-                    <td style="width: 50%; vertical-align: top; padding-right: 10px;">
-                        <div style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 12px; height: 100%; box-sizing: border-box;">
-                            <div style="font-size: 13.5px; font-weight: bold; color: #1d4ed8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span>🤖</span> অ্যান্ড্রয়েড মোবাইলে (Google Chrome):
-                            </div>
-                            <ol style="margin: 0; padding-left: 18px; font-size: 11.5px; line-height: 1.55; color: #1e293b;">
-                                <li>ফোনের <strong>Camera</strong> বা <strong>Google Lens</strong> দিয়ে ওপরের QR কোডটি স্ক্যান করুন (বা Chrome এ লিংকটি টাইপ করুন)।</li>
-                                <li>Chrome ব্রাউজারের উপরে ডানদিকের <strong>3 Dots (⋮)</strong> মেনু বাটনে ট্যাপ করুন।</li>
-                                <li>তালিকা থেকে <strong>"Install app"</strong> অথবা <strong>"Add to Home screen"</strong> চাপুন।</li>
-                                <li>অ্যাপটি আপনার ফোনের হোম স্ক্রিনে ইনস্টল হয়ে যাবে এবং সরাসরি একটি ক্লিক করেই ব্যবহার করতে পারবেন।</li>
-                            </ol>
-                        </div>
-                    </td>
-                    <td style="width: 50%; vertical-align: top; padding-left: 10px;">
-                        <div style="background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 12px; height: 100%; box-sizing: border-box;">
-                            <div style="font-size: 13.5px; font-weight: bold; color: #c2410c; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <span>🍏</span> আইফোন মোবাইলে (Apple Safari):
-                            </div>
-                            <ol style="margin: 0; padding-left: 18px; font-size: 11.5px; line-height: 1.55; color: #1e293b;">
-                                <li>ফোনের ক্যামেরা দিয়ে QR কোড স্ক্যান করে <strong>Safari</strong> ব্রাউজারে লিংকটি খুলুন।</li>
-                                <li>Safari এর নিচের মাঝখানে থাকা <strong>Share আইকন (⎋)</strong> এ ট্যাপ করুন।</li>
-                                <li>নিচে স্ক্রল করে <strong>"Add to Home Screen"</strong> অপশনে চাপ দিন এবং ওপরে ডানদিকে <strong>'Add'</strong> চাপুন।</li>
-                                <li>অ্যাপটি আপনার আইফোনের হোম স্ক্রিনে যুক্ত হয়ে যাবে।</li>
-                            </ol>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <!-- Two Installation Steps Cards -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div style="background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 8px; padding: 10px 12px; box-sizing: border-box;">
+                    <div style="font-size: 12.5px; font-weight: bold; color: #1d4ed8; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;">
+                        <span>🌐</span> Microsoft Edge ব্রাউজারে (Super Smooth & No Warning):
+                    </div>
+                    <ol style="margin: 0; padding-left: 16px; font-size: 11px; line-height: 1.5; color: #1e293b;">
+                        <li>বামের QR স্ক্যান করলে সরাসরি <strong>Microsoft Edge</strong> ওপেন হবে।</li>
+                        <li>নিচের <strong>3 Dots (⋯)</strong> অপশনে চাপ দিন।</li>
+                        <li><strong>"Add to phone"</strong> বা <strong>"Install app"</strong> চাপুন—১ সেকেন্ডে ফুল মোবাইল অ্যাপ ইনস্টল হবে।</li>
+                    </ol>
+                </div>
+
+                <div style="background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 10px 12px; box-sizing: border-box;">
+                    <div style="font-size: 12.5px; font-weight: bold; color: #c2410c; margin-bottom: 4px; display: flex; align-items: center; gap: 5px;">
+                        <span>🤖</span> Google Chrome ব্রাউজারে (যদি লাল স্ক্রিন আসে):
+                    </div>
+                    <ol style="margin: 0; padding-left: 16px; font-size: 11px; line-height: 1.5; color: #1e293b;">
+                        <li>Chrome-এ লাল স্ক্রিন দেখালে নিচে <strong>"Details"</strong> বা <strong>"Advanced"</strong> এ চাপুন।</li>
+                        <li>এরপর <strong>"visit this unsafe site"</strong> বা <strong>"Proceed"</strong> চাপলে সাইটটি নিরাপদে খুলে যাবে।</li>
+                        <li>উপরে ডানদিকের <strong>3 Dots (⋮)</strong> থেকে <strong>"Install app"</strong> চাপুন।</li>
+                    </ol>
+                </div>
+            </div>
 
             <!-- Key Features / Value Props -->
-            <div style="background: #f1f5f9; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px;">
-                <div style="font-size: 12.5px; font-weight: bold; color: #0f172a; margin-bottom: 6px;">🌟 অ্যাপটির মূল সুবিধাসমূহ:</div>
-                <table style="width: 100%; font-size: 11px; color: #334155; line-height: 1.4;">
+            <div style="background: #f1f5f9; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;">
+                <div style="font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 5px;">🌟 অ্যাপটির মূল সুবিধাসমূহ:</div>
+                <table style="width: 100%; font-size: 10.5px; color: #334155; line-height: 1.4;">
                     <tr>
                         <td style="width: 50%; padding: 2px 0;">⚡ <strong>রিয়েল-টাইম হিসাব:</strong> ডাউন পেমেন্ট ও টেনিউর পরিবর্তনে তাৎক্ষণিক কিস্তি ও প্রফিট।</td>
                         <td style="width: 50%; padding: 2px 0;">📊 <strong>২৯ মাসের স্ট্যান্ডার্ড বেস:</strong> সার্বজনীন সঠিক প্রফিট সমন্বয় ও নোটিং।</td>
                     </tr>
                     <tr>
                         <td style="width: 50%; padding: 2px 0;">📄 <strong>অটো বায়ার ফর্ম জেনারেশন:</strong> ফিল্ড থেকে ১ ক্লিকে ক্রেতার ফর্ম প্রস্তুত ও প্রিন্ট।</td>
-                        <td style="width: 50%; padding: 2px 0;">📝 <strong>অফিশিয়াল কোটেশন / অফার লেটার:</strong> ক্যাশ ও ক্রেডিট উভয় প্রস্তাবের লেটারহেড প্যাড।</td>
+                        <td style="width: 50%; padding: 2px 0;">📷 <strong>AI NID & TIN স্ক্যানার:</strong> ১ ছবিতে NID বা TIN সার্টিফিকেট অটো-ফিল।</td>
                     </tr>
                 </table>
             </div>
 
             <!-- Footer -->
-            <div style="border-top: 2px solid #004b87; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b;">
+            <div style="border-top: 2px solid #004b87; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: #64748b;">
                 <div>
                     <strong>Runner Motors Limited</strong> | IT & Sales Coordination Support
                 </div>
