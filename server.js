@@ -34,7 +34,8 @@ async function connectToDatabase() {
         });
         cachedDb = db;
         console.log('Connected to MongoDB');
-        await initDatabaseUsers();
+        // Run employee initialization asynchronously in the background so it never blocks Vercel requests or causes serverless timeouts
+        initDatabaseUsers().catch(err => console.error('Background initDatabaseUsers error:', err));
         return db;
     } catch (err) {
         console.error('MongoDB connection error:', err);
@@ -141,6 +142,10 @@ const OfferLetter = mongoose.model('OfferLetter', offerLetterSchema);
 // Helper to sync to Central Excel
 async function syncCentralOfferExcel() {
     try {
+        if (process.env.VERCEL) {
+            // Vercel serverless runtime filesystem is read-only; records are saved in MongoDB and can be downloaded via API
+            return;
+        }
         const offers = await OfferLetter.find({}).sort({ createdAt: -1 });
         const excelRows = offers.map((o, idx) => ({
             'SL No': idx + 1,
@@ -205,8 +210,16 @@ async function logFailedAttempt(req, phone, deviceId) {
 }
 
 // Sync and seed employees & master admin
+let usersInitialized = false;
 async function initDatabaseUsers() {
+    if (usersInitialized) return;
     try {
+        const count = await User.countDocuments();
+        if (count > 0) {
+            usersInitialized = true;
+            return;
+        }
+
         // 1. Default Master Admin
         const masterAdmin = await User.findOne({ phone: '01700000000' });
         if (!masterAdmin) {
@@ -226,10 +239,10 @@ async function initDatabaseUsers() {
         if (fs.existsSync(jsonPath)) {
             const employees = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
             if (employees && employees.length > 0) {
-                for (const emp of employees) {
-                    await User.findOneAndUpdate(
-                        { phone: emp.phone },
-                        {
+                const bulkOps = employees.map(emp => ({
+                    updateOne: {
+                        filter: { phone: emp.phone },
+                        update: {
                             $set: {
                                 empId: emp.empId || '',
                                 name: emp.name || '',
@@ -237,12 +250,14 @@ async function initDatabaseUsers() {
                                 role: emp.role || 'Area Manager'
                             }
                         },
-                        { upsert: true, new: true }
-                    );
-                }
-                console.log(`Synced ${employees.length} employees into MongoDB.`);
+                        upsert: true
+                    }
+                }));
+                await User.bulkWrite(bulkOps);
+                console.log(`Synced ${employees.length} employees into MongoDB via bulkWrite.`);
             }
         }
+        usersInitialized = true;
     } catch (e) {
         console.error("Error during initDatabaseUsers:", e);
     }
@@ -989,7 +1004,33 @@ app.post('/api/admin/unlock-offer', async (req, res) => {
     }
 });
 
-if (process.env.NODE_ENV !== 'production') {
+// SPA Fallback: Serve index.html for non-API GET requests
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        return next();
+    }
+    const indexPath = path.join(__dirname, 'public', 'index.html');
+    if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+    }
+    res.status(404).send('Page not found');
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Unhandled Server Error:', err);
+    res.status(500).json({ success: false, error: err.message || 'Internal Server Error' });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception thrown:', err);
+});
+
+// Only listen when executed directly via 'node server.js', NEVER when required by Vercel serverless runtime
+if (require.main === module && !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`Eicher EMI Backend running on http://localhost:${PORT}`);
     });
@@ -997,3 +1038,4 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export for Vercel Serverless
 module.exports = app;
+

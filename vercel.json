@@ -5,7 +5,10 @@
       "src": "server.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": "public/**"
+        "includeFiles": [
+          "public/**",
+          "employees_data.json"
+        ]
       }
     }
   ],
