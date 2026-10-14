@@ -3488,9 +3488,14 @@
 
             <!-- Vehicle Model Select -->
             <div>
-                <label style="font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase;">মডেল নির্বাচন (Vehicle Model) *</label>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="font-size: 11px; font-weight: 700; color: #334155; text-transform: uppercase;">মডেল নির্বাচন (Vehicle Model) *</label>
+                    <button type="button" onclick="openModelManagerModal()" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 4px; padding: 2px 8px; font-size: 10.5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <span>⚙️</span> মডেল যোগ / এডিট
+                    </button>
+                </div>
                 <select id="olModelSelect" onchange="onModelSelectChanged()" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; font-weight: 600; box-sizing: border-box;">
-                    <!-- Populated dynamically with all 18 models -->
+                    <!-- Populated dynamically with all models -->
                 </select>
             </div>
 
@@ -3545,9 +3550,68 @@
     </div>
 
     <!-- ======================================================== -->
+    <!-- OFFER LETTER FORMATTING & A4 FIT TOOLBAR (NO-PRINT)      -->
+    <!-- ======================================================== -->
+    <div class="no-print" style="max-width: 210mm; margin: 15px auto 10px auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;">
+        
+        <!-- Left Group: Font Size, Spacing & Rich Text Controls -->
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <!-- Font Size Adjuster -->
+            <div style="display: flex; align-items: center; background: #f8fafc; padding: 3px 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <span style="font-size: 11px; font-weight: 700; color: #334155; margin-right: 5px;">ফন্ট সাইজ:</span>
+                <button type="button" onclick="changeOfferFontSize(-0.5)" title="ছোট করুন (Decrease Font Size)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; font-weight: bold; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center;">A-</button>
+                <select id="olFontSizeSelect" onchange="setOfferFontSize(this.value)" style="margin: 0 4px; padding: 3px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; font-weight: bold; background: white; cursor: pointer;">
+                    <option value="7.5pt">7.5 pt (খুব ছোট)</option>
+                    <option value="8pt">8.0 pt (ছোট)</option>
+                    <option value="8.5pt">8.5 pt (কম্প্যাক্ট)</option>
+                    <option value="9pt" selected>9.0 pt (ডিফল্ট)</option>
+                    <option value="9.5pt">9.5 pt (একটু বড়)</option>
+                    <option value="10pt">10.0 pt (বড়)</option>
+                    <option value="10.5pt">10.5 pt</option>
+                    <option value="11pt">11.0 pt</option>
+                </select>
+                <button type="button" onclick="changeOfferFontSize(0.5)" title="বড় করুন (Increase Font Size)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; font-weight: bold; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center;">A+</button>
+            </div>
+
+            <!-- Line Spacing / Density -->
+            <div style="display: flex; align-items: center; background: #f8fafc; padding: 3px 6px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <span style="font-size: 11px; font-weight: 700; color: #334155; margin-right: 5px;">স্পেসিং:</span>
+                <select id="olSpacingSelect" onchange="setOfferSpacing(this.value)" style="padding: 3px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 11px; font-weight: 600; background: white; cursor: pointer;">
+                    <option value="compact">কম্প্যাক্ট (Compact)</option>
+                    <option value="normal" selected>স্বাভাবিক (Normal)</option>
+                    <option value="relaxed">খোলামেলা (Relaxed)</option>
+                </select>
+            </div>
+
+            <!-- Text Formatting (execCommand on selection) -->
+            <div style="display: flex; align-items: center; gap: 3px; background: #f8fafc; padding: 3px 5px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null);" title="বোল্ড (Bold)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; font-weight: bold; cursor: pointer;">B</button>
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null);" title="ইটালিক (Italic)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; font-style: italic; font-weight: bold; cursor: pointer;">I</button>
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null);" title="আন্ডারলাইন (Underline)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; text-decoration: underline; font-weight: bold; cursor: pointer;">U</button>
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('justifyLeft', false, null);" title="বামে সারিবদ্ধ (Align Left)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; cursor: pointer; font-size: 12px;">⫷</button>
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('justifyCenter', false, null);" title="মাঝখানে সারিবদ্ধ (Center)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; cursor: pointer; font-size: 12px;">≡</button>
+                <button type="button" onmousedown="event.preventDefault(); document.execCommand('justifyRight', false, null);" title="ডানে সারিবদ্ধ (Align Right)" style="background: white; border: 1px solid #cbd5e1; border-radius: 4px; width: 26px; height: 26px; cursor: pointer; font-size: 12px;">⫸</button>
+            </div>
+        </div>
+
+        <!-- Right Group: A4 Fit & Direct Actions -->
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <button type="button" onclick="autoFitOfferLetterA4()" title="১-পেজ A4 সাইজে দৈর্ঘ্য ও প্রস্থে অটো ফিট করুন যাতে কোনো অংশ ২য় পেজে না যায়" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(16,185,129,0.3);">
+                <span>📄</span> ১-পেজে অটো ফিট
+            </button>
+            <button type="button" onclick="resetOfferFormatting()" title="ডিফল্ট ফরম্যাটিং রিসেট করুন" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;">
+                🔄 রিসেট
+            </button>
+            <button type="button" onclick="printOfferLetterNow()" style="background: #004b87; color: white; border: none; padding: 6px 14px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(0,75,135,0.3);">
+                <span>🖨️</span> প্রিন্ট / সেভ PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
     <!-- PRINTABLE OFFER LETTER DOCUMENT (WORD IDENTICAL 2-COLUMN) -->
     <!-- ======================================================== -->
-    <div id="printableOfferArea" class="offer-print-sheet" contenteditable="true" spellcheck="false" style="width: 210mm; min-height: 297mm; margin: 0 auto 30px auto; background: #ffffff; color: #000000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); box-sizing: border-box; padding: 15mm 15mm 12mm 15mm; font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 9pt; line-height: 1.25; text-align: left;">
+    <div id="printableOfferArea" class="offer-print-sheet" contenteditable="true" spellcheck="false" style="width: 210mm; min-height: 297mm; margin: 0 auto 30px auto; background: #ffffff; color: #000000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); box-sizing: border-box; padding: 12mm 14mm 10mm 14mm; font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: var(--offer-fs, 9pt); line-height: var(--offer-lh, 1.25); text-align: left;">
         
         <!-- PARENT 2-COLUMN TABLE (MATCHING ORIGINAL WORD TEMPLATE) -->
         <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0; text-align: left;">
@@ -3709,10 +3773,17 @@
 <!-- PRINT SPECIFIC CSS (PIXEL-PERFECT A4 PRINTING) -->
 <style>
     @media print {
+        @page {
+            size: A4 portrait;
+            margin: 6mm 8mm 6mm 8mm;
+        }
         body.printing-offer-letter {
             background: #ffffff !important;
             margin: 0 !important;
             padding: 0 !important;
+            width: 100% !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         body.printing-offer-letter .no-print,
         body.printing-offer-letter .container,
@@ -3721,7 +3792,8 @@
         body.printing-offer-letter #buyerFormModal,
         body.printing-offer-letter #qrPosterModal,
         body.printing-offer-letter #qrModal,
-        body.printing-offer-letter #myOffersModal {
+        body.printing-offer-letter #myOffersModal,
+        body.printing-offer-letter #modelManagerModal {
             display: none !important;
         }
         body.printing-offer-letter #newOfferLetterModal {
@@ -3734,11 +3806,27 @@
         }
         body.printing-offer-letter #printableOfferArea {
             box-shadow: none !important;
-            margin: 0 !important;
-            padding: 8mm 10mm !important;
+            border: none !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
             width: 100% !important;
+            max-width: 194mm !important;
+            max-height: 284mm !important;
+            overflow: hidden !important;
             page-break-after: avoid !important;
             page-break-inside: avoid !important;
+        }
+        body.printing-offer-letter .offer-table th {
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            background-image: none !important;
+            color: #000000 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body.printing-offer-letter .offer-print-sheet,
+        body.printing-offer-letter .offer-print-sheet * {
+            outline: none !important;
         }
         /* Strict isolation: when NOT printing offer letter, never show offer modals */
         body:not(.printing-offer-letter) #newOfferLetterModal,
@@ -3750,6 +3838,13 @@
         }
     }
     .offer-print-sheet {
+        --offer-fs: 9pt;
+        --offer-lh: 1.25;
+        --offer-cell-pad: 3px 5px;
+        --offer-block-gap: 6px;
+        font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+        font-size: var(--offer-fs) !important;
+        line-height: var(--offer-lh) !important;
         text-align: left !important;
     }
     .offer-print-sheet * {
@@ -3758,12 +3853,12 @@
     .offer-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 8.5pt;
+        font-size: calc(var(--offer-fs) * 0.95);
         border: 1px solid #000000 !important;
     }
     .offer-table th, .offer-table td {
         border: 1px solid #000000 !important;
-        padding: 5px 6px;
+        padding: var(--offer-cell-pad) !important;
         color: #000000;
     }
     .offer-table th {
@@ -3787,21 +3882,126 @@
     .offer-print-sheet p:hover {
         cursor: text;
     }
-    @media print {
-        .offer-table th {
-            background: #f1f5f9 !important;
-            background-color: #f1f5f9 !important;
-            background-image: none !important;
-            color: #000000 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .offer-print-sheet,
-        .offer-print-sheet * {
-            outline: none !important;
-        }
-    }
 </style>
+
+<!-- ======================================================== -->
+<!-- MODEL MANAGER MODAL (ADD / EDIT VEHICLE MODELS)          -->
+<!-- ======================================================== -->
+<div id="modelManagerModal" class="no-print" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 99999; overflow-y: auto; padding: 20px 10px;">
+    <div style="max-width: 680px; margin: 30px auto; background: white; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        
+        <!-- Modal Header -->
+        <div style="background: #004b87; color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                    <span>⚙️</span> যানবাহন মডেল যোগ ও এডিট (Model Manager)
+                </div>
+                <div style="font-size: 11px; color: #cbd5e1; margin-top: 2px;">
+                    নতুন মডেল যোগ করুন অথবা বিদ্যমান মডেলের স্পেক্স ও প্রাইস আপডেট করুন
+                </div>
+            </div>
+            <button type="button" onclick="closeModelManagerModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 18px; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 18px 22px; max-height: calc(85vh - 130px); overflow-y: auto;">
+            
+            <!-- Model Selector (New or Existing) -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+                <label style="font-size: 11px; font-weight: 700; color: #004b87; text-transform: uppercase;">কোন মডেলটি এডিট করতে চান?</label>
+                <div style="display: flex; gap: 8px; margin-top: 5px;">
+                    <select id="mmSelectModel" onchange="onModelManagerSelectChanged()" style="flex: 1; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; font-weight: bold; background: white;">
+                        <!-- Populated with __NEW__ and existing models -->
+                    </select>
+                    <button type="button" onclick="prepareAddNewModel()" style="background: #10b981; color: white; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; white-space: nowrap;">
+                        ➕ নতুন মডেল
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Fields Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">মডেলের নাম (Model Name) *</label>
+                    <input type="text" id="mmModelName" placeholder="যেমন: Pro 3015 বা Pro 2049" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; font-weight: bold; margin-top: 3px; box-sizing: border-box;">
+                </div>
+
+                <!-- Pricing Info -->
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">MRP / তালিকা মূল্য (টাকা) *</label>
+                    <input type="number" id="mmDefaultMrp" placeholder="3850000" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; font-weight: bold; color: #004b87; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">অনুমোদিত সর্বনিম্ন মূল্য / Floor Price (টাকা)</label>
+                    <input type="number" id="mmFloorPrice" placeholder="3500000" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; font-weight: bold; color: #d97706; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">ডিফল্ট ডাউনপেমেন্ট (টাকা)</label>
+                    <input type="number" id="mmDefaultDp" placeholder="800000" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; font-weight: bold; margin-top: 3px; box-sizing: border-box;">
+                </div>
+
+                <!-- Tech Specs -->
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Payload</label>
+                    <input type="text" id="mmPayload" placeholder="যেমন: 4740 Kg" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Rated Payload</label>
+                    <input type="text" id="mmRatedPayload" placeholder="যেমন: 7933 Kg" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Wheelbase</label>
+                    <input type="text" id="mmWb" placeholder="যেমন: 4490 mm" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Cargo Dimensions</label>
+                    <input type="text" id="mmCargo" placeholder="যেমন: 19.02’ X 7.6’ X 7.54’ (LxWxH)" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Displacement (Engine CC)</label>
+                    <input type="text" id="mmDisp" placeholder="যেমন: 3770 cc" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Engine Power</label>
+                    <input type="text" id="mmHp" placeholder="যেমন: 150 HP" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Tire Size & Qty</label>
+                    <input type="text" id="mmTire" placeholder="যেমন: 9.00x20 (6+1)" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Country of Origin</label>
+                    <input type="text" id="mmOrigin" value="India" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">YOM</label>
+                    <input type="text" id="mmYom" value="2025/2026" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: #334155;">Others Spec</label>
+                    <input type="text" id="mmOthersSpec" value="As attached brochure" style="width: 100%; padding: 7px 10px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px; margin-top: 3px; box-sizing: border-box;">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="background: #f8fafc; padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" id="btnDeleteModel" onclick="deleteCurrentManagedModel()" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">
+                🗑️ মডেল মুছুন
+            </button>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" onclick="closeModelManagerModal()" style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 7px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    বাতিল
+                </button>
+                <button type="button" onclick="saveModelManagerData()" style="background: #004b87; color: white; border: none; padding: 7px 20px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;">
+                    💾 সংরক্ষণ করুন
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <!-- ======================================================== -->
 <!-- OFFER LETTER JAVASCRIPT LOGIC & STATE ENGINE             -->
@@ -3809,7 +4009,7 @@
 <script>
     // Embedded Complete Model Specifications Catalog (18 Unique Models)
     // Embedded Complete Model Specifications Catalog (18 Unique Models) with Approved Floor Prices
-    const OFFER_MODELS_CATALOG = {
+    let OFFER_MODELS_CATALOG = {
         "Pro 1049CT": { name: "Pro 1049CT", payload: "1048 Kg", rated_payload: "2500 Kg", wb: "2750 mm", cargo: "10’x6.6’x6.3’ (LxWxH)", disp: "3298 cc", hp: "95 HP", tire: "7.00x16 (4+1)", origin: "India", yom: "2025/2026", defaultMrp: 2450000, floorPrice: 2250000, defaultDp: 500000 },
         "Pro 1050CT": { name: "Pro 1050CT", payload: "1481 Kg", rated_payload: "2980 Kg", wb: "3350 mm", cargo: "12.9’x6.6’x6.2’ (LxWxH)", disp: "3298 cc", hp: "95 HP", tire: "7.00x16 (4+1)", origin: "India", yom: "2025/2026", defaultMrp: 2500000, floorPrice: 2300000, defaultDp: 500000 },
         "Pro 1055CT": { name: "Pro 1055CT", payload: "1461 Kg", rated_payload: "2950 Kg", wb: "2815 mm", cargo: "11.5’x6.5’x6.3’ (LxWxH)", disp: "3298 cc", hp: "95 HP", tire: "7.00x16 (4+1)", origin: "India", yom: "2025/2026", defaultMrp: 2525000, floorPrice: 2325000, defaultDp: 500000 },
@@ -3834,22 +4034,350 @@
     let currentLockedOffer = null;
     let myOffersListCache = [];
 
+    // Load custom models from localStorage and server
+    function loadCustomModels() {
+        try {
+            const saved = localStorage.getItem('rml_custom_models');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                Object.assign(OFFER_MODELS_CATALOG, parsed);
+            }
+        } catch(e) {
+            console.warn("Could not parse saved models from localStorage:", e);
+        }
+    }
+    loadCustomModels();
+
+    // Async server custom model sync
+    async function syncCustomModelsFromServer() {
+        try {
+            const res = await fetch(`${getApiUrl()}/api/models`);
+            const data = await res.json();
+            if (data.success && Array.isArray(data.models)) {
+                let changed = false;
+                data.models.forEach(m => {
+                    if (m && m.name) {
+                        OFFER_MODELS_CATALOG[m.name] = m;
+                        changed = true;
+                    }
+                });
+                if (changed) {
+                    initOfferModelsDropdown();
+                }
+            }
+        } catch(e) {
+            // offline or error, silent fallback
+        }
+    }
+    syncCustomModelsFromServer();
+
     // Format BDT Currency
     function fmtBDT(num) {
         if (num === null || num === undefined || isNaN(num)) return "0";
         return Math.round(Number(num)).toLocaleString('en-IN');
     }
 
+    // ==========================================
+    // OFFER LETTER FORMATTING & A4 AUTO-FIT ENGINE
+    // ==========================================
+    let currentOfferFontSizePt = 9.0;
+    let currentOfferSpacingMode = 'normal';
+
+    function setOfferFontSize(sizeStr) {
+        const pt = parseFloat(sizeStr);
+        if (isNaN(pt)) return;
+        currentOfferFontSizePt = pt;
+        const sheet = document.getElementById('printableOfferArea');
+        if (sheet) {
+            sheet.style.setProperty('--offer-fs', pt + 'pt');
+            sheet.style.fontSize = pt + 'pt';
+        }
+        const sel = document.getElementById('olFontSizeSelect');
+        if (sel) {
+            let found = false;
+            for (let opt of sel.options) {
+                if (parseFloat(opt.value) === pt) {
+                    sel.value = opt.value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                const opt = new Option(`${pt.toFixed(1)} pt`, `${pt}pt`, true, true);
+                sel.add(opt);
+            }
+        }
+    }
+
+    function changeOfferFontSize(delta) {
+        let newPt = Math.max(7.0, Math.min(13.0, currentOfferFontSizePt + delta));
+        newPt = Math.round(newPt * 2) / 2;
+        setOfferFontSize(`${newPt}pt`);
+    }
+
+    function setOfferSpacing(mode) {
+        currentOfferSpacingMode = mode;
+        const sheet = document.getElementById('printableOfferArea');
+        if (!sheet) return;
+        const sel = document.getElementById('olSpacingSelect');
+        if (sel) sel.value = mode;
+
+        if (mode === 'compact') {
+            sheet.style.setProperty('--offer-lh', '1.15');
+            sheet.style.setProperty('--offer-cell-pad', '2px 4px');
+            sheet.style.setProperty('--offer-block-gap', '4px');
+            sheet.style.lineHeight = '1.15';
+        } else if (mode === 'relaxed') {
+            sheet.style.setProperty('--offer-lh', '1.35');
+            sheet.style.setProperty('--offer-cell-pad', '4.5px 6px');
+            sheet.style.setProperty('--offer-block-gap', '10px');
+            sheet.style.lineHeight = '1.35';
+        } else {
+            // normal
+            sheet.style.setProperty('--offer-lh', '1.25');
+            sheet.style.setProperty('--offer-cell-pad', '3px 5px');
+            sheet.style.setProperty('--offer-block-gap', '6px');
+            sheet.style.lineHeight = '1.25';
+        }
+    }
+
+    function resetOfferFormatting() {
+        setOfferFontSize('9pt');
+        setOfferSpacing('normal');
+        alert('🔄 ফরম্যাটিং ডিফল্ট মানে (৯ pt ও সাধারণ স্পেসিং) রিসেট করা হয়েছে!');
+    }
+
+    function autoFitOfferLetterA4() {
+        const sheet = document.getElementById('printableOfferArea');
+        if (!sheet) return;
+
+        // Max printable A4 height at 96 DPI: 284mm * 3.7795 ≈ 1073px
+        const MAX_A4_PX = 1070;
+
+        const sizeSteps = [9.5, 9.0, 8.5, 8.0, 7.5];
+        const spacingSteps = ['normal', 'compact'];
+
+        let fitted = false;
+        let chosenPt = currentOfferFontSizePt;
+        let chosenSpacing = currentOfferSpacingMode;
+
+        if (sheet.scrollHeight <= MAX_A4_PX) {
+            alert('✅ অফার লেটারটি ইতিমধ্যে ১-পেজ A4 সাইজে সুন্দরভাবে ফিট আছে!');
+            return;
+        }
+
+        for (let sp of spacingSteps) {
+            setOfferSpacing(sp);
+            for (let pt of sizeSteps) {
+                setOfferFontSize(`${pt}pt`);
+                if (sheet.scrollHeight <= MAX_A4_PX) {
+                    fitted = true;
+                    chosenPt = pt;
+                    chosenSpacing = sp;
+                    break;
+                }
+            }
+            if (fitted) break;
+        }
+
+        if (fitted) {
+            alert(`✅ অফার লেটারটি সফলভাবে ১-পেজ A4 সাইজে ফিট করা হয়েছে!\n(ফন্ট সাইজ: ${chosenPt}pt, স্পেসিং: ${chosenSpacing === 'compact' ? 'কম্প্যাক্ট' : 'স্বাভাবিক'})`);
+        } else {
+            setOfferFontSize('7.5pt');
+            setOfferSpacing('compact');
+            alert('⚠️ অফার লেটারের কনটেন্ট অত্যন্ত বড়। সর্বোচ্চ কম্প্যাক্ট (৭.৫ pt) আকারে ফিট করা হয়েছে।');
+        }
+    }
+
+    // ==========================================
+    // VEHICLE MODEL MANAGER (ADD / EDIT / DELETE)
+    // ==========================================
+    function openModelManagerModal() {
+        const modal = document.getElementById('modelManagerModal');
+        if (!modal) return;
+        modal.style.display = 'block';
+        populateModelManagerDropdown();
+        const currentModel = document.getElementById('olModelSelect')?.value;
+        const sel = document.getElementById('mmSelectModel');
+        if (currentModel && OFFER_MODELS_CATALOG[currentModel]) {
+            sel.value = currentModel;
+            loadModelIntoForm(currentModel);
+        } else {
+            sel.value = "__NEW__";
+            prepareAddNewModel();
+        }
+    }
+
+    function closeModelManagerModal() {
+        const modal = document.getElementById('modelManagerModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function populateModelManagerDropdown(selectedKey) {
+        const sel = document.getElementById('mmSelectModel');
+        if (!sel) return;
+        sel.innerHTML = '<option value="__NEW__">➕ নতুন মডেল যোগ করুন (Add New Model)</option>';
+        Object.keys(OFFER_MODELS_CATALOG).forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.innerText = m;
+            sel.appendChild(opt);
+        });
+        if (selectedKey) sel.value = selectedKey;
+    }
+
+    function onModelManagerSelectChanged() {
+        const sel = document.getElementById('mmSelectModel');
+        if (!sel) return;
+        if (sel.value === '__NEW__') {
+            prepareAddNewModel();
+        } else {
+            loadModelIntoForm(sel.value);
+        }
+    }
+
+    function prepareAddNewModel() {
+        document.getElementById('mmSelectModel').value = '__NEW__';
+        document.getElementById('mmModelName').value = '';
+        document.getElementById('mmModelName').disabled = false;
+        document.getElementById('mmDefaultMrp').value = '';
+        document.getElementById('mmFloorPrice').value = '';
+        document.getElementById('mmDefaultDp').value = '';
+        document.getElementById('mmPayload').value = '';
+        document.getElementById('mmRatedPayload').value = '';
+        document.getElementById('mmWb').value = '';
+        document.getElementById('mmCargo').value = '';
+        document.getElementById('mmDisp').value = '';
+        document.getElementById('mmHp').value = '';
+        document.getElementById('mmTire').value = '';
+        document.getElementById('mmOrigin').value = 'India';
+        document.getElementById('mmYom').value = '2025/2026';
+        document.getElementById('mmOthersSpec').value = 'As attached brochure';
+        document.getElementById('btnDeleteModel').style.display = 'none';
+        document.getElementById('mmModelName').focus();
+    }
+
+    function loadModelIntoForm(modelName) {
+        const m = OFFER_MODELS_CATALOG[modelName];
+        if (!m) return;
+        document.getElementById('mmModelName').value = m.name || modelName;
+        document.getElementById('mmDefaultMrp').value = m.defaultMrp || '';
+        document.getElementById('mmFloorPrice').value = m.floorPrice || '';
+        document.getElementById('mmDefaultDp').value = m.defaultDp || '';
+        document.getElementById('mmPayload').value = m.payload || '';
+        document.getElementById('mmRatedPayload').value = m.rated_payload || '';
+        document.getElementById('mmWb').value = m.wb || '';
+        document.getElementById('mmCargo').value = m.cargo || '';
+        document.getElementById('mmDisp').value = m.disp || '';
+        document.getElementById('mmHp').value = m.hp || '';
+        document.getElementById('mmTire').value = m.tire || '';
+        document.getElementById('mmOrigin').value = m.origin || 'India';
+        document.getElementById('mmYom').value = m.yom || '2025/2026';
+        document.getElementById('mmOthersSpec').value = m.others_spec || 'As attached brochure';
+        document.getElementById('btnDeleteModel').style.display = 'inline-block';
+    }
+
+    async function saveModelManagerData() {
+        const name = (document.getElementById('mmModelName')?.value || '').trim();
+        if (!name) {
+            alert('অনুগ্রহ করে মডেলের নাম লিখুন!');
+            document.getElementById('mmModelName')?.focus();
+            return;
+        }
+
+        const modelObj = {
+            name: name,
+            payload: document.getElementById('mmPayload')?.value || '',
+            rated_payload: document.getElementById('mmRatedPayload')?.value || '',
+            wb: document.getElementById('mmWb')?.value || '',
+            cargo: document.getElementById('mmCargo')?.value || '',
+            disp: document.getElementById('mmDisp')?.value || '',
+            hp: document.getElementById('mmHp')?.value || '',
+            tire: document.getElementById('mmTire')?.value || '',
+            origin: document.getElementById('mmOrigin')?.value || 'India',
+            yom: document.getElementById('mmYom')?.value || '2025/2026',
+            others_spec: document.getElementById('mmOthersSpec')?.value || 'As attached brochure',
+            defaultMrp: Number(document.getElementById('mmDefaultMrp')?.value) || 0,
+            floorPrice: Number(document.getElementById('mmFloorPrice')?.value) || 0,
+            defaultDp: Number(document.getElementById('mmDefaultDp')?.value) || 0
+        };
+
+        // 1. Update in-memory catalog
+        OFFER_MODELS_CATALOG[name] = modelObj;
+
+        // 2. Save to localStorage
+        try {
+            let customMap = {};
+            const saved = localStorage.getItem('rml_custom_models');
+            if (saved) customMap = JSON.parse(saved);
+            customMap[name] = modelObj;
+            localStorage.setItem('rml_custom_models', JSON.stringify(customMap));
+        } catch(e) {
+            console.warn("Could not save to localStorage", e);
+        }
+
+        // 3. Sync to server in background
+        fetch(`${getApiUrl()}/api/models`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(modelObj)
+        }).catch(err => console.warn("Background server save model error:", err));
+
+        // 4. Update dropdowns
+        initOfferModelsDropdown(name);
+        onModelSelectChanged();
+        closeModelManagerModal();
+        alert(`✅ "${name}" মডেলটি সফলভাবে সংরক্ষিত হয়েছে!`);
+    }
+
+    async function deleteCurrentManagedModel() {
+        const selVal = document.getElementById('mmSelectModel')?.value;
+        const name = (document.getElementById('mmModelName')?.value || selVal || '').trim();
+        if (!name || name === '__NEW__') return;
+
+        if (!confirm(`আপনি কি নিশ্চিতভাবে "${name}" মডেলটি তালিকা থেকে মুছে ফেলতে চান?`)) {
+            return;
+        }
+
+        delete OFFER_MODELS_CATALOG[name];
+
+        try {
+            const saved = localStorage.getItem('rml_custom_models');
+            if (saved) {
+                const customMap = JSON.parse(saved);
+                delete customMap[name];
+                localStorage.setItem('rml_custom_models', JSON.stringify(customMap));
+            }
+        } catch(e) {
+            console.warn("LocalStorage remove error:", e);
+        }
+
+        fetch(`${getApiUrl()}/api/models/${encodeURIComponent(name)}`, {
+            method: 'DELETE'
+        }).catch(err => console.warn("Server delete model error:", err));
+
+        initOfferModelsDropdown();
+        onModelSelectChanged();
+        closeModelManagerModal();
+        alert(`🗑️ "${name}" মডেলটি মুছে ফেলা হয়েছে!`);
+    }
+
     // 1. POPULATE MODEL SELECT DROPDOWN
-    function initOfferModelsDropdown() {
+    function initOfferModelsDropdown(selectedModelName) {
+        loadCustomModels();
         const sel = document.getElementById("olModelSelect");
-        if (!sel || sel.children.length > 0) return;
+        if (!sel) return;
+        const currentVal = selectedModelName || sel.value;
+        sel.innerHTML = "";
         Object.keys(OFFER_MODELS_CATALOG).forEach(m => {
             const opt = document.createElement("option");
             opt.value = m;
             opt.innerText = m;
             sel.appendChild(opt);
         });
+        if (currentVal && OFFER_MODELS_CATALOG[currentVal]) {
+            sel.value = currentVal;
+        }
     }
 
     // 2. FETCH COUNT OF MY OFFERS (CALLED ON LOGIN)
@@ -4654,13 +5182,20 @@
     }
 
 
-    // 12. PRINT / SAVE AS PDF
+    // 12. PRINT / SAVE AS PDF (STRICT 1-PAGE A4 FIT)
     function printOfferLetterNow() {
+        const sheet = document.getElementById('printableOfferArea');
+        if (sheet && sheet.scrollHeight > 1075) {
+            setOfferSpacing('compact');
+            if (sheet.scrollHeight > 1075) {
+                changeOfferFontSize(-0.5);
+            }
+        }
         document.body.classList.remove('printing-buyer-form', 'printing-qr-poster');
         document.body.classList.add('printing-offer-letter');
         setTimeout(() => {
             window.print();
-        }, 80);
+        }, 100);
     }
 
     // ==========================================
