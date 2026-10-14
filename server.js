@@ -1012,6 +1012,70 @@ app.post('/api/admin/unlock-offer', async (req, res) => {
     }
 });
 
+// ==========================================
+// CUSTOM VEHICLE MODELS API (CRUD)
+// ==========================================
+const customModelSchema = new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    payload: String,
+    rated_payload: String,
+    wb: String,
+    cargo: String,
+    disp: String,
+    hp: String,
+    tire: String,
+    origin: { type: String, default: 'India' },
+    yom: { type: String, default: '2025/2026' },
+    others_spec: { type: String, default: 'As attached brochure' },
+    free_service: String,
+    warranty: String,
+    training: String,
+    defaultMrp: Number,
+    floorPrice: Number,
+    defaultDp: Number,
+    updatedAt: { type: Date, default: Date.now }
+});
+const CustomModel = mongoose.models.CustomModel || mongoose.model('CustomModel', customModelSchema);
+
+// Get all custom models
+app.get('/api/models', async (req, res) => {
+    try {
+        const models = await CustomModel.find({}).lean();
+        res.json({ success: true, models });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Create or update model
+app.post('/api/models', async (req, res) => {
+    try {
+        const data = req.body;
+        if (!data || !data.name) {
+            return res.status(400).json({ success: false, error: 'Model name is required' });
+        }
+        const updated = await CustomModel.findOneAndUpdate(
+            { name: data.name.trim() },
+            { ...data, name: data.name.trim(), updatedAt: new Date() },
+            { upsert: true, new: true }
+        );
+        res.json({ success: true, model: updated });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Delete custom model
+app.delete('/api/models/:name', async (req, res) => {
+    try {
+        const { name } = req.params;
+        await CustomModel.deleteOne({ name: decodeURIComponent(name).trim() });
+        res.json({ success: true, message: 'Model deleted' });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // SPA Fallback: Serve index.html for non-API GET requests
 app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) {
