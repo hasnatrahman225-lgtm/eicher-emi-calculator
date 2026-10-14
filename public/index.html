@@ -199,19 +199,19 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        table {
+        .results table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        th, td {
+        .results th, .results td {
             border: 1px solid var(--border-color);
             padding: 10px;
             text-align: right;
         }
 
-        th {
+        .results th {
             background: var(--gradient);
             color: white;
             text-align: center;
@@ -3547,67 +3547,67 @@
     <!-- ======================================================== -->
     <!-- PRINTABLE OFFER LETTER DOCUMENT (WORD IDENTICAL 2-COLUMN) -->
     <!-- ======================================================== -->
-    <div id="printableOfferArea" class="offer-print-sheet" style="width: 210mm; min-height: 297mm; margin: 0 auto 30px auto; background: #ffffff; color: #000000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); box-sizing: border-box; padding: 15mm 15mm 12mm 15mm; font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 9pt; line-height: 1.25;">
+    <div id="printableOfferArea" class="offer-print-sheet" contenteditable="true" spellcheck="false" style="width: 210mm; min-height: 297mm; margin: 0 auto 30px auto; background: #ffffff; color: #000000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); box-sizing: border-box; padding: 15mm 15mm 12mm 15mm; font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 9pt; line-height: 1.25; text-align: left;">
         
         <!-- PARENT 2-COLUMN TABLE (MATCHING ORIGINAL WORD TEMPLATE) -->
-        <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">
+        <table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0; text-align: left;">
             <tr style="vertical-align: top;">
                 
                 <!-- ========================================== -->
                 <!-- LEFT COLUMN: SIDEBAR & PRODUCT SPECS       -->
                 <!-- ========================================== -->
-                <td style="width: 32%; padding-right: 14px; border-right: 1px solid #e2e8f0; vertical-align: top;">
+                <td style="width: 32%; padding-right: 14px; border-right: 1px solid #e2e8f0; vertical-align: top; text-align: left;">
                     
                     <!-- Header Sidebar Brand -->
-                    <div style="margin-bottom: 12px;">
-                        <div style="font-size: 16pt; font-weight: 900; line-height: 1.1; color: #004b87; letter-spacing: -0.5px;">
+                    <div style="margin-bottom: 12px; text-align: left;">
+                        <div style="font-size: 16pt; font-weight: 900; line-height: 1.1; color: #004b87; letter-spacing: -0.5px; text-align: left;">
                             Sales<br>Quote
                         </div>
-                        <div style="font-size: 11pt; font-weight: 700; color: #d9251c; margin-top: 2px;">
+                        <div style="font-size: 11pt; font-weight: 700; color: #d9251c; margin-top: 2px; text-align: left;">
                             EICHER Trucks
                         </div>
-                        <div style="color: #64748b; font-weight: bold; margin-top: -3px;">ㅡ</div>
+                        <div style="color: #64748b; font-weight: bold; margin-top: -3px; text-align: left;">ㅡ</div>
                     </div>
 
                     <!-- 1. OVERVIEW OF PRODUCT TABLE -->
-                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a;">
+                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a; text-align: left;">
                         Overview of product:
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 12px;">
-                        <tr><td style="padding: 2px 0; width: 45%; color: #334155; font-weight: 600;">Model</td><td id="pvSpecModel" style="padding: 2px 0; font-weight: bold; color: #000000;">Pro 1049CT</td></tr>
-                        <tr><td style="padding: 2px 0; color: #004b87; font-weight: 700;">Total Quantity</td><td id="pvSpecTotalVehicles" style="padding: 2px 0; font-weight: 900; color: #004b87;">1 Unit</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Payload</td><td id="pvSpecPayload" style="padding: 2px 0;">1048 Kg</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Rated payload</td><td id="pvSpecRatedPayload" style="padding: 2px 0;">2500 Kg</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Wheelbase</td><td id="pvSpecWb" style="padding: 2px 0;">2750 mm</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Cargo dimensions</td><td id="pvSpecCargo" style="padding: 2px 0;">10’x6.6’x6.3’ (LxWxH)</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Displacement</td><td id="pvSpecDisp" style="padding: 2px 0;">3298 cc</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Engine power</td><td id="pvSpecHp" style="padding: 2px 0;">95 HP</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Tire size & qty.</td><td id="pvSpecTire" style="padding: 2px 0;">7.00x16 (4+1)</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Country of origin</td><td id="pvSpecOrigin" style="padding: 2px 0;">India</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">YOM</td><td id="pvSpecYom" style="padding: 2px 0;">2025/2026</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Others spec</td><td style="padding: 2px 0;">As attached brochure</td></tr>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 12px; border: 1px solid #cbd5e1; text-align: left;">
+                        <tr><td style="padding: 2.5px 4px; width: 45%; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Model</td><td id="pvSpecModel" style="padding: 2.5px 4px; font-weight: bold; color: #000000; border: 1px solid #cbd5e1; text-align: left;">Pro 1049CT</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #004b87; font-weight: 700; border: 1px solid #cbd5e1; text-align: left;">Total Quantity</td><td id="pvSpecTotalVehicles" style="padding: 2.5px 4px; font-weight: 900; color: #004b87; border: 1px solid #cbd5e1; text-align: left;">1 Unit</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Payload</td><td id="pvSpecPayload" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">1048 Kg</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Rated payload</td><td id="pvSpecRatedPayload" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">2500 Kg</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Wheelbase</td><td id="pvSpecWb" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">2750 mm</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Cargo dimensions</td><td id="pvSpecCargo" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">10’x6.6’x6.3’ (LxWxH)</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Displacement</td><td id="pvSpecDisp" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">3298 cc</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Engine power</td><td id="pvSpecHp" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">95 HP</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Tire size & qty.</td><td id="pvSpecTire" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">7.00x16 (4+1)</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Country of origin</td><td id="pvSpecOrigin" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">India</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">YOM</td><td id="pvSpecYom" style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">2025/2026</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Others spec</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">As attached brochure</td></tr>
                     </table>
 
                     <!-- 2. AFTER SALES SERVICES TABLE -->
-                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a;">
+                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a; text-align: left;">
                         After sales services:
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 12px;">
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; width: 36%; color: #334155; font-weight: 600;">Free service</td><td style="padding: 2px 0;">First 03 regular maintenance at free of cost, each interval 03 months or 12,000 km whichever is earlier</td></tr>
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; color: #334155; font-weight: 600;">Warranty</td><td style="padding: 2px 0;">Unlimited km up to 12 months from delivery date for engine, gearbox & differential.</td></tr>
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; color: #334155; font-weight: 600;">Training</td><td style="padding: 2px 0;">Driver & mechanic training at Runner training school, Bhaluka</td></tr>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 12px; border: 1px solid #cbd5e1; text-align: left;">
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; width: 36%; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Free service</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">First 03 regular maintenance at free of cost, each interval 03 months or 12,000 km whichever is earlier</td></tr>
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Warranty</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">Unlimited km up to 12 months from delivery date for engine, gearbox & differential.</td></tr>
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Training</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">Driver & mechanic training at Runner training school, Bhaluka</td></tr>
                     </table>
 
                     <!-- 3. SERVICE & SPARE PARTS NETWORK -->
-                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a;">
+                    <div style="font-weight: bold; font-style: italic; font-size: 9pt; margin-bottom: 4px; color: #0f172a; text-align: left;">
                         Service & spare parts network:
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; width: 44%; color: #334155; font-weight: 600;">Central service center</td><td style="padding: 2px 0;">Gazipura Bus Stand, Tongi, Gazipur<br>+88 017 3040 7689</td></tr>
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; color: #334155; font-weight: 600;">Countrywide service</td><td style="padding: 2px 0;">42 nos. (RML-08, Dealer-07, ASC-12, STAR Mechanic-15)</td></tr>
-                        <tr style="vertical-align: top;"><td style="padding: 2px 0; color: #334155; font-weight: 600;">Spare parts points</td><td style="padding: 2px 0;">279 nos.</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Service HOTLINE</td><td style="padding: 2px 0; font-weight: bold;">+88 017 9655 4433</td></tr>
-                        <tr><td style="padding: 2px 0; color: #334155; font-weight: 600;">Parts HOTLINE</td><td style="padding: 2px 0; font-weight: bold;">+88 017 3040 5566</td></tr>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt; border: 1px solid #cbd5e1; text-align: left;">
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; width: 44%; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Central service center</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">Gazipura Bus Stand, Tongi, Gazipur<br>+88 017 3040 7689</td></tr>
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Countrywide service</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">42 nos. (RML-08, Dealer-07, ASC-12, STAR Mechanic-15)</td></tr>
+                        <tr style="vertical-align: top;"><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Spare parts points</td><td style="padding: 2.5px 4px; border: 1px solid #cbd5e1; text-align: left;">279 nos.</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Service HOTLINE</td><td style="padding: 2.5px 4px; font-weight: bold; border: 1px solid #cbd5e1; text-align: left;">+88 017 9655 4433</td></tr>
+                        <tr><td style="padding: 2.5px 4px; color: #334155; font-weight: 600; border: 1px solid #cbd5e1; text-align: left;">Parts HOTLINE</td><td style="padding: 2.5px 4px; font-weight: bold; border: 1px solid #cbd5e1; text-align: left;">+88 017 3040 5566</td></tr>
                     </table>
 
                 </td>
@@ -3615,74 +3615,80 @@
                 <!-- ========================================== -->
                 <!-- RIGHT COLUMN: COMMERCIAL QUOTATION         -->
                 <!-- ========================================== -->
-                <td style="width: 68%; padding-left: 16px; vertical-align: top;">
+                <td style="width: 68%; padding-left: 16px; vertical-align: top; text-align: left;">
                     
                     <!-- Official Header Letterhead -->
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1.5px solid #004b87; padding-bottom: 6px;">
-                        <div>
-                            <div style="font-size: 13pt; font-weight: 900; color: #004b87; letter-spacing: 0.5px;">RUNNER MOTORS PLC</div>
-                            <div style="font-size: 8pt; color: #475569;">138/1 Tejgaon I/A, Dhaka-1208, Bangladesh</div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 1.5px solid #004b87; padding-bottom: 6px; text-align: left;">
+                        <div style="text-align: left;">
+                            <div style="font-size: 13pt; font-weight: 900; color: #004b87; letter-spacing: 0.5px; text-align: left;">RUNNER MOTORS PLC</div>
+                            <div style="font-size: 8pt; color: #475569; text-align: left;">138/1 Tejgaon I/A, Dhaka-1208, Bangladesh</div>
                         </div>
                         <img src="runner-motors-plc-logo.png" alt="Runner Logo" style="height: 38px; object-fit: contain;" onerror="this.style.display='none'">
                     </div>
 
                     <!-- Ref, Date, Validity -->
-                    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 8px;">
-                        <tr><td style="width: 60%; font-weight: bold;">Ref # <span id="pvRefNo">RML/CS/SQ/1049CT/1026/001</span></td><td style="text-align: right;">Issue date: <span id="pvIssueDate" style="font-weight: bold;">13th October, 2026</span></td></tr>
-                        <tr><td></td><td style="text-align: right; color: #475569;">Validity: <span id="pvValidity">30 days from issue</span></td></tr>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 8px; border: 1px solid #94a3b8; text-align: left;">
+                        <tr>
+                            <td style="width: 58%; font-weight: bold; border: 1px solid #94a3b8; padding: 4px 6px; text-align: left;">Ref # <span id="pvRefNo">RML/CS/SQ/1049CT/1026/001</span></td>
+                            <td style="border: 1px solid #94a3b8; padding: 4px 6px; text-align: left;">Issue date: <span id="pvIssueDate" style="font-weight: bold;">13th October, 2026</span></td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #94a3b8; padding: 4px 6px; text-align: left;"></td>
+                            <td style="border: 1px solid #94a3b8; padding: 4px 6px; color: #475569; text-align: left;">Validity: <span id="pvValidity">30 days from issue</span></td>
+                        </tr>
                     </table>
 
                     <!-- Recipient Address (To) -->
-                    <div style="margin-bottom: 8px; font-size: 8.5pt; line-height: 1.3;">
-                        <div style="font-weight: bold;">To</div>
-                        <div id="pvCustomerName" style="font-weight: bold; font-size: 9.5pt; color: #0f172a;">মো: কামরুল হাসান</div>
-                        <div id="pvOrgName" style="font-weight: 600; color: #334155;">ইউনিক লজিস্টিকস লি:</div>
-                        <div id="pvCustomerAddress" style="color: #475569;">হাউজ # ১২, রোড # ৪, তেজগাঁও, ঢাকা</div>
-                        <div style="margin-top: 3px; font-weight: bold;">Kind Attention: <span id="pvAttention">Managing Director</span></div>
+                    <div style="margin-bottom: 8px; font-size: 8.5pt; line-height: 1.3; text-align: left;">
+                        <div style="font-weight: bold; text-align: left;">To</div>
+                        <div id="pvCustomerName" style="font-weight: bold; font-size: 9.5pt; color: #0f172a; text-align: left;">মো: কামরুল হাসান</div>
+                        <div id="pvOrgName" style="font-weight: 600; color: #334155; text-align: left;">ইউনিক লজিস্টিকস লি:</div>
+                        <div id="pvCustomerAddress" style="color: #475569; text-align: left;">হাউজ # ১২, রোড # ৪, তেজগাঁও, ঢাকা</div>
+                        <div style="margin-top: 3px; font-weight: bold; text-align: left;">Kind Attention: <span id="pvAttention">Managing Director</span></div>
                     </div>
 
                     <!-- Intro Salutation -->
-                    <div style="margin-bottom: 8px; font-size: 8.5pt; text-align: justify; line-height: 1.3;">
-                        <div style="margin-bottom: 3px;">Dear Sir,</div>
-                        <div>We are pleased to express our interest becoming a business partner to your reputed organization through offering Eicher Commercial Vehicles, manufactured by VE Commercial Vehicles Ltd. (VECV) is a joint venture between Volvo Group and Eicher Motors Ltd.</div>
+                    <div style="margin-bottom: 8px; font-size: 8.5pt; text-align: left; line-height: 1.35;">
+                        <div style="margin-bottom: 3px; text-align: left;">Dear Sir,</div>
+                        <div style="text-align: left;">We are pleased to express our interest becoming a business partner to your reputed organization through offering Eicher Commercial Vehicles, manufactured by VE Commercial Vehicles Ltd. (VECV) is a joint venture between Volvo Group and Eicher Motors Ltd.</div>
                     </div>
 
                     <!-- Proposal Title -->
-                    <div id="pvProposalTitle" style="font-weight: bold; text-decoration: underline; font-size: 9pt; margin-bottom: 6px; color: #004b87;">
+                    <div id="pvProposalTitle" style="font-weight: bold; text-decoration: underline; font-size: 9pt; margin-bottom: 6px; color: #004b87; text-align: left;">
                         Commercial proposal (Cash & Credit):
                     </div>
 
                     <!-- 4. COMMERCIAL PROPOSAL TABLE (NESTED) -->
-                    <div id="pvProposalTableContainer" style="margin-bottom: 10px;">
+                    <div id="pvProposalTableContainer" style="margin-bottom: 10px; text-align: left;">
                         <!-- Dynamically populated based on mode -->
                     </div>
 
                     <!-- N.B. VAT/AIT NOTE -->
-                    <div style="font-size: 7.5pt; color: #334155; margin-bottom: 8px; font-style: italic;">
+                    <div style="font-size: 7.5pt; color: #334155; margin-bottom: 8px; font-style: italic; text-align: left;">
                         <strong>N.B-</strong> All price mentioned here in BDT. VAT & AIT included in chassis & cabin price only, others items are excluding VAT & Taxes.
                     </div>
 
                     <!-- Terms & Conditions -->
-                    <div style="font-size: 8pt; line-height: 1.3; margin-bottom: 10px;">
-                        <div style="font-weight: bold; color: #0f172a;">Payment terms:</div>
-                        <div id="pvPaymentTerms" style="margin-bottom: 4px; color: #334155;">Initial payment is to be made by PO/Online account in favor of “RUNNER MOTORS LTD.’ before delivery.</div>
-                        <div style="font-weight: bold; color: #0f172a;">Delivery terms:</div>
-                        <div style="color: #334155;">Chassis & cabin will deliver within 07 days from ready stock at Seed store, Bhaluka, Mymensingh to your nominated place. In case of ready-made vehicle, you must take delivery from body building workshop within 25 days.</div>
+                    <div style="font-size: 8pt; line-height: 1.35; margin-bottom: 10px; text-align: left;">
+                        <div style="font-weight: bold; color: #0f172a; text-align: left;">Payment terms:</div>
+                        <div id="pvPaymentTerms" style="margin-bottom: 4px; color: #334155; text-align: left;">Initial payment is to be made by PO/Online account in favor of “RUNNER MOTORS LTD.’ before delivery.</div>
+                        <div style="font-weight: bold; color: #0f172a; text-align: left;">Delivery terms:</div>
+                        <div style="color: #334155; text-align: left;">Chassis & cabin will deliver within 07 days from ready stock at Seed store, Bhaluka, Mymensingh to your nominated place. In case of ready-made vehicle, you must take delivery from body building workshop within 25 days.</div>
                     </div>
 
                     <!-- Closing -->
-                    <div style="font-size: 8pt; margin-bottom: 14px; color: #334155;">
+                    <div style="font-size: 8pt; margin-bottom: 14px; color: #334155; text-align: left;">
                         We feel our mentioned vehicle will serve your purpose and would be an asset of your company. For further query, please feel free to contact the undersigned.
                     </div>
 
                     <!-- Signature Block -->
-                    <div style="font-size: 8.5pt; line-height: 1.25;">
-                        <div>Sincerely,</div>
-                        <div id="pvSenderName" style="font-weight: bold; margin-top: 24px; color: #0f172a; font-size: 9.5pt;">Md. Nazmul Hossain Shuvo</div>
-                        <div id="pvSenderDesignation" style="color: #475569;">Manager - Corporate Sales</div>
-                        <div style="font-weight: 600; color: #004b87;">Runner Motors Ltd.</div>
-                        <div>Cell & WhatsApp # <span id="pvSenderPhone" style="font-weight: bold;">+88 01730405642</span></div>
-                        <div>Email # <span id="pvSenderEmail">rmlsales@runnerbd.com</span></div>
+                    <div style="font-size: 8.5pt; line-height: 1.25; text-align: left;">
+                        <div style="text-align: left;">Sincerely,</div>
+                        <div id="pvSenderName" style="font-weight: bold; margin-top: 24px; color: #0f172a; font-size: 9.5pt; text-align: left;">Md. Nazmul Hossain Shuvo</div>
+                        <div id="pvSenderDesignation" style="color: #475569; text-align: left;">Manager - Corporate Sales</div>
+                        <div style="font-weight: 600; color: #004b87; text-align: left;">Runner Motors Ltd.</div>
+                        <div style="text-align: left;">Cell & WhatsApp # <span id="pvSenderPhone" style="font-weight: bold;">+88 01730405642</span></div>
+                        <div style="text-align: left;">Email # <span id="pvSenderEmail">rmlsales@runnerbd.com</span></div>
                     </div>
 
                 </td>
@@ -3691,7 +3697,7 @@
         </table>
 
         <!-- FOOTER BAR -->
-        <div style="border-top: 1px solid #cbd5e1; margin-top: 15px; padding-top: 4px; font-size: 7.5pt; color: #64748b; display: flex; justify-content: space-between;">
+        <div style="border-top: 1px solid #cbd5e1; margin-top: 15px; padding-top: 4px; font-size: 7.5pt; color: #64748b; display: flex; justify-content: space-between; text-align: left;">
             <div>Head Office: 138/1 Tejgaon Industrial Area, Dhaka-1208</div>
             <div>Web: www.runnermotors.com.bd | Hotline: +88 017 3040 6484</div>
         </div>
@@ -3743,20 +3749,57 @@
             overflow: hidden !important;
         }
     }
+    .offer-print-sheet {
+        text-align: left !important;
+    }
+    .offer-print-sheet * {
+        box-sizing: border-box;
+    }
     .offer-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 8pt;
+        font-size: 8.5pt;
+        border: 1px solid #000000 !important;
     }
     .offer-table th, .offer-table td {
-        border: 1px solid #94a3b8;
-        padding: 4px 6px;
+        border: 1px solid #000000 !important;
+        padding: 5px 6px;
+        color: #000000;
     }
     .offer-table th {
-        background-color: #f1f5f9;
-        font-weight: bold;
-        color: #0f172a;
+        background: #f1f5f9 !important;
+        background-color: #f1f5f9 !important;
+        background-image: none !important;
+        font-weight: bold !important;
+        color: #000000 !important;
         text-align: left;
+    }
+    .offer-print-sheet:focus {
+        outline: none;
+    }
+    .offer-print-sheet *:focus {
+        outline: 1.5px dashed #3b82f6 !important;
+        background-color: rgba(59, 130, 246, 0.04) !important;
+    }
+    .offer-print-sheet td:hover,
+    .offer-print-sheet div:hover,
+    .offer-print-sheet span:hover,
+    .offer-print-sheet p:hover {
+        cursor: text;
+    }
+    @media print {
+        .offer-table th {
+            background: #f1f5f9 !important;
+            background-color: #f1f5f9 !important;
+            background-image: none !important;
+            color: #000000 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .offer-print-sheet,
+        .offer-print-sheet * {
+            outline: none !important;
+        }
     }
 </style>
 
