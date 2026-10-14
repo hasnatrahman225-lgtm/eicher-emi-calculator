@@ -4,7 +4,12 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
-const xlsx = require('xlsx');
+let xlsx;
+try {
+    xlsx = require('xlsx');
+} catch (e) {
+    console.warn('Optional xlsx module not installed:', e.message);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -142,8 +147,8 @@ const OfferLetter = mongoose.model('OfferLetter', offerLetterSchema);
 // Helper to sync to Central Excel
 async function syncCentralOfferExcel() {
     try {
-        if (process.env.VERCEL) {
-            // Vercel serverless runtime filesystem is read-only; records are saved in MongoDB and can be downloaded via API
+        if (!xlsx || process.env.VERCEL) {
+            // Either xlsx not installed or Vercel serverless runtime filesystem is read-only
             return;
         }
         const offers = await OfferLetter.find({}).sort({ createdAt: -1 });
@@ -924,6 +929,9 @@ app.get('/api/offer-letter/my-offers', async (req, res) => {
 // Download executive's personal offer register excel
 app.get('/api/offer-letter/download-my-excel', async (req, res) => {
     try {
+        if (!xlsx) {
+            return res.status(500).json({ error: 'Excel generation library (xlsx) is not installed on the server.' });
+        }
         const { phone } = req.query;
         if (!phone) return res.status(400).json({ error: 'Phone parameter required' });
         const offers = await OfferLetter.find({ createdByPhone: phone.trim() }).sort({ createdAt: -1 });
