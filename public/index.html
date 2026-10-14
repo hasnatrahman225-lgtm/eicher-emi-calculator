@@ -1743,6 +1743,11 @@
         return "Tk. " + parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
     }
 
+    function formatNumberOnly(num) {
+        if (num === null || num === undefined || isNaN(num)) return "0";
+        return parseFloat(num).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    }
+
     function calculate() {
         const price = parseFloat(document.getElementById("price").value);
         let dpAmount = parseFloat(document.getElementById("dpAmount").value);
@@ -2333,7 +2338,9 @@
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Finance By</td>
-                        <td colspan="4" style="text-align: left; padding-left: 6px;">Runner Motors Ltd.</td>
+                        <td colspan="4" style="text-align: left; padding: 2px 6px;">
+                            <input type="text" class="print-input" id="bfFinanceBy" value="Runner Motors Ltd." style="width: 100%; border: none; font-size: inherit; font-family: inherit; font-weight: inherit; outline: none; background: transparent;">
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -2963,6 +2970,11 @@
                 const radioCredit = document.getElementById("bfTypeCredit");
                 if (radioCredit) radioCredit.checked = true;
                 switchBfDealType('credit');
+            }
+            
+            const bfFinanceEl = document.getElementById("bfFinanceBy");
+            if (bfFinanceEl && !bfFinanceEl.value.trim()) {
+                bfFinanceEl.value = "Runner Motors Ltd.";
             }
             
             document.getElementById("buyerFormModal").style.display = "block";
