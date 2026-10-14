@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
+const xlsx = require('xlsx');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -83,6 +84,112 @@ const loginAttemptSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now }
 });
 const LoginAttempt = mongoose.model('LoginAttempt', loginAttemptSchema);
+
+// Offer Letter Schema & Model
+const offerLetterSchema = new mongoose.Schema({
+    refNo: { type: String, required: true, unique: true },
+    issueDate: { type: String, required: true },
+    validityDate: { type: String, required: true },
+    customerName: { type: String, required: true, index: true },
+    attention: { type: String, default: 'Managing Director' },
+    orgName: { type: String, default: '' },
+    customerPhone: { type: String, required: true, index: true },
+    customerAddress: { type: String, default: '' },
+    createdByEmpId: { type: String, default: '' },
+    createdByName: { type: String, required: true },
+    createdByPhone: { type: String, required: true, index: true },
+    createdByRole: { type: String, default: 'Sales Executive' },
+    createdByDesignation: { type: String, default: '' },
+    areaName: { type: String, default: '' },
+    modelKey: { type: String, required: true },
+    modelName: { type: String, required: true },
+    quantity: { type: Number, default: 1 }, // গাড়ির সংখ্যা (Quantity)
+    totalVehicles: { type: Number, default: 1 },
+    offerType: { type: String, enum: ['cash', 'credit', 'lc'], default: 'cash' },
+    approvedMinPrice: { type: Number, default: 0 },
+    isBelowApprovedPrice: { type: Boolean, default: false },
+    priceApprovalStatus: { type: String, enum: ['auto_approved', 'pending_admin', 'approved', 'rejected'], default: 'auto_approved' },
+    unitPrice: { type: Number, default: 0 },
+    specialPrice: { type: Number, default: 0 },
+    bodyPrice: { type: Number, default: 0 },
+    downPayment: { type: Number, default: 0 },
+    registrationCost: { type: Number, default: 0 },
+    insuranceCost: { type: Number, default: 0 },
+    processingFee: { type: Number, default: 0 },
+    vtsFee: { type: Number, default: 0 },
+    dnpDrcFee: { type: Number, default: 0 },
+    totalBeforeDelivery: { type: Number, default: 0 },
+    loanAmount: { type: Number, default: 0 },
+    tenorMonths: { type: Number, default: 0 },
+    profitRate: { type: Number, default: 0 },
+    monthlyEmi: { type: Number, default: 0 },
+    specs: { type: Object, default: {} },
+    isLocked: { type: Boolean, default: true },
+    status: { type: String, default: 'Issued' },
+    unlockRequest: {
+        requestedBy: { type: String, default: '' },
+        requestReason: { type: String, default: '' },
+        requestDate: { type: Date, default: null },
+        status: { type: String, enum: ['none', 'pending', 'approved', 'rejected'], default: 'none' },
+        adminNote: { type: String, default: '' }
+    },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+const OfferLetter = mongoose.model('OfferLetter', offerLetterSchema);
+
+// Helper to sync to Central Excel
+async function syncCentralOfferExcel() {
+    try {
+        const offers = await OfferLetter.find({}).sort({ createdAt: -1 });
+        const excelRows = offers.map((o, idx) => ({
+            'SL No': idx + 1,
+            'Reference No': o.refNo,
+            'Issue Date': o.issueDate,
+            'Validity': o.validityDate,
+            'Customer Name (ক্রেতার নাম)': o.customerName,
+            'Attention / In Name (কার নামে)': o.attention + (o.orgName ? ` - ${o.orgName}` : ''),
+            'Customer Phone (মোবাইল)': o.customerPhone,
+            'Customer Address (ঠিকানা)': o.customerAddress,
+            'Model (মডেল)': o.modelName,
+            'Quantity (গাড়ির সংখ্যা)': o.quantity || 1,
+            'Total Vehicles (মোট গাড়ি)': o.totalVehicles || o.quantity || 1,
+            'Offer Type (অফার ধরন)': (o.offerType || 'CASH').toUpperCase(),
+            'MRP / Unit Price (দাম)': o.unitPrice,
+            'Special Price (ডিসকাউন্ট মূল্য)': o.specialPrice,
+            'Body Price (বডি খরচ)': o.bodyPrice,
+            'Down Payment (ডাউনপেমেন্ট)': o.downPayment,
+            'Total Before Delivery (ডেলিভারির পূর্বে প্রদেয়)': o.totalBeforeDelivery,
+            'Loan Amount (লোন)': o.loanAmount,
+            'Tenor (মেয়াদ মাস)': o.tenorMonths,
+            'Monthly EMI (কিস্তি)': o.monthlyEmi,
+            'Created By (প্রেরকের নাম)': o.createdByName,
+            'Designation & Role': `${o.createdByDesignation || o.createdByRole}`,
+            'Creator Phone (প্রেরকের ফোন)': o.createdByPhone,
+            'Area / Unit (এরিয়া)': o.areaName,
+            'Status': o.status,
+            'Locked': o.isLocked ? 'Yes' : 'No'
+        }));
+
+        const wb = xlsx.utils.book_new();
+        const ws = xlsx.utils.json_to_sheet(excelRows);
+        xlsx.utils.book_append_sheet(wb, ws, 'Central Offer Register');
+
+        const p1 = path.join(__dirname, '../Central_Offer_Letter_Register.xlsx');
+        const p2 = path.resolve('c:/Users/motiur/OneDrive - Runner Group/Office/26-27/PRICE/Offer letter format/Central_Offer_Letter_Register.xlsx');
+        
+        xlsx.writeFile(wb, p1);
+        try {
+            if (fs.existsSync(path.dirname(p2))) {
+                xlsx.writeFile(wb, p2);
+            }
+        } catch(e) {}
+        console.log('Central Offer Register Excel synced successfully. Total records:', offers.length);
+    } catch(err) {
+        console.error('Error syncing central offer excel:', err);
+    }
+}
+
 
 async function logFailedAttempt(req, phone, deviceId) {
     try {
@@ -540,6 +647,345 @@ Rules:
     } catch (err) {
         console.error('NID OCR scan error:', err.response?.data || err.message);
         res.status(500).json({ error: 'Failed to scan NID card: ' + (err.response?.data?.error?.message || err.message) });
+    }
+});
+
+
+// ==========================================
+// OFFER LETTER AUTOMATION & REGISTER APIS
+// ==========================================
+
+// Check if customer already has an offer letter (With Same Executive Ownership check)
+app.post('/api/offer-letter/check-customer', async (req, res) => {
+    try {
+        const { customerPhone, customerName, executivePhone } = req.body;
+        if (!customerPhone && !customerName) {
+            return res.status(400).json({ error: 'Customer phone or name is required' });
+        }
+        const query = [];
+        if (customerPhone && customerPhone.trim()) {
+            query.push({ customerPhone: customerPhone.trim() });
+        }
+        if (customerName && customerName.trim()) {
+            query.push({ customerName: new RegExp('^' + customerName.trim() + '$', 'i') });
+        }
+        const existing = await OfferLetter.findOne({ $or: query }).sort({ createdAt: -1 });
+        if (existing) {
+            const isApproved = existing.unlockRequest && existing.unlockRequest.status === 'approved';
+            const isSameExecutive = executivePhone && (existing.createdByPhone.trim() === executivePhone.trim());
+
+            if (isSameExecutive) {
+                // The same executive / sales unit can create one or multiple offers for this customer!
+                return res.json({
+                    exists: true,
+                    isLocked: false,
+                    isSameExecutive: true,
+                    offer: existing,
+                    message: `এই কাস্টমার আপনার রেজিস্টার্ড কাস্টমার। আপনি এই কাস্টমারের জন্য নতুন মডেল, অতিরিক্ত গাড়ি বা নতুন অফার লেটার তৈরি করতে পারবেন।`
+                });
+            } else if (existing.isLocked && !isApproved) {
+                // Different executive is blocked!
+                return res.json({
+                    exists: true,
+                    isLocked: true,
+                    isSameExecutive: false,
+                    offer: existing,
+                    message: `এই কাস্টমার ইতিমধ্যে এক্সিকিউটিভ ${existing.createdByName} (${existing.createdByPhone}, ${existing.areaName}) এর অধীনে রেজিস্টার্ড। অনুমতি ছাড়া অন্য কেউ এই কাস্টমারকে নতুন অফার দিতে পারবে না। দিতে হলে এডমিনের অনুমোদন প্রয়োজন।`
+                });
+            } else {
+                return res.json({
+                    exists: true,
+                    isLocked: false,
+                    isSameExecutive: false,
+                    isApprovedForRevision: isApproved,
+                    offer: existing,
+                    message: `এডমিন কর্তৃক এই কাস্টমারের অফার লেটার তৈরির অনুমতি দেওয়া হয়েছে।`
+                });
+            }
+        }
+        res.json({ exists: false, isLocked: false, isSameExecutive: true });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Create or update offer letter
+app.post('/api/offer-letter/create', async (req, res) => {
+    try {
+        const {
+            customerName, attention, orgName, customerPhone, customerAddress,
+            createdByEmpId, createdByName, createdByPhone, createdByRole, createdByDesignation, areaName,
+            modelKey, modelName, quantity, totalVehicles, offerType,
+            unitPrice, specialPrice, approvedMinPrice, bodyPrice, downPayment, registrationCost, insuranceCost,
+            processingFee, vtsFee, dnpDrcFee, totalBeforeDelivery, loanAmount, tenorMonths, profitRate, monthlyEmi,
+            specs
+        } = req.body;
+
+        if (!customerPhone || !customerName || !modelName) {
+            return res.status(400).json({ error: 'Customer name, phone, and model are required' });
+        }
+
+        const existing = await OfferLetter.findOne({
+            $or: [
+                { customerPhone: customerPhone.trim() },
+                { customerName: new RegExp('^' + customerName.trim() + '$', 'i') }
+            ]
+        }).sort({ createdAt: -1 });
+
+        const isSameExecutive = existing && (existing.createdByPhone.trim() === createdByPhone.trim());
+        const isApproved = existing && existing.unlockRequest && existing.unlockRequest.status === 'approved';
+
+        if (existing && !isSameExecutive && existing.isLocked && !isApproved) {
+            return res.status(403).json({
+                error: `এই কাস্টমার ইতিমধ্যে ${existing.createdByName} (${existing.createdByPhone}) এর অধীনে রেজিস্টার্ড। এডমিনের অনুমতি ছাড়া অন্য কেউ এই কাস্টমারকে নতুন অফার দিতে পারবে না।`
+            });
+        }
+
+        // Check if price is below approved minimum price
+        const numSpecial = Number(specialPrice) || 0;
+        const numFloor = Number(approvedMinPrice) || 0;
+        let isBelowFloor = false;
+        let priceStatus = 'auto_approved';
+
+        if (numFloor > 0 && numSpecial < numFloor) {
+            isBelowFloor = true;
+            if (createdByRole !== 'Admin' && createdByRole !== 'Division') {
+                priceStatus = 'pending_admin';
+            }
+        }
+
+        let savedOffer;
+        const now = new Date();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yy = String(now.getFullYear()).slice(-2);
+        const day = now.getDate();
+        const suffix = (day === 1 || day === 21 || day === 31) ? "st" : (day === 2 || day === 22) ? "nd" : (day === 3 || day === 23) ? "rd" : "th";
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const curMonth = monthNames[now.getMonth()];
+        const curYear = now.getFullYear();
+        const issueDate = `${day}${suffix} ${curMonth}, ${curYear}`;
+        const lastDay = new Date(curYear, now.getMonth() + 1, 0).getDate();
+        const validityDate = `30 days from issue (${lastDay}th ${curMonth}, ${curYear})`;
+
+        // If existing under another executive and approved for revision -> update that offer
+        if (existing && !isSameExecutive && isApproved) {
+            existing.issueDate = issueDate;
+            existing.validityDate = validityDate;
+            existing.attention = attention || existing.attention;
+            existing.orgName = orgName || existing.orgName;
+            existing.customerAddress = customerAddress || existing.customerAddress;
+            existing.modelKey = modelKey;
+            existing.modelName = modelName;
+            existing.quantity = Number(quantity) || 1;
+            existing.totalVehicles = Number(totalVehicles || quantity) || 1;
+            existing.offerType = offerType || 'cash';
+            existing.unitPrice = Number(unitPrice) || 0;
+            existing.specialPrice = Number(specialPrice) || 0;
+            existing.approvedMinPrice = numFloor;
+            existing.isBelowApprovedPrice = isBelowFloor;
+            existing.priceApprovalStatus = priceStatus;
+            existing.bodyPrice = Number(bodyPrice) || 0;
+            existing.downPayment = Number(downPayment) || 0;
+            existing.registrationCost = Number(registrationCost) || 0;
+            existing.insuranceCost = Number(insuranceCost) || 0;
+            existing.processingFee = Number(processingFee) || 0;
+            existing.vtsFee = Number(vtsFee) || 0;
+            existing.dnpDrcFee = Number(dnpDrcFee) || 0;
+            existing.totalBeforeDelivery = Number(totalBeforeDelivery) || 0;
+            existing.loanAmount = Number(loanAmount) || 0;
+            existing.tenorMonths = Number(tenorMonths) || 0;
+            existing.profitRate = Number(profitRate) || 0;
+            existing.monthlyEmi = Number(monthlyEmi) || 0;
+            existing.specs = specs || existing.specs;
+            existing.isLocked = true;
+            existing.status = 'Revised';
+            existing.unlockRequest = { status: 'none', requestedBy: '', requestReason: '', requestDate: null, adminNote: '' };
+            existing.updatedAt = new Date();
+            savedOffer = await existing.save();
+        } else {
+            // New offer creation (allowed for new customers OR same executive creating one or more offers for the same customer)
+            const count = await OfferLetter.countDocuments({});
+            const seqStr = String(count + 1).padStart(3, '0');
+            const cleanModel = modelName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 7) || 'VEH';
+            const refNo = `RML/CS/SQ/${cleanModel}/${mm}${yy}/${seqStr}`;
+
+            savedOffer = await OfferLetter.create({
+                refNo,
+                issueDate,
+                validityDate,
+                customerName: customerName.trim(),
+                attention: attention || 'Managing Director',
+                orgName: orgName || '',
+                customerPhone: customerPhone.trim(),
+                customerAddress: customerAddress || '',
+                createdByEmpId: createdByEmpId || '',
+                createdByName: createdByName || 'Sales Executive',
+                createdByPhone: createdByPhone.trim(),
+                createdByRole: createdByRole || 'Area Manager',
+                createdByDesignation: createdByDesignation || 'Manager - Corporate Sales',
+                areaName: areaName || '',
+                modelKey: modelKey || '',
+                modelName: modelName || '',
+                quantity: Number(quantity) || 1,
+                totalVehicles: Number(totalVehicles || quantity) || 1,
+                offerType: offerType || 'cash',
+                approvedMinPrice: numFloor,
+                isBelowApprovedPrice: isBelowFloor,
+                priceApprovalStatus: priceStatus,
+                unitPrice: Number(unitPrice) || 0,
+                specialPrice: Number(specialPrice) || 0,
+                bodyPrice: Number(bodyPrice) || 0,
+                downPayment: Number(downPayment) || 0,
+                registrationCost: Number(registrationCost) || 0,
+                insuranceCost: Number(insuranceCost) || 0,
+                processingFee: Number(processingFee) || 0,
+                vtsFee: Number(vtsFee) || 0,
+                dnpDrcFee: Number(dnpDrcFee) || 0,
+                totalBeforeDelivery: Number(totalBeforeDelivery) || 0,
+                loanAmount: Number(loanAmount) || 0,
+                tenorMonths: Number(tenorMonths) || 0,
+                profitRate: Number(profitRate) || 0,
+                monthlyEmi: Number(monthlyEmi) || 0,
+                specs: specs || {},
+                isLocked: true,
+                status: 'Issued'
+            });
+        }
+
+        // Auto-update central excel file
+        await syncCentralOfferExcel();
+
+        res.json({ success: true, offer: savedOffer });
+    } catch(err) {
+        console.error('Error creating offer letter:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Request unlock / update approval from Admin
+app.post('/api/offer-letter/request-unlock', async (req, res) => {
+    try {
+        const { offerId, customerPhone, requestedBy, requestReason } = req.body;
+        let offer = null;
+        if (offerId) offer = await OfferLetter.findById(offerId);
+        else if (customerPhone) offer = await OfferLetter.findOne({ customerPhone: customerPhone.trim() });
+
+        if (!offer) {
+            return res.status(404).json({ error: 'অফার লেটার রেকর্ড পাওয়া যায়নি।' });
+        }
+
+        offer.unlockRequest = {
+            requestedBy: requestedBy || 'Executive',
+            requestReason: requestReason || 'Update terms or vehicle package',
+            requestDate: new Date(),
+            status: 'pending',
+            adminNote: ''
+        };
+        await offer.save();
+        res.json({ success: true, message: 'এডমিনের নিকট আনলক আবেদন পাঠানো হয়েছে। অনুমোদন সাপেক্ষে অফার লেটার এডিট করা যাবে।' });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get executive's own created offer letters with count
+app.get('/api/offer-letter/my-offers', async (req, res) => {
+    try {
+        const { phone } = req.query;
+        if (!phone) {
+            return res.status(400).json({ error: 'Phone parameter is required' });
+        }
+        const offers = await OfferLetter.find({ createdByPhone: phone.trim() }).sort({ createdAt: -1 });
+        res.json({
+            success: true,
+            totalCount: offers.length,
+            offers: offers
+        });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Download executive's personal offer register excel
+app.get('/api/offer-letter/download-my-excel', async (req, res) => {
+    try {
+        const { phone } = req.query;
+        if (!phone) return res.status(400).json({ error: 'Phone parameter required' });
+        const offers = await OfferLetter.find({ createdByPhone: phone.trim() }).sort({ createdAt: -1 });
+        const rows = offers.map((o, idx) => ({
+            'SL No': idx + 1,
+            'Reference No': o.refNo,
+            'Issue Date': o.issueDate,
+            'Customer Name (ক্রেতার নাম)': o.customerName,
+            'Attention / In Name (কার নামে)': o.attention + (o.orgName ? ` - ${o.orgName}` : ''),
+            'Customer Phone (মোবাইল)': o.customerPhone,
+            'Model (মডেল)': o.modelName,
+            'Offer Type (অফার ধরন)': (o.offerType || 'CASH').toUpperCase(),
+            'MRP / Unit Price (দাম)': o.unitPrice,
+            'Special Price (ডিসকাউন্ট মূল্য)': o.specialPrice,
+            'Body Price (বডি খরচ)': o.bodyPrice,
+            'Down Payment (ডাউনপেমেন্ট)': o.downPayment,
+            'Total Before Delivery': o.totalBeforeDelivery,
+            'Loan Amount (লোন)': o.loanAmount,
+            'Tenor (মেয়াদ মাস)': o.tenorMonths,
+            'Monthly EMI (কিস্তি)': o.monthlyEmi,
+            'Status': o.status
+        }));
+        const wb = xlsx.utils.book_new();
+        const ws = xlsx.utils.json_to_sheet(rows);
+        xlsx.utils.book_append_sheet(wb, ws, 'My Offer Letters');
+        const buf = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+        res.setHeader('Content-Disposition', `attachment; filename="My_Offer_Letters_${phone}.xlsx"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(buf);
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: view all offer letters and unlock requests
+app.post('/api/admin/offer-letters', async (req, res) => {
+    try {
+        const { adminPhone } = req.body;
+        const user = await User.findOne({ phone: adminPhone });
+        if (!user || user.role !== 'Admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const offers = await OfferLetter.find({}).sort({ createdAt: -1 });
+        const pendingCount = offers.filter(o => o.unlockRequest && o.unlockRequest.status === 'pending').length;
+        res.json({ success: true, count: offers.length, pendingCount, offers });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: approve or reject unlock request
+app.post('/api/admin/unlock-offer', async (req, res) => {
+    try {
+        const { adminPhone, offerId, action, adminNote } = req.body;
+        const user = await User.findOne({ phone: adminPhone });
+        if (!user || user.role !== 'Admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const offer = await OfferLetter.findById(offerId);
+        if (!offer) return res.status(404).json({ error: 'Offer not found' });
+
+        if (action === 'approve') {
+            offer.isLocked = false;
+            offer.status = 'Unlocked_For_Revision';
+            if (!offer.unlockRequest) offer.unlockRequest = {};
+            offer.unlockRequest.status = 'approved';
+            offer.unlockRequest.adminNote = adminNote || 'Approved by Admin';
+        } else {
+            if (!offer.unlockRequest) offer.unlockRequest = {};
+            offer.unlockRequest.status = 'rejected';
+            offer.unlockRequest.adminNote = adminNote || 'Rejected by Admin';
+        }
+        await offer.save();
+        await syncCentralOfferExcel();
+        res.json({ success: true, offer });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
