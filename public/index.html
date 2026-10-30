@@ -1235,7 +1235,7 @@
                 <input type="number" id="customEmi" placeholder="Fixed Monthly Tk.">
             </div>
 
-            <div class="form-group" id="gracePeriodGroup" style="display: none;">
+            <div class="form-group" id="gracePeriodGroup" style="display: block;">
                 <label for="firstEmiDays">Grace Period (Days)</label>
                 <input type="number" id="firstEmiDays" placeholder="Days (e.g. 30, 45, 60)" min="0" oninput="calculate()">
             </div>
@@ -1521,10 +1521,10 @@
             document.getElementById("customEmiGroup").style.display = "none";
         }
 
-        // First Installment Grace Period: Admin only (for now)
+        // First Installment Grace Period: Open for ALL roles
         const graceGroup = document.getElementById("gracePeriodGroup");
         if (graceGroup) {
-            graceGroup.style.display = (role === "Admin") ? "block" : "none";
+            graceGroup.style.display = "block";
         }
 
         // Admin Dashboard: Admin only
@@ -2093,13 +2093,13 @@
         const effectiveInterestRate = interestRate;
         const totalLoan = price - dpAmount;
 
-        // Admin Only: First Installment Delay / Grace Period & Gestation Profit
+        // First Installment Delay / Grace Period & Gestation Profit (Open for ALL users)
         const graceDaysInput = document.getElementById("firstEmiDays");
         let graceDays = 0;
         let graceProfit = 0;
         let isGraceApplied = false;
 
-        if (userRole === "Admin" && graceDaysInput && graceDaysInput.value.trim() !== "") {
+        if (graceDaysInput && graceDaysInput.value.trim() !== "") {
             const parsedDays = parseFloat(graceDaysInput.value.trim());
             if (!isNaN(parsedDays) && parsedDays > 0) {
                 graceDays = parsedDays;
