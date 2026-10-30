@@ -68,14 +68,63 @@
             position: relative;
         }
 
-        /* Top Nav Actions */
-        .top-nav {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        /* Modern App Header */
+        .app-top-header {
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-main-row {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
             align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-brand-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #6366f1;
+            background: #eef2ff;
+            padding: 3px 9px;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        body.dark-mode .brand-tag {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+        }
+
+        .main-title {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: left;
+            line-height: 1.2;
+        }
+
+        /* Top Action Buttons Toolbar */
+        .header-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .theme-btn {
@@ -83,17 +132,91 @@
             color: var(--card-bg);
             border: none;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             font-size: 16px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
         }
-        .theme-btn:active { transform: scale(0.9); }
+        .theme-btn:active { transform: scale(0.92); }
+
+        .nav-pill-btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .nav-pill-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .nav-pill-btn:active { transform: scale(0.96); }
+
+        .btn-offers {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+        }
+
+        .btn-dashboard {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+        }
+
+        .pill-badge {
+            background: rgba(255, 255, 255, 0.28);
+            color: white;
+            padding: 1px 7px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .user-status-wrapper {
+            margin-top: 10px;
+        }
+
+        .user-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12.5px;
+            background: #f1f5f9;
+            color: #334155;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+            max-width: 100%;
+        }
+
+        body.dark-mode .user-status-pill {
+            background: #1e293b;
+            color: #94a3b8;
+            border-color: #334155;
+        }
+
+        .user-role-text {
+            font-weight: 700;
+            color: var(--primary);
+        }
 
         .action-btn {
             padding: 8px 12px;
@@ -118,8 +241,60 @@
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .results-grid { grid-template-columns: 1fr !important; }
-            .container { padding: 15px; margin-top: 40px; }
-            .top-nav { top: 10px; right: 10px; }
+            .container { padding: 14px 12px; margin-top: 10px; }
+            
+            .app-top-header {
+                margin-bottom: 15px;
+                padding-bottom: 12px;
+            }
+
+            .header-main-row {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .header-brand-box {
+                align-items: center;
+                text-align: center;
+            }
+
+            .main-title {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .header-actions-bar {
+                justify-content: center;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .nav-pill-btn {
+                padding: 6px 11px;
+                font-size: 12px;
+                border-radius: 16px;
+            }
+
+            .theme-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .user-status-wrapper {
+                text-align: center;
+                margin-top: 8px;
+            }
+
+            .user-status-pill {
+                font-size: 11px;
+                padding: 4px 10px;
+                justify-content: center;
+                text-align: center;
+                word-break: break-word;
+            }
         }
 
         .form-group { margin-bottom: 15px; }
@@ -633,6 +808,22 @@
             margin-bottom: 14px !important;
         }
 
+        body.printing-buyer-form #bfKpiTable td {
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            vertical-align: top !important;
+        }
+
+        body.printing-buyer-form #bfKpiTable .print-input {
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            height: auto !important;
+            overflow: visible !important;
+            display: block !important;
+        }
+
         /* Avoid any page break inside tables */
         body.printing-buyer-form table,
         body.printing-buyer-form tr,
@@ -741,13 +932,6 @@
             </div>
         </div>
 
-        <!-- Scan QR Code prompt -->
-        <div style="text-align:center; margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:12px;">
-            <button type="button" onclick="openQrModal()" style="background: #f8fafc; border: 1px solid #3b82f6; color: #2563eb; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
-                📱 Scan QR Code to Install Mobile App
-            </button>
-        </div>
-
         <!-- Backend URL Config removed for production -->
     </div>
 </div>
@@ -761,7 +945,6 @@
                 <div id="adminUserStats" style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Loading employees...</div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="action-btn" style="background: #059669; font-size: 13px; padding: 8px 14px; color: white;" onclick="openQrModal()">📱 Field QR Poster</button>
                 <button class="action-btn" style="background: #2563eb; font-size: 13px; padding: 8px 14px;" onclick="adminSyncEmployees()">🔄 Sync from File</button>
                 <button class="action-btn btn-close" onclick="closeAdmin()">Close</button>
             </div>
@@ -929,18 +1112,42 @@
 
 <!-- Main App -->
 <div class="container" id="mainApp" style="display:none;">
-    <div class="top-nav">
-        <button class="theme-btn" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
-        <button id="btnMyOffers" class="action-btn" style="background: #059669; color: white; display: none; align-items: center; gap: 6px; font-weight: 600;" onclick="openMyOffersModal()" title="আমার তৈরিকৃত অফার লেটার রেজিস্টার">
-            📋 আমার অফার লেটার (<span id="myOffersCountBadge">0</span>)
-        </button>
-        <button class="action-btn" style="background: #0284c7; color: white;" onclick="openQrModal()" title="App QR Code for Mobile">📱 App QR</button>
-        <button id="btnOpenAdmin" class="action-btn btn-admin" style="display:none;" onclick="openAdmin()">Dashboard</button>
-        <button class="action-btn btn-logout" onclick="logout()">Logout</button>
-    </div>
+    <!-- Modern Responsive Top Header -->
+    <header class="app-top-header">
+        <div class="header-main-row">
+            <div class="header-brand-box">
+                <div class="brand-tag">🚛 RUNNER MOTORS PLC</div>
+                <h1 class="main-title">RML EMI Calculator</h1>
+            </div>
 
-    <h1>RML EMI Calculator</h1>
-    <p style="text-align:center; margin-top:-10px; color:var(--text-muted);">Logged in as: <span id="displayRole" style="font-weight:bold; color:var(--primary);"></span></p>
+            <!-- Action Buttons Toolbar -->
+            <div class="header-actions-bar">
+                <button class="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+                <button id="btnMyOffers" class="nav-pill-btn btn-offers" style="display: none;" onclick="openMyOffersModal()" title="আমার তৈরিকৃত অফার লেটার">
+                    <span>📋</span>
+                    <span>অফার লেটার</span>
+                    <span id="myOffersCountBadge" class="pill-badge">0</span>
+                </button>
+                <button id="btnOpenAdmin" class="nav-pill-btn btn-dashboard" style="display:none;" onclick="openAdmin()" title="অ্যাডমিন ড্যাশবোর্ড">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-pill-btn btn-logout" onclick="logout()" title="লগআউট">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- User Information Status Pill -->
+        <div class="user-status-wrapper">
+            <div class="user-status-pill">
+                <span>👤</span>
+                <span>Logged in as:</span>
+                <span id="displayRole" class="user-role-text"></span>
+            </div>
+        </div>
+    </header>
     
     <div class="grid">
         <div class="form-section">
@@ -1015,6 +1222,33 @@
             <div class="form-group" id="customEmiGroup" style="display: none;">
                 <label for="customEmi">Custom EMI (Optional)</label>
                 <input type="number" id="customEmi" placeholder="Fixed Monthly Tk.">
+            </div>
+
+            <!-- Admin Only: First Installment Grace Period & Gestation Profit Calculator -->
+            <div class="form-group" id="gracePeriodGroup" style="display: none; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 10px 12px; margin-top: 5px;">
+                <label for="firstEmiDays" style="display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #166534; margin-bottom: 6px;">
+                    <span>⏳ ১ম কিস্তির সময়কাল / গ্রেস পিরিয়ড</span>
+                    <span style="font-size: 11px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: bold;">এডমিন স্পেশাল</span>
+                </label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label for="firstEmiDays" style="font-size: 11.5px; color: #1e293b; margin-bottom: 3px; display: block;">১ম কিস্তি শুরু হবে (দিন):</label>
+                        <input type="number" id="firstEmiDays" placeholder="যেমন: 30, 45, 60" min="0" max="180" oninput="calculate()">
+                    </div>
+                    <div>
+                        <label for="firstEmiQuickSelect" style="font-size: 11.5px; color: #1e293b; margin-bottom: 3px; display: block;">কুইক সিলেক্ট:</label>
+                        <select id="firstEmiQuickSelect" onchange="applyQuickGraceDays(this.value)" style="width: 100%; height: 38px; border: 1px solid #86efac; border-radius: 6px; font-size: 12px; font-weight: bold; background: white; color: #166534;">
+                            <option value="0">স্বাভাবিক (০ দিন / নো গ্রেস)</option>
+                            <option value="30">৩০ দিন (১ মাস)</option>
+                            <option value="45">৪৫ দিন (দেড় মাস)</option>
+                            <option value="60">৬০ দিন (২ মাস)</option>
+                            <option value="90">৯০ দিন (৩ মাস)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="font-size: 11px; color: #166534; margin-top: 6px; line-height: 1.4; background: #e8f5e9; padding: 6px 8px; border-radius: 4px;">
+                    * গাড়ি ডেলিভারি, বডি তৈরি ও রেজিস্ট্রেশনের যে সময় লাগে সে কয়দিনের প্রফিট চার্জ হবে এবং মূল প্রাইসে যুক্ত হবে। কিস্তির সংখ্যা ফাইলের মোট মেয়াদের সমান থাকবে।
+                </div>
             </div>
 
             <button class="primary-btn" onclick="calculate()">Calculate Package</button>
@@ -1298,9 +1532,15 @@
             document.getElementById("customEmiGroup").style.display = "none";
         }
 
+        // First Installment Grace Period: Admin only (for now)
+        const graceGroup = document.getElementById("gracePeriodGroup");
+        if (graceGroup) {
+            graceGroup.style.display = (role === "Admin") ? "block" : "none";
+        }
+
         // Admin Dashboard: Admin only
         if (role === "Admin") {
-            document.getElementById("btnOpenAdmin").style.display = "block";
+            document.getElementById("btnOpenAdmin").style.display = "inline-flex";
         } else {
             document.getElementById("btnOpenAdmin").style.display = "none";
         }
@@ -1313,6 +1553,15 @@
 
         if (document.getElementById("model") && document.getElementById("model").value) {
             updatePrice();
+        }
+    }
+
+    function applyQuickGraceDays(val) {
+        const days = parseInt(val) || 0;
+        const inp = document.getElementById("firstEmiDays");
+        if (inp) {
+            inp.value = days > 0 ? days : "";
+            calculate();
         }
     }
 
@@ -1854,12 +2103,33 @@
 
         const effectiveInterestRate = interestRate;
         const totalLoan = price - dpAmount;
-        let totalInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
+
+        // Admin Only: First Installment Delay / Grace Period & Gestation Profit
+        const graceDaysInput = document.getElementById("firstEmiDays");
+        let graceDays = 0;
+        let graceProfit = 0;
+        let isGraceApplied = false;
+
+        if (userRole === "Admin" && graceDaysInput && graceDaysInput.value.trim() !== "") {
+            const parsedDays = parseFloat(graceDaysInput.value.trim());
+            if (!isNaN(parsedDays) && parsedDays > 0) {
+                graceDays = parsedDays;
+                isGraceApplied = true;
+                // Gestation profit on financed amount for the grace days (365 days basis)
+                graceProfit = Math.round((totalLoan * effectiveInterestRate * (graceDays / 365)) / 100);
+            }
+        }
+
+        let standardInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
+        let totalInterest = standardInterest + graceProfit;
         let totalPrice = price + totalInterest;
         totalPrice = Math.round(totalPrice / 1000) * 1000;
         totalInterest = totalPrice - price;
         let emi = ((totalPrice - dpAmount) / months) + 500;
         let emiDisplayText = formatCurrency(emi);
+        if (isGraceApplied) {
+            emiDisplayText = `${formatCurrency(emi)} <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>`;
+        }
         let finalMonthEmi = emi;
         
         const customEmiInput = document.getElementById("customEmi").value.trim();
@@ -1887,7 +2157,7 @@
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else {
                 isCustomEmi = false;
-                emiDisplayText = formatCurrency(emi);
+                emiDisplayText = isGraceApplied ? `${formatCurrency(emi)} <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>` : formatCurrency(emi);
             }
         }
 
@@ -1974,37 +2244,44 @@
                 regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
             }
         } else if (selectedRegOption === "emi") {
-            const regPerMonth = months > 0 ? Math.round(regCost / months) : 0;
+            const regMonths = months;
+            const regPerMonth = regMonths > 0 ? Math.round(regCost / regMonths) : 0;
             effectiveEmi = emi + regPerMonth;
             if (isCustomEmi) {
                 effectiveFinalMonthEmi = finalMonthEmi + regPerMonth;
-                emiDisplayText = `${formatCurrency(customEmi + regPerMonth)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months, incl. Reg ${formatCurrency(regPerMonth)}/mo)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
-                regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
+                emiDisplayText = `${formatCurrency(customEmi + regPerMonth)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${regMonths-1} months, incl. Reg ${formatCurrency(regPerMonth)}/mo)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${regMonths}th month)</span></div>`;
+                regPkgNote1 = "Last (" + regMonths + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
                 regPkgNote2 = "Includes Monthly Reg Tk. " + formatCurrency(regPerMonth) + "/mo";
             } else {
                 effectiveFinalMonthEmi = effectiveEmi;
                 emiDisplayText = formatCurrency(effectiveEmi);
+                if (isGraceApplied) {
+                    emiDisplayText += ` <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>`;
+                }
                 regPkgNote1 = "Monthly Installment includes Reg Tk. " + formatCurrency(regPerMonth) + "/mo";
             }
             regNote = "Included with Monthly EMI: " + formatCurrency(regPerMonth) + "/mo (Total: " + formatCurrency(regCost) + ")";
         } else if (selectedRegOption === "last_emi") {
+            const finalMonthIdx = months;
             effectiveFinalMonthEmi = finalMonthEmi + regCost;
-            regNote = "Pay with Last (" + months + "th) Installment: " + formatCurrency(regCost);
-            regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
+            regNote = "Pay with Last (" + finalMonthIdx + "th) Installment: " + formatCurrency(regCost);
+            regPkgNote1 = "Last (" + finalMonthIdx + "th) Installment: " + formatCurrency(effectiveFinalMonthEmi);
             regPkgNote2 = "Includes Registration: " + formatCurrency(regCost);
             
             if (isCustomEmi) {
-                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month, incl. Reg)</span></div>`;
+                emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${finalMonthIdx-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${finalMonthIdx}th month, incl. Reg)</span></div>`;
             } else {
-                emiDisplayText = `${formatCurrency(emi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${months}th month, incl. Reg)</span></div>`;
+                emiDisplayText = `${formatCurrency(emi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${finalMonthIdx-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(effectiveFinalMonthEmi)} <span style="font-size:14px;">(${finalMonthIdx}th month, incl. Reg)</span></div>`;
             }
         } else if (selectedRegOption === "free") {
             regNote = "FREE (Company Promotional Offer)";
-            regPkgNote1 = isCustomEmi ? ("Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi)) : "Registration Free / Waived";
+            const finalMonthIdx = months;
+            regPkgNote1 = isCustomEmi ? ("Last (" + finalMonthIdx + "th) Installment: " + formatCurrency(finalMonthEmi)) : "Registration Free / Waived";
             regPkgNote2 = isCustomEmi ? "Registration Free / Waived" : "";
         } else {
             if (isCustomEmi) {
-                regPkgNote1 = "Last (" + months + "th) Installment: " + formatCurrency(finalMonthEmi);
+                const finalMonthIdx = months;
+                regPkgNote1 = "Last (" + finalMonthIdx + "th) Installment: " + formatCurrency(finalMonthEmi);
             }
         }
 
@@ -2058,6 +2335,23 @@
             `;
         }
 
+        // Add Grace Period Note in Explanation HTML
+        if (isGraceApplied && graceDays > 0) {
+            explanationHTML += `
+                <div style="margin-top:12px; padding:12px 14px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#14532d; font-size:14px;">
+                    <div style="font-size:15px; font-weight:bold; color:#15803d; margin-bottom:5px; display:flex; align-items:center; gap:6px;">
+                        <span>⏳ ১ম কিস্তি শুরুর সময়কাল (${graceDays} দিন পর) ও প্রফিট চার্জ:</span>
+                    </div>
+                    <div style="font-size:13px; font-weight:normal; line-height:1.6; color:#166534;">
+                        • <strong>১ম কিস্তি শুরু হবে:</strong> গাড়ি ডেলিভারির <strong>${graceDays} দিন পর</strong>।<br>
+                        • <strong>গ্রেস প্রফিট চার্জ:</strong> লোন পরিমাণের (${formatCurrency(totalLoan)}) উপর ${effectiveInterestRate}% হারে <strong>+${formatCurrency(graceProfit)}</strong> প্রফিট মূল প্রাইসের সাথে যোগ করা হয়েছে।<br>
+                        • <strong>কিস্তির মেয়াদ:</strong> অনুমোদিত <strong>${months} মাস (${months} কিস্তি)</strong>। মেয়াদ থেকে কোনো কিস্তি বাদ দেওয়া হয়নি।<br>
+                        • <strong>নির্ধারিত মাসিক কিস্তি (EMI):</strong> <strong>${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)।
+                    </div>
+                </div>
+            `;
+        }
+
         document.getElementById("results").style.display = "block";
         document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
         document.getElementById("resEmi").innerHTML = emiDisplayText;
@@ -2093,7 +2387,10 @@
             regPkgNote2: regPkgNote2,
             deviation: deviation,
             deviationNote: deviationNote,
-            deviationEmiNote: deviationEmiNote
+            deviationEmiNote: deviationEmiNote,
+            isGraceApplied: isGraceApplied,
+            graceDays: graceDays,
+            graceProfit: graceProfit
         };
     }
 
@@ -2356,19 +2653,19 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="text-align: center; padding: 4px;">1.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow1"></td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfVtsNote"></td>
+                        <td style="text-align: center; padding: 4px; vertical-align: top;">1.</td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfPkgRow1"></div></td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfVtsNote"></div></td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; padding: 4px;">2.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow2"></td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfFinalEmiNote"></td>
+                        <td style="text-align: center; padding: 4px; vertical-align: top;">2.</td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfPkgRow2"></div></td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfFinalEmiNote"></div></td>
                     </tr>
                     <tr>
-                        <td style="text-align: center; padding: 4px;">3.</td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfPkgRow3"></td>
-                        <td><input type="text" class="print-input" style="width: 98%;" id="bfNoteRow3"></td>
+                        <td style="text-align: center; padding: 4px; vertical-align: top;">3.</td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfPkgRow3"></div></td>
+                        <td style="padding: 3px 5px; vertical-align: top;"><div contenteditable="true" class="print-input" style="width: 100%; min-height: 22px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.35; outline: none;" id="bfNoteRow3"></div></td>
                     </tr>
                 </tbody>
             </table>
@@ -2764,6 +3061,20 @@
         background: #ffffff !important;
         background-color: #ffffff !important;
     }
+    #bfKpiTable td {
+        vertical-align: top !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    #bfKpiTable .print-input {
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        min-height: 20px;
+        line-height: 1.35;
+        height: auto !important;
+    }
 </style>
 
 <script>
@@ -2831,7 +3142,13 @@
         currentBfDealType = type;
         const setVal = (id, val) => {
             const el = document.getElementById(id);
-            if (el) el.value = val;
+            if (el) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.value = val;
+                } else {
+                    el.innerText = val;
+                }
+            }
         };
 
         if (type === "cash") {
@@ -2923,8 +3240,29 @@
                 setVal("bfPkgRow2", globalCalcData.regPkgNote2 || "");
                 setVal("bfFinalEmiNote", "");
             }
-            setVal("bfPkgRow3", "");
-            setVal("bfNoteRow3", "");
+
+            if (globalCalcData.isGraceApplied && globalCalcData.graceDays > 0) {
+                if (!globalCalcData.isCustomEmi && globalCalcData.selectedRegOption !== 'last_emi') {
+                    setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+                }
+                const gracePkgNote = `১ম কিস্তি শুরু: ডেলিভারির ${globalCalcData.graceDays} দিন পর (গ্রেস প্রফিট: +Tk. ${formatNumberOnly(globalCalcData.graceProfit)} মূল প্রাইসে যুক্ত)`;
+                const graceEmiNote = `১ম কিস্তি শুরু: ডেলিভারির ${globalCalcData.graceDays} দিন পর`;
+                
+                const row2El = document.getElementById("bfPkgRow2");
+                const row2Val = row2El ? (row2El.value || row2El.innerText || "").trim() : "";
+                if (!row2Val) {
+                    setVal("bfPkgRow2", gracePkgNote);
+                    setVal("bfFinalEmiNote", graceEmiNote);
+                    setVal("bfPkgRow3", "");
+                    setVal("bfNoteRow3", "");
+                } else {
+                    setVal("bfPkgRow3", gracePkgNote);
+                    setVal("bfNoteRow3", graceEmiNote);
+                }
+            } else {
+                setVal("bfPkgRow3", "");
+                setVal("bfNoteRow3", "");
+            }
             updateBfRegNote();
 
             let processNote = "";
