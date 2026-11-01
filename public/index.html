@@ -529,7 +529,7 @@
     @media print {
         @page {
             size: A4 portrait;
-            margin: 6mm 8mm;
+            margin: 5mm 6mm;
         }
         html, body {
             height: auto !important;
@@ -621,15 +621,19 @@
             break-inside: avoid !important;
             page-break-after: always !important;
             break-after: page !important;
+            page-break-before: avoid !important;
+            break-before: avoid !important;
             height: auto !important;
+            max-height: 282mm !important;
+            overflow: hidden !important;
             box-sizing: border-box !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2,
         body.printing-buyer-form .buyer-form-page-2 {
             display: block !important;
-            page-break-before: always !important;
-            break-before: page !important;
+            page-break-before: auto !important;
+            break-before: auto !important;
             page-break-after: avoid !important;
             break-after: avoid !important;
             page-break-inside: avoid !important;
@@ -640,23 +644,23 @@
             border-top: none !important;
             box-sizing: border-box !important;
             height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
+            max-height: 282mm !important;
+            overflow: hidden !important;
         }
 
-        /* Perfectly Balanced Full-Page 2 Print Styles (Large High-Legibility Fonts) */
+        /* Perfectly Balanced Full-Page 2 Print Styles (High-Legibility, strictly fits A4) */
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 h2 {
-            font-size: 22px !important;
-            margin: 0 0 8px 0 !important;
+            font-size: 16px !important;
+            margin: 0 0 4px 0 !important;
             padding: 0 !important;
             text-align: center !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 table {
             width: 100% !important;
-            margin-bottom: 9px !important;
-            font-size: 14px !important;
-            line-height: 1.32 !important;
+            margin-bottom: 5px !important;
+            font-size: 11px !important;
+            line-height: 1.25 !important;
             border-collapse: collapse !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
@@ -664,76 +668,76 @@
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 table th,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 table td {
-            padding: 4px 6px !important;
-            font-size: 14px !important;
-            line-height: 1.32 !important;
+            padding: 2.5px 4px !important;
+            font-size: 11px !important;
+            line-height: 1.25 !important;
             vertical-align: middle !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-payment-table th,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-payment-table td {
-            padding: 3.5px 5px !important;
-            font-size: 13.5px !important;
+            padding: 2px 3px !important;
+            font-size: 10.5px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-details-table th,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-details-table td {
-            padding: 4.5px 6px !important;
-            font-size: 14px !important;
+            padding: 2.5px 4px !important;
+            font-size: 10.5px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .print-input {
-            font-size: 13.5px !important;
-            height: 22px !important;
-            padding: 1px 4px !important;
+            font-size: 11px !important;
+            height: 19px !important;
+            padding: 1px 3px !important;
             box-sizing: border-box !important;
             font-weight: 600 !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 textarea.print-input,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 #bfP2CashCalculationArea {
-            height: 135px !important;
-            min-height: 135px !important;
-            max-height: 135px !important;
-            font-size: 13.5px !important;
-            line-height: 1.4 !important;
-            padding: 6px 8px !important;
+            height: 90px !important;
+            min-height: 90px !important;
+            max-height: 90px !important;
+            font-size: 11px !important;
+            line-height: 1.35 !important;
+            padding: 4px 6px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 label {
-            font-size: 13px !important;
-            line-height: 1.3 !important;
-            margin-right: 4px !important;
+            font-size: 11px !important;
+            line-height: 1.25 !important;
+            margin-right: 3px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-section-title {
-            font-size: 15px !important;
+            font-size: 11.5px !important;
             font-weight: bold !important;
-            margin-bottom: 5px !important;
-            margin-top: 8px !important;
+            margin-bottom: 2px !important;
+            margin-top: 4px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-vehicle-row {
-            font-size: 14.5px !important;
-            margin-bottom: 6px !important;
+            font-size: 11px !important;
+            margin-bottom: 2px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-details-table {
-            margin-bottom: 20px !important;
+            margin-bottom: 6px !important;
         }
 
         body.printing-buyer-form #buyerFormModal .buyer-form-page-2 .p2-signatures {
-            margin-top: 55px !important;
-            padding: 0 45px !important;
-            font-size: 15px !important;
+            margin-top: 22px !important;
+            padding: 0 40px !important;
+            font-size: 12px !important;
             font-weight: 600 !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
         body.printing-buyer-form .buyer-form-content {
-            font-size: 15px !important;
-            line-height: 1.36 !important;
+            font-size: 12px !important;
+            line-height: 1.28 !important;
         }
 
         /* NID Card containers in print */
@@ -743,55 +747,55 @@
         }
         body.printing-buyer-form #bfNidFrontBox,
         body.printing-buyer-form #bfNidBackBox {
-            width: 115px !important;
-            height: 68px !important;
+            width: 105px !important;
+            height: 56px !important;
         }
 
         /* Header elements in print */
         body.printing-buyer-form #bfHeaderCenter img {
-            height: 38px !important;
+            height: 34px !important;
             margin-bottom: 1px !important;
         }
         body.printing-buyer-form #bfHeaderCenter p {
-            font-size: 13px !important;
+            font-size: 11px !important;
             margin: 1px 0 !important;
         }
         body.printing-buyer-form #bfHeaderCenter h3 {
-            font-size: 21px !important;
-            margin: 3px 0 !important;
+            font-size: 17px !important;
+            margin: 2px 0 !important;
         }
 
         body.printing-buyer-form #bfSalesUnitBox {
-            font-size: 13.5px !important;
+            font-size: 11px !important;
             padding-top: 0 !important;
             font-weight: 500 !important;
         }
         body.printing-buyer-form #bfSalesUnitBox > div {
-            margin-bottom: 3.5px !important;
+            margin-bottom: 2px !important;
         }
 
         /* Customer info rows in print with comfortable line spacing */
         body.printing-buyer-form .form-row {
-            margin-bottom: 7.5px !important;
-            font-size: 15px !important;
+            margin-bottom: 2.5px !important;
+            font-size: 12px !important;
             font-weight: 500 !important;
         }
         body.printing-buyer-form .dotted-input {
-            border-bottom: 1.5px dotted black !important;
-            padding-bottom: 2px !important;
+            border-bottom: 1px dotted black !important;
+            padding-bottom: 1px !important;
         }
 
         body.printing-buyer-form .print-input {
-            font-size: 14.5px !important;
+            font-size: 11.5px !important;
             font-weight: 600 !important;
             color: #000000 !important;
         }
 
         /* Model info box in print */
         body.printing-buyer-form #bfModelInfoBox {
-            padding: 6px 10px !important;
-            margin-bottom: 9px !important;
-            font-size: 15px !important;
+            padding: 3px 6px !important;
+            margin-bottom: 4px !important;
+            font-size: 12px !important;
             font-weight: 600 !important;
         }
 
@@ -800,23 +804,23 @@
         body.printing-buyer-form .print-table td,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-1 table th,
         body.printing-buyer-form #buyerFormModal .buyer-form-page-1 table td {
-            padding: 5px 6px !important;
-            font-size: 14.5px !important;
-            line-height: 1.35 !important;
+            padding: 2.5px 4px !important;
+            font-size: 11.5px !important;
+            line-height: 1.25 !important;
         }
 
         /* Financial table & KPI table margins in print */
         body.printing-buyer-form #bfFinancialTable {
-            margin-bottom: 10px !important;
+            margin-bottom: 5px !important;
         }
 
         body.printing-buyer-form #bfKpiTable {
-            margin-top: 6px !important;
-            margin-bottom: 12px !important;
+            margin-top: 3px !important;
+            margin-bottom: 5px !important;
         }
 
         body.printing-buyer-form #bfKpiTable td {
-            font-size: 14.5px !important;
+            font-size: 11px !important;
             white-space: normal !important;
             word-break: break-word !important;
             overflow-wrap: break-word !important;
@@ -824,7 +828,7 @@
         }
 
         body.printing-buyer-form #bfKpiTable .print-input {
-            font-size: 14.5px !important;
+            font-size: 11px !important;
             white-space: normal !important;
             word-break: break-word !important;
             overflow-wrap: break-word !important;
@@ -844,16 +848,16 @@
 
         /* Signature rows in print */
         body.printing-buyer-form .buyer-sig-row-1 {
-            margin-top: 40px !important;
-            font-size: 14.5px !important;
+            margin-top: 22px !important;
+            font-size: 11.5px !important;
             font-weight: 600 !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
         body.printing-buyer-form .buyer-sig-row-2 {
-            margin-top: 45px !important;
-            font-size: 14.5px !important;
+            margin-top: 24px !important;
+            font-size: 11.5px !important;
             font-weight: 600 !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
@@ -1230,6 +1234,17 @@
                 <input type="number" id="duration" placeholder="e.g. 24">
             </div>
 
+            <div class="form-group" id="cashEmiGroup" style="display: none; background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 8px; padding: 10px 14px; margin-top: 15px; margin-bottom: 5px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; color: #065f46; font-weight: bold; font-size: 13.5px;">
+                    <input type="checkbox" id="isCashEmiMode" onchange="toggleCashEmiMode()" style="width: 18px; height: 18px; accent-color: #059669; cursor: pointer;">
+                    <span>✨ ক্যাশ ইএমআই পদ্ধতি (Cash EMI - Division Only)</span>
+                </label>
+                <div id="cashEmiHelpText" style="display: none; font-size: 12px; color: #047857; margin-top: 6px; line-height: 1.45;">
+                    • <strong>ক্যাশ প্রাইসের</strong> উপর সর্বনিম্ন <strong>৩০%</strong> ডাউনপেমেন্ট।<br>
+                    • বাকি টাকার উপর <strong>১৩.৭৫%</strong> বাৎসরিক মুনাফা হারে দাম ও কিস্তি নির্ধারিত হবে।
+                </div>
+            </div>
+
             <div class="form-group" id="customEmiGroup" style="display: none;">
                 <label for="customEmi">Custom EMI (Optional)</label>
                 <input type="number" id="customEmi" placeholder="Fixed Monthly Tk.">
@@ -1521,6 +1536,12 @@
             document.getElementById("customEmiGroup").style.display = "none";
         }
 
+        // Cash EMI: Admin & Division Only
+        const cashEmiGroup = document.getElementById("cashEmiGroup");
+        if (cashEmiGroup) {
+            cashEmiGroup.style.display = (role === "Admin" || role === "Division") ? "block" : "none";
+        }
+
         // First Installment Grace Period: Open for ALL roles
         const graceGroup = document.getElementById("gracePeriodGroup");
         if (graceGroup) {
@@ -1564,6 +1585,12 @@
         if (btnMyOffers) btnMyOffers.style.display = "none";
         const btnOffer = document.getElementById("btnGenerateOfferLetter");
         if (btnOffer) btnOffer.style.display = "none";
+        const cashEmiGroup = document.getElementById("cashEmiGroup");
+        if (cashEmiGroup) cashEmiGroup.style.display = "none";
+        const cashEmiCheck = document.getElementById("isCashEmiMode");
+        if (cashEmiCheck) cashEmiCheck.checked = false;
+        const helpEl = document.getElementById("cashEmiHelpText");
+        if (helpEl) helpEl.style.display = "none";
         document.getElementById("mainApp").style.display = "none";
         document.getElementById("loginOverlay").style.display = "flex";
         
@@ -1923,26 +1950,81 @@
         }
     }
 
-    function updateDpTk() {
+    function toggleCashEmiMode() {
+        const isCashEmi = (userRole === "Admin" || userRole === "Division") && document.getElementById("isCashEmiMode")?.checked;
+        const helpEl = document.getElementById("cashEmiHelpText");
+        if (helpEl) helpEl.style.display = isCashEmi ? "block" : "none";
+
+        const customEmiGrp = document.getElementById("customEmiGroup");
+        if (customEmiGrp) {
+            customEmiGrp.style.display = isCashEmi ? "none" : ((userRole === "Admin" || userRole === "Division") ? "block" : "none");
+        }
+        if (isCashEmi) {
+            const customEmiInp = document.getElementById("customEmi");
+            if (customEmiInp) customEmiInp.value = "";
+        }
+
         const price = parseFloat(document.getElementById("price").value);
+        const data = price ? modelData[price.toString()] : null;
+        const applicableCashPrice = getApplicableCashPrice(data) || price;
+
+        if (isCashEmi) {
+            const interestInput = document.getElementById("interest");
+            if (interestInput) interestInput.value = "13.75";
+            
+            if (applicableCashPrice > 0) {
+                const dpPercentInput = document.getElementById("dpPercent");
+                const dpAmountInput = document.getElementById("dpAmount");
+                const currentDp = parseFloat(dpAmountInput.value) || 0;
+                const minCashDp = Math.round(applicableCashPrice * 0.30);
+                if (currentDp < minCashDp) {
+                    if (dpPercentInput) dpPercentInput.value = "30";
+                    if (dpAmountInput) dpAmountInput.value = minCashDp;
+                } else {
+                    if (dpPercentInput) dpPercentInput.value = ((currentDp / applicableCashPrice) * 100).toFixed(2);
+                }
+            }
+        } else {
+            autoUpdateInterest({ target: { id: "duration" } });
+            updateDpPercent();
+        }
+
+        if (document.getElementById("results").style.display !== "none") {
+            calculate();
+        }
+    }
+
+    function updateDpTk() {
+        const isCashEmi = (userRole === "Admin" || userRole === "Division") && document.getElementById("isCashEmiMode")?.checked;
+        const price = parseFloat(document.getElementById("price").value);
+        const data = price ? modelData[price.toString()] : null;
+        const basePrice = (isCashEmi && data) ? (getApplicableCashPrice(data) || price) : price;
         const percent = parseFloat(document.getElementById("dpPercent").value);
-        if (!isNaN(price) && !isNaN(percent)) {
-            document.getElementById("dpAmount").value = Math.round((price * percent) / 100);
+        if (!isNaN(basePrice) && !isNaN(percent)) {
+            document.getElementById("dpAmount").value = Math.round((basePrice * percent) / 100);
         }
     }
 
     function updateDpPercent() {
+        const isCashEmi = (userRole === "Admin" || userRole === "Division") && document.getElementById("isCashEmiMode")?.checked;
         const price = parseFloat(document.getElementById("price").value);
+        const data = price ? modelData[price.toString()] : null;
+        const basePrice = (isCashEmi && data) ? (getApplicableCashPrice(data) || price) : price;
         const amount = parseFloat(document.getElementById("dpAmount").value);
-        if (!isNaN(price) && !isNaN(amount) && price > 0) {
-            document.getElementById("dpPercent").value = ((amount / price) * 100).toFixed(2);
+        if (!isNaN(basePrice) && !isNaN(amount) && basePrice > 0) {
+            document.getElementById("dpPercent").value = ((amount / basePrice) * 100).toFixed(2);
         }
     }
 
     function autoUpdateInterest(event) {
+        const isCashEmi = (userRole === "Admin" || userRole === "Division") && document.getElementById("isCashEmiMode")?.checked;
+        const interestInput = document.getElementById("interest");
+        if (isCashEmi) {
+            if (interestInput) interestInput.value = "13.75";
+            return;
+        }
         const customEmiInput = document.getElementById("customEmi") ? document.getElementById("customEmi").value.trim() : "";
         const isCustomEmiEntered = (userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0;
-        const interestInput = document.getElementById("interest");
         
         const price = parseFloat(document.getElementById("price").value);
         let dpAmount = parseFloat(document.getElementById("dpAmount").value);
@@ -2091,14 +2173,30 @@
             }
         }
 
+        const isCashEmi = (userRole === "Admin" || userRole === "Division") && document.getElementById("isCashEmiMode")?.checked;
         const customEmiInput = document.getElementById("customEmi") ? document.getElementById("customEmi").value.trim() : "";
         let isCustomEmi = false;
         let customEmi = 0;
+        let baseVehiclePrice = price;
+        let effectiveInterestRate = interestRate;
+        let totalLoan = price - dpAmount;
         
-        if ((userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+        if (isCashEmi) {
+            baseVehiclePrice = applicableCashPrice;
+            const minCashDp = Math.round(baseVehiclePrice * 0.30);
+            if (dpAmount < minCashDp) {
+                alert(`ক্যাশ ইএমআই পদ্ধতিতে ডাউনপেমেন্ট ক্যাশ প্রাইসের সর্বনিম্ন ৩০% (${formatCurrency(minCashDp)}) বা তার বেশি হতে হবে। ডাউনপেমেন্ট ৩০% সেট করা হয়েছে।`);
+                dpAmount = minCashDp;
+                document.getElementById("dpAmount").value = dpAmount;
+                updateDpPercent();
+            }
+            effectiveInterestRate = 13.75;
+            document.getElementById("interest").value = "13.75";
+            totalLoan = baseVehiclePrice - dpAmount;
+        } else if ((userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
             isCustomEmi = true;
             customEmi = parseFloat(customEmiInput);
-            interestRate = 8;
+            effectiveInterestRate = 8;
             document.getElementById("interest").value = "8";
         } else {
             let requiredRate = 5;
@@ -2107,15 +2205,16 @@
             else if (months > 29) requiredRate = 10;
             else if (months > 24) requiredRate = 7;
             
-            if (userRole !== "Admin" && userRole !== "Division" && interestRate < requiredRate) {
+            if (isNaN(interestRate) || interestRate <= 0) {
+                interestRate = requiredRate;
+                document.getElementById("interest").value = requiredRate.toString();
+            } else if (userRole !== "Admin" && userRole !== "Division" && interestRate < requiredRate) {
                 interestRate = requiredRate;
                 document.getElementById("interest").value = requiredRate.toString();
                 alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
             }
+            effectiveInterestRate = interestRate;
         }
-
-        const effectiveInterestRate = isCustomEmi ? 8 : interestRate;
-        const totalLoan = price - dpAmount;
 
         // First Installment Delay / Grace Period & Gestation Profit (Open for ALL users, 1st 30 days free)
         const graceDaysInput = document.getElementById("firstEmiDays");
@@ -2141,9 +2240,9 @@
 
         let standardInterest = (totalLoan * effectiveInterestRate * (months / 12)) / 100;
         let totalInterest = standardInterest + graceProfit;
-        let totalPrice = price + totalInterest;
+        let totalPrice = baseVehiclePrice + totalInterest;
         totalPrice = Math.round(totalPrice / 1000) * 1000;
-        totalInterest = totalPrice - price;
+        totalInterest = totalPrice - baseVehiclePrice;
         let emi = ((totalPrice - dpAmount) / months) + 500;
         let emiDisplayText = formatCurrency(emi);
         if (isGraceApplied) {
@@ -2173,87 +2272,6 @@
                 emiDisplayText = isGraceApplied ? `${formatCurrency(emi)} <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>` : formatCurrency(emi);
             }
         }
-
-        let creditPriceExcel = 0;
-        let baseStandardLabel = "29 Months Standard CP";
-        if (data) {
-            // FOR ALL ROLES: Base comparison is ALWAYS the 29 Months Credit Price (data.cp29)
-            creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
-        }
-
-        const base29CreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
-        const isPriceAbove29 = (creditPriceExcel > 0 && totalPrice > creditPriceExcel);
-        const isPriceChanged = isCustomEmi || isPriceAbove29 || (months > 29);
-        const approvedStandardCreditPrice = isPriceChanged 
-            ? totalPrice 
-            : base29CreditPrice;
-        const deviation = totalPrice - base29CreditPrice;
-        const diffPerMonth = months > 0 ? Math.round(Math.abs(deviation) / months) : 0;
-        let deviationNote = "";
-        let deviationEmiNote = "Includes Tk. 500 VTS";
-        if (isCustomEmi) {
-            deviationNote = `Custom EMI Package (${months} Months @ 8% Flat Profit)`;
-            deviationEmiNote = `Custom EMI: Tk. ${formatNumberOnly(customEmi)}/Mo`;
-        } else if (months > 29) {
-            deviationNote = `${months} Months Credit Package (@ ${effectiveInterestRate}% Profit)`;
-            deviationEmiNote = `Includes Tk. 500 VTS`;
-        } else if (isPriceAbove29) {
-            deviationNote = `Approved Sales Package (Adjusted Price: Tk. ${formatCurrency(totalPrice)})`;
-            deviationEmiNote = `Includes Tk. 500 VTS`;
-        } else if (deviation < 0) {
-            deviationNote = `Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
-            deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
-        }
-
-        let comparisonHTML = "";
-        if (isCustomEmi) {
-            comparisonHTML = `
-                <div style="margin-top:10px; padding:12px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1e40af; font-size:15px;">
-                    <strong>✨ কাস্টম ইএমআই প্যাকেজ (৮% ফ্ল্যাট প্রফিট অনুমোদিত):</strong><br>
-                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                        • ফাইনাল অনুমোদিত প্রাইস: <strong>Tk. ${formatCurrency(totalPrice)}</strong> (৮% ফ্ল্যাট প্রফিট সহ)<br>
-                        • ১ থেকে ${months-1} তম মাস পর্যন্ত কিস্তি: <strong>Tk. ${formatCurrency(customEmi)}</strong><br>
-                        • শেষ (${months} তম) মাসের কিস্তি: <strong>Tk. ${formatCurrency(finalMonthEmi)}</strong><br>
-                        • <em>এই নির্ধারিত প্রাইসটি বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
-                    </span>
-                </div>
-            `;
-        } else if (isPriceAbove29 || months > 29) {
-            const diff = (creditPriceExcel > 0 && totalPrice > creditPriceExcel) ? (totalPrice - creditPriceExcel) : 0;
-            comparisonHTML = `
-                <div style="margin-top:10px; padding:12px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#15803d; font-size:15px;">
-                    <strong>✨ অনুমোদিত বর্ধিত ক্রেডিট প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা</strong><br>
-                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(base29CreditPrice)}</strong> টাকা<br>
-                        • এই নির্দিষ্ট ফাইলের জন্য বর্ধিত অনুমোদিত প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা ${diff > 0 ? `(+${formatCurrency(diff)} সমন্বয়)` : ''}<br>
-                        • কিস্তির মেয়াদ: <strong>${months} মাস (${months} কিস্তি)</strong> | প্রফিট রেট: <strong>${effectiveInterestRate}%</strong><br>
-                        • মাসিক কিস্তি (EMI): <strong>Tk. ${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)<br>
-                        • <em>এই পরিবর্তিত বর্ধিত প্রাইসটি (${formatCurrency(totalPrice)}) বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
-                    </span>
-                </div>
-            `;
-        } else if (creditPriceExcel > 0 && deviation < 0) {
-            const diff = Math.abs(deviation);
-            comparisonHTML = `
-                <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
-                    <strong>🎉 কাস্টমার বেনিফিট / লাভ / ছাড় (Rebate): -${formatCurrency(diff)}</strong><br>
-                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> টাকা<br>
-                        • মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা<br>
-                        • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় বেশি ডাউনপেমেন্ট বা কম মেয়াদের কারণে মোট <strong>${formatCurrency(diff)}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে সমন্বয়/বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
-                    </span>
-                </div>
-            `;
-        } else if (creditPriceExcel > 0) {
-            comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches 29 Months Base Credit Price exactly (Tk. ${formatCurrency(creditPriceExcel)}).</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
-        }
-
-        let explanationHTML = `
-            ${comparisonHTML}
-            <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #4b5563; font-style: italic;">
-                * VTS চার্জ ৫০০ টাকা মান্থলি কিস্তির (EMI) সাথে যোগ করা হয়েছে।
-            </div>
-        `;
 
         // Registration and Processing Fee Options
         let regCost = (data && data.regCost) ? data.regCost : 0;
@@ -2320,6 +2338,101 @@
                 regPkgNote1 = "Last (" + finalMonthIdx + "th) Installment: " + formatCurrency(finalMonthEmi);
             }
         }
+
+        let creditPriceExcel = 0;
+        let baseStandardLabel = "29 Months Standard CP";
+        if (data) {
+            // FOR ALL ROLES: Base comparison is ALWAYS the 29 Months Credit Price (data.cp29)
+            creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
+        }
+
+        const base29CreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
+        const isPriceAbove29 = (creditPriceExcel > 0 && totalPrice > creditPriceExcel);
+        const isPriceChanged = isCustomEmi || isPriceAbove29 || (months > 29);
+        const approvedStandardCreditPrice = isPriceChanged 
+            ? totalPrice 
+            : base29CreditPrice;
+        const deviation = totalPrice - base29CreditPrice;
+        const diffPerMonth = months > 0 ? Math.round(Math.abs(deviation) / months) : 0;
+        let deviationNote = "";
+        let deviationEmiNote = "Includes Tk. 500 VTS";
+        if (isCustomEmi) {
+            deviationNote = `Custom EMI Package (${months} Months @ 8% Flat Profit)`;
+            deviationEmiNote = `Custom EMI: Tk. ${formatNumberOnly(customEmi)}/Mo`;
+        } else if (months > 29) {
+            deviationNote = `${months} Months Credit Package (@ ${effectiveInterestRate}% Profit)`;
+            deviationEmiNote = `Includes Tk. 500 VTS`;
+        } else if (isPriceAbove29) {
+            deviationNote = `Approved Sales Package (Adjusted Price: Tk. ${formatCurrency(totalPrice)})`;
+            deviationEmiNote = `Includes Tk. 500 VTS`;
+        } else if (deviation < 0) {
+            deviationNote = `Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
+            deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
+        }
+
+        let comparisonHTML = "";
+        if (isCashEmi) {
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #059669; border-radius:8px; color:#065f46; font-size:15px;">
+                    <strong>✨ ক্যাশ ইএমআই প্যাকেজ (Division Special - ১৩.৭৫% বাৎসরিক মুনাফা):</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.6;">
+                        • অফার প্রাইস (ক্যাশ প্রাইস): <strong>${formatCurrency(baseVehiclePrice)}</strong> টাকা<br>
+                        • <strong>ফাইনাল নেগোসিয়েশন প্রাইস (ইন্টারেস্ট সহ): <strong>${formatCurrency(totalPrice)}</strong> টাকা</strong><br>
+                        • ডাউনপেমেন্ট: <strong>${formatCurrency(dpAmount)}</strong> (${((dpAmount / baseVehiclePrice) * 100).toFixed(1)}%) | লোন ব্যালেন্স: <strong>${formatCurrency(totalLoan)}</strong> টাকা<br>
+                        • কিস্তির মেয়াদ: <strong>${months} মাস (${months} কিস্তি)</strong> | মুনাফা হার: <strong>13.75%</strong><br>
+                        • মাসিক কিস্তি (EMI): <strong>${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)<br>
+                        • <em>বায়ার ফর্মে কোম্পানির অফার প্রাইস হিসেবে <strong>${formatCurrency(baseVehiclePrice)}</strong> এবং ফাইনাল নেগোসিয়েশন প্রাইস হিসেবে <strong>${formatCurrency(totalPrice)}</strong> প্রদর্শিত হবে।</em>
+                    </span>
+                </div>
+            `;
+        } else if (isCustomEmi) {
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1e40af; font-size:15px;">
+                    <strong>✨ কাস্টম ইএমআই প্যাকেজ (৮% ফ্ল্যাট প্রফিট অনুমোদিত):</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • ফাইনাল অনুমোদিত প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> (৮% ফ্ল্যাট প্রফিট সহ)<br>
+                        • ১ থেকে ${months-1} তম মাস পর্যন্ত কিস্তি: <strong>${formatCurrency(customEmi)}</strong><br>
+                        • শেষ (${months} তম) মাসের কিস্তি: <strong>${formatCurrency(effectiveFinalMonthEmi)}</strong><br>
+                        • <em>এই নির্ধারিত প্রাইসটি বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
+                    </span>
+                </div>
+            `;
+        } else if (isPriceAbove29 || months > 29) {
+            const diff = (creditPriceExcel > 0 && totalPrice > creditPriceExcel) ? (totalPrice - creditPriceExcel) : 0;
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#15803d; font-size:15px;">
+                    <strong>✨ অনুমোদিত বর্ধিত ক্রেডিট প্রাইস: <strong>${formatCurrency(totalPrice)}</strong></strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(base29CreditPrice)}</strong><br>
+                        • এই নির্দিষ্ট ফাইলের জন্য বর্ধিত অনুমোদিত প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> ${diff > 0 ? `(+ ${formatCurrency(diff)} সমন্বয়)` : ''}<br>
+                        • কিস্তির মেয়াদ: <strong>${months} মাস (${months} কিস্তি)</strong> | প্রফিট রেট: <strong>${effectiveInterestRate}%</strong><br>
+                        • মাসিক কিস্তি (EMI): <strong>${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)<br>
+                        • <em>এই পরিবর্তিত বর্ধিত প্রাইসটি (${formatCurrency(totalPrice)}) বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
+                    </span>
+                </div>
+            `;
+        } else if (creditPriceExcel > 0 && deviation < 0) {
+            const diff = Math.abs(deviation);
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
+                    <strong>🎉 কাস্টমার বেনিফিট / লাভ / ছাড় (Rebate): -${formatCurrency(diff)}</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong><br>
+                        • মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
+                        • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় বেশি ডাউনপেমেন্ট বা কম মেয়াদের কারণে মোট <strong>${formatCurrency(diff)}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে সমন্বয়/বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                    </span>
+                </div>
+            `;
+        } else if (creditPriceExcel > 0) {
+            comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches 29 Months Base Credit Price exactly (${formatCurrency(creditPriceExcel)}).</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
+        }
+
+        let explanationHTML = `
+            ${comparisonHTML}
+            <div style="margin-top: 8px; text-align: center; font-size: 13px; color: #4b5563; font-style: italic;">
+                * VTS চার্জ ৫০০ টাকা মান্থলি কিস্তির (EMI) সাথে যোগ করা হয়েছে।
+            </div>
+        `;
 
         if (regCost > 0 || processingFee > 0) {
             explanationHTML += `
@@ -2394,6 +2507,10 @@
         }
 
         document.getElementById("results").style.display = "block";
+        const resPriceTitle = document.querySelector("#results .result-card:nth-child(1) h4");
+        if (resPriceTitle) {
+            resPriceTitle.innerText = isCashEmi ? "Negotiation Price" : "Total Price";
+        }
         document.getElementById("resTotalPrice").innerText = formatCurrency(totalPrice);
         document.getElementById("resEmi").innerHTML = emiDisplayText;
         document.getElementById("resInterest").innerText = formatCurrency(totalInterest);
@@ -2405,14 +2522,17 @@
             btnOffer.style.display = (userRole === "Admin") ? "inline-flex" : "none";
         }
         globalCalcData = {
-            price: price,
-            cashPrice: getApplicableCashPrice(data) || price,
-            base29Price: base29CreditPrice,
-            standardCreditPrice: base29CreditPrice,
+            isCashEmi: isCashEmi,
+            offerPrice: isCashEmi ? baseVehiclePrice : base29CreditPrice,
+            negotiationPrice: totalPrice,
+            price: isCashEmi ? baseVehiclePrice : price,
+            cashPrice: applicableCashPrice,
+            base29Price: isCashEmi ? baseVehiclePrice : base29CreditPrice,
+            standardCreditPrice: isCashEmi ? baseVehiclePrice : base29CreditPrice,
             calculatedTotalPrice: totalPrice,
             totalInterest: totalInterest,
             totalPrice: totalPrice,
-            isPriceChanged: isPriceChanged,
+            isPriceChanged: isPriceChanged || isCashEmi,
             dpAmount: dpAmount,
             months: months,
             emi: emi,
@@ -3051,6 +3171,7 @@
 </div>
 
 <style>
+@media screen {
     .form-row { display: flex; align-items: flex-end; margin-bottom: 6.5px; }
     .print-input { 
         border: none; 
@@ -3147,6 +3268,7 @@
         line-height: 1.35;
         height: auto !important;
     }
+}
 </style>
 
 <script>
@@ -3271,38 +3393,55 @@
             setVal("bfP2CreditTotal", "");
             setVal("bfP2CashCalculationArea", `Vehicle Cash Price: Tk. ${formatNumberOnly(cashPriceVal)}\nDown Payment / Booking: Tk. ${formatNumberOnly(globalCalcData.dpAmount || 0)}\nBalance Payable: Tk. ${formatNumberOnly(Math.max(0, cashPriceVal - (globalCalcData.dpAmount || 0)))}`);
         } else {
-            // Credit Mode - 
-            // ২৯ মাসের প্রাইসের ঊর্ধ্বে কোনো প্রাইস আসলে সেটা ওই নির্দিষ্ট সেলসের জন্য প্রাইস চেঞ্জ হবে।
-            const base29 = globalCalcData.base29Price || globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
-            const isPriceChanged = globalCalcData.isPriceChanged || globalCalcData.isCustomEmi || (globalCalcData.totalPrice > base29) || (globalCalcData.months > 29);
-            
-            if (isPriceChanged) {
-                const finalPrice = globalCalcData.totalPrice;
-                setVal("bfCompanyTotal", formatCurrency(finalPrice));
-                setVal("bfFinalTotal", formatCurrency(finalPrice));
+            // Credit Mode / Cash EMI Mode
+            if (globalCalcData.isCashEmi) {
+                const offerPrice = globalCalcData.offerPrice || globalCalcData.cashPrice;
+                const negPrice = globalCalcData.negotiationPrice || globalCalcData.totalPrice;
+                setVal("bfCompanyTotal", formatCurrency(offerPrice));
+                setVal("bfFinalTotal", formatCurrency(negPrice));
                 setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
-                setVal("bfOutstanding", formatCurrency(finalPrice - globalCalcData.dpAmount));
+                setVal("bfOutstanding", formatCurrency(negPrice - globalCalcData.dpAmount));
             } else {
-                setVal("bfCompanyTotal", formatCurrency(base29));
-                setVal("bfFinalTotal", formatCurrency(base29));
-                setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
-                setVal("bfOutstanding", formatCurrency(base29 - globalCalcData.dpAmount));
+                const base29 = globalCalcData.base29Price || globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
+                const isPriceChanged = globalCalcData.isPriceChanged || globalCalcData.isCustomEmi || (globalCalcData.totalPrice > base29) || (globalCalcData.months > 29);
+                
+                if (isPriceChanged) {
+                    const finalPrice = globalCalcData.totalPrice;
+                    setVal("bfCompanyTotal", formatCurrency(finalPrice));
+                    setVal("bfFinalTotal", formatCurrency(finalPrice));
+                    setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+                    setVal("bfOutstanding", formatCurrency(finalPrice - globalCalcData.dpAmount));
+                } else {
+                    setVal("bfCompanyTotal", formatCurrency(base29));
+                    setVal("bfFinalTotal", formatCurrency(base29));
+                    setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+                    setVal("bfOutstanding", formatCurrency(base29 - globalCalcData.dpAmount));
+                }
             }
             
             // Credit Remarks/Notes logic:
             // 1. Remove duplicate rebate note from bfVtsNote (Remarks/Notes column)
             // 2. Clear breakdown of VTS and Registration monthly addition
             let remarksNoteRow1 = "Includes Tk. 500 VTS/Mo";
-            const pkgRow1Text = globalCalcData.isCustomEmi 
-                ? `Custom EMI Package (${globalCalcData.months} Months @ 8% Flat Profit)`
-                : (globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)");
+            const pkgRow1Text = globalCalcData.isCashEmi
+                ? `Cash EMI Package (${globalCalcData.months} Months @ 13.75% Flat Profit)`
+                : (globalCalcData.isCustomEmi 
+                    ? `Custom EMI Package (${globalCalcData.months} Months @ 8% Flat Profit)`
+                    : (globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)"));
             
             if (globalCalcData.selectedRegOption === 'emi' && globalCalcData.regCost > 0) {
                 const regPerMo = globalCalcData.months > 0 ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
                 remarksNoteRow1 = `Includes VTS: Tk. 500/Mo + Reg: Tk. ${formatNumberOnly(regPerMo)}/Mo`;
             }
             
-            if (globalCalcData.isCustomEmi) {
+            if (globalCalcData.isCashEmi) {
+                setVal("bfEmi", formatCurrency(globalCalcData.effectiveEmi));
+                setVal("bfEmiMonths", (globalCalcData.months || "") + " Months");
+                setVal("bfPkgRow1", pkgRow1Text);
+                setVal("bfVtsNote", remarksNoteRow1);
+                setVal("bfPkgRow2", `Offer Price (Cash): Tk. ${formatNumberOnly(globalCalcData.offerPrice || globalCalcData.cashPrice)} | Neg. Price: Tk. ${formatNumberOnly(globalCalcData.negotiationPrice || globalCalcData.totalPrice)}`);
+                setVal("bfFinalEmiNote", globalCalcData.regPkgNote2 || "");
+            } else if (globalCalcData.isCustomEmi) {
                 const regPerMonth = globalCalcData.selectedRegOption === 'emi' ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
                 setVal("bfEmi", formatCurrency(globalCalcData.customEmi + regPerMonth));
                 setVal("bfEmiMonths", "1 to " + (globalCalcData.months - 1) + " Months");
