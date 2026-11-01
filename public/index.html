@@ -1222,7 +1222,7 @@
 
             <div class="form-group" id="interestGroup">
                 <label for="interest">Profit Rate (%)</label>
-                <input type="number" id="interest" placeholder="e.g. 5" step="0.1">
+                <input type="number" id="interest" placeholder="e.g. 5" step="any">
             </div>
 
             <div class="form-group">
@@ -1940,18 +1940,29 @@
     }
 
     function autoUpdateInterest(event) {
+        const customEmiInput = document.getElementById("customEmi") ? document.getElementById("customEmi").value.trim() : "";
+        const isCustomEmiEntered = (userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0;
+        const interestInput = document.getElementById("interest");
+        
         const price = parseFloat(document.getElementById("price").value);
         let dpAmount = parseFloat(document.getElementById("dpAmount").value);
         const months = parseInt(document.getElementById("duration").value);
-        const interestInput = document.getElementById("interest");
         
-        if (isNaN(months) || months <= 0) return;
-
         let requiredRate = 5;
-        if (months > 35) requiredRate = 13;
+        if (months >= 60) requiredRate = 13.75;
+        else if (months > 35) requiredRate = 13;
         else if (months > 29) requiredRate = 10;
         else if (months > 24) requiredRate = 7;
         
+        if (isCustomEmiEntered) {
+            interestInput.value = "8";
+            return;
+        } else if (interestInput.value === "8" && (event && event.target && event.target.id === "customEmi")) {
+            interestInput.value = requiredRate;
+        }
+
+        if (isNaN(months) || months <= 0) return;
+
         let currentInterest = parseFloat(interestInput.value);
         
         // If the duration was changed, automatically set default profit rate for that duration
@@ -1970,7 +1981,8 @@
     document.getElementById("price").addEventListener("change", autoUpdateInterest);
     document.getElementById("dpAmount").addEventListener("input", autoUpdateInterest);
     document.getElementById("interest").addEventListener("change", autoUpdateInterest); // Enforce min rate on manual edit for field users
-    document.getElementById("customEmi").addEventListener("input", () => {
+    document.getElementById("customEmi").addEventListener("input", (e) => {
+        autoUpdateInterest(e);
         if (document.getElementById("results").style.display !== "none") {
             calculate();
         }
@@ -2079,18 +2091,30 @@
             }
         }
 
-        let requiredRate = 5;
-        if (months > 35) requiredRate = 13;
-        else if (months > 29) requiredRate = 10;
-        else if (months > 24) requiredRate = 7;
+        const customEmiInput = document.getElementById("customEmi") ? document.getElementById("customEmi").value.trim() : "";
+        let isCustomEmi = false;
+        let customEmi = 0;
         
-        if (userRole !== "Admin" && userRole !== "Division" && interestRate < requiredRate) {
-            interestRate = requiredRate;
-            document.getElementById("interest").value = requiredRate.toString();
-            alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
+        if ((userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
+            isCustomEmi = true;
+            customEmi = parseFloat(customEmiInput);
+            interestRate = 8;
+            document.getElementById("interest").value = "8";
+        } else {
+            let requiredRate = 5;
+            if (months >= 60) requiredRate = 13.75;
+            else if (months > 35) requiredRate = 13;
+            else if (months > 29) requiredRate = 10;
+            else if (months > 24) requiredRate = 7;
+            
+            if (userRole !== "Admin" && userRole !== "Division" && interestRate < requiredRate) {
+                interestRate = requiredRate;
+                document.getElementById("interest").value = requiredRate.toString();
+                alert(`For a duration of ${months} months, the minimum profit rate is ${requiredRate}%. The rate has been adjusted automatically.`);
+            }
         }
 
-        const effectiveInterestRate = interestRate;
+        const effectiveInterestRate = isCustomEmi ? 8 : interestRate;
         const totalLoan = price - dpAmount;
 
         // First Installment Delay / Grace Period & Gestation Profit (Open for ALL users, 1st 30 days free)
@@ -2127,31 +2151,25 @@
         }
         let finalMonthEmi = emi;
         
-        const customEmiInput = document.getElementById("customEmi").value.trim();
-        let isCustomEmi = false;
-        let customEmi = 0;
-        
-        if ((userRole === "Admin" || userRole === "Division") && customEmiInput !== "" && !isNaN(customEmiInput) && parseFloat(customEmiInput) > 0) {
-            customEmi = parseFloat(customEmiInput);
+        if (isCustomEmi) {
             const deficitPerMonth = emi - customEmi;
             
             if (deficitPerMonth > 0) {
-                isCustomEmi = true;
                 const totalDeficit = deficitPerMonth * (months - 1);
                 const extraInterest = (totalDeficit * effectiveInterestRate * (months / 12)) / 100;
                 
                 totalInterest += extraInterest;
                 totalPrice += extraInterest;
+                totalPrice = Math.round(totalPrice / 1000) * 1000;
+                totalInterest = totalPrice - price;
                 
                 finalMonthEmi = emi + totalDeficit + extraInterest;
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else if (deficitPerMonth < 0) {
-                isCustomEmi = true;
                 const totalSurplus = Math.abs(deficitPerMonth) * (months - 1);
                 finalMonthEmi = Math.max(0, emi - totalSurplus);
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else {
-                isCustomEmi = false;
                 emiDisplayText = isGraceApplied ? `${formatCurrency(emi)} <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>` : formatCurrency(emi);
             }
         }
@@ -2163,48 +2181,71 @@
             creditPriceExcel = data.cp29 || data.cp24 || data.cp35 || data.cp12 || 0;
         }
 
-        const approvedStandardCreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
-        const deviation = totalPrice - approvedStandardCreditPrice;
+        const base29CreditPrice = creditPriceExcel > 0 ? creditPriceExcel : totalPrice;
+        const isPriceAbove29 = (creditPriceExcel > 0 && totalPrice > creditPriceExcel);
+        const isPriceChanged = isCustomEmi || isPriceAbove29 || (months > 29);
+        const approvedStandardCreditPrice = isPriceChanged 
+            ? totalPrice 
+            : base29CreditPrice;
+        const deviation = totalPrice - base29CreditPrice;
         const diffPerMonth = months > 0 ? Math.round(Math.abs(deviation) / months) : 0;
         let deviationNote = "";
         let deviationEmiNote = "Includes Tk. 500 VTS";
-        if (creditPriceExcel > 0 && deviation !== 0) {
-            if (deviation < 0) {
-                deviationNote = `Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
-                deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
-            } else {
-                deviationNote = `Surcharge: +${formatCurrency(deviation)} (DP/Tenure Adjustment: +${formatCurrency(diffPerMonth)}/Mo)`;
-                deviationEmiNote = `EMI Adjusted (+${formatCurrency(diffPerMonth)}/Mo Surcharge)`;
-            }
+        if (isCustomEmi) {
+            deviationNote = `Custom EMI Package (${months} Months @ 8% Flat Profit)`;
+            deviationEmiNote = `Custom EMI: Tk. ${formatNumberOnly(customEmi)}/Mo`;
+        } else if (months > 29) {
+            deviationNote = `${months} Months Credit Package (@ ${effectiveInterestRate}% Profit)`;
+            deviationEmiNote = `Includes Tk. 500 VTS`;
+        } else if (isPriceAbove29) {
+            deviationNote = `Approved Sales Package (Adjusted Price: Tk. ${formatCurrency(totalPrice)})`;
+            deviationEmiNote = `Includes Tk. 500 VTS`;
+        } else if (deviation < 0) {
+            deviationNote = `Rebate: -${formatCurrency(Math.abs(deviation))} (DP/Tenure Benefit: -${formatCurrency(diffPerMonth)}/Mo)`;
+            deviationEmiNote = `EMI Adjusted (-${formatCurrency(diffPerMonth)}/Mo Rebate)`;
         }
 
         let comparisonHTML = "";
-        if (creditPriceExcel > 0) {
-            const diff = totalPrice - creditPriceExcel;
-            const standardText = `স্ট্যান্ডার্ড ক্রেডিট প্রাইস (২৯ মাস বেস): <strong>${formatCurrency(creditPriceExcel)}</strong>`;
-            if (diff > 0) {
-                comparisonHTML = `
-                    <div style="margin-top:10px; padding:12px; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; color:#b91c1c; font-size:15px;">
-                        <strong>⚠️ অতিরিক্ত সমন্বয় (Surcharge / লস সমন্বয়): +${formatCurrency(diff)}</strong><br>
-                        <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • ${standardText} | মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় ডাউনপেমেন্ট কম বা মেয়াদ বেশি হওয়ায় অতিরিক্ত <strong>${formatCurrency(diff)}</strong> টাকা সরাসরি প্রতি মাসের কিস্তির সাথে সমন্বয়/যোগ করা হয়েছে (<strong>+${formatCurrency(diffPerMonth)}/মাস</strong>)।
-                        </span>
-                    </div>
-                `;
-            } else if (diff < 0) {
-                comparisonHTML = `
-                    <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
-                        <strong>🎉 কাস্টমার বেনিফিট / লাভ / ছাড় (Rebate): -${formatCurrency(Math.abs(diff))}</strong><br>
-                        <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
-                            • ${standardText} | মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong><br>
-                            • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় বেশি ডাউনপেমেন্ট বা কম মেয়াদের কারণে মোট <strong>${formatCurrency(Math.abs(diff))}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে সমন্বয়/বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
-                        </span>
-                    </div>
-                `;
-            } else {
-                comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches 29 Months Base Credit Price exactly (Tk. ${formatCurrency(creditPriceExcel)}).</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
-            }
+        if (isCustomEmi) {
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1e40af; font-size:15px;">
+                    <strong>✨ কাস্টম ইএমআই প্যাকেজ (৮% ফ্ল্যাট প্রফিট অনুমোদিত):</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • ফাইনাল অনুমোদিত প্রাইস: <strong>Tk. ${formatCurrency(totalPrice)}</strong> (৮% ফ্ল্যাট প্রফিট সহ)<br>
+                        • ১ থেকে ${months-1} তম মাস পর্যন্ত কিস্তি: <strong>Tk. ${formatCurrency(customEmi)}</strong><br>
+                        • শেষ (${months} তম) মাসের কিস্তি: <strong>Tk. ${formatCurrency(finalMonthEmi)}</strong><br>
+                        • <em>এই নির্ধারিত প্রাইসটি বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
+                    </span>
+                </div>
+            `;
+        } else if (isPriceAbove29 || months > 29) {
+            const diff = (creditPriceExcel > 0 && totalPrice > creditPriceExcel) ? (totalPrice - creditPriceExcel) : 0;
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#15803d; font-size:15px;">
+                    <strong>✨ অনুমোদিত বর্ধিত ক্রেডিট প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(base29CreditPrice)}</strong> টাকা<br>
+                        • এই নির্দিষ্ট ফাইলের জন্য বর্ধিত অনুমোদিত প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা ${diff > 0 ? `(+${formatCurrency(diff)} সমন্বয়)` : ''}<br>
+                        • কিস্তির মেয়াদ: <strong>${months} মাস (${months} কিস্তি)</strong> | প্রফিট রেট: <strong>${effectiveInterestRate}%</strong><br>
+                        • মাসিক কিস্তি (EMI): <strong>Tk. ${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)<br>
+                        • <em>এই পরিবর্তিত বর্ধিত প্রাইসটি (${formatCurrency(totalPrice)}) বায়ার ফর্মে ফাইনাল প্রাইস হিসেবে প্রদর্শিত হবে।</em>
+                    </span>
+                </div>
+            `;
+        } else if (creditPriceExcel > 0 && deviation < 0) {
+            const diff = Math.abs(deviation);
+            comparisonHTML = `
+                <div style="margin-top:10px; padding:12px; background:#ecfdf5; border:2px solid #10b981; border-radius:8px; color:#047857; font-size:15px;">
+                    <strong>🎉 কাস্টমার বেনিফিট / লাভ / ছাড় (Rebate): -${formatCurrency(diff)}</strong><br>
+                    <span style="font-size:13.5px; font-weight:normal; line-height:1.5;">
+                        • স্ট্যান্ডার্ড ২৯ মাস বেস প্রাইস: <strong>${formatCurrency(creditPriceExcel)}</strong> টাকা<br>
+                        • মোট ক্যালকুলেটেড প্রাইস: <strong>${formatCurrency(totalPrice)}</strong> টাকা<br>
+                        • <strong>কিস্তির সমন্বয় নোট:</strong> ২৯ মাসের বেস প্রাইসের তুলনায় বেশি ডাউনপেমেন্ট বা কম মেয়াদের কারণে মোট <strong>${formatCurrency(diff)}</strong> টাকা ছাড় সরাসরি প্রতি মাসের কিস্তি থেকে সমন্বয়/বিয়োগ করা হয়েছে (<strong>-${formatCurrency(diffPerMonth)}/মাস</strong>)।
+                    </span>
+                </div>
+            `;
+        } else if (creditPriceExcel > 0) {
+            comparisonHTML = `<div style="margin-top:10px; padding:10px; background:#eff6ff; border:2px solid #3b82f6; border-radius:8px; color:#1d4ed8; font-size:15px;"><strong>Matches 29 Months Base Credit Price exactly (Tk. ${formatCurrency(creditPriceExcel)}).</strong><br><span style="font-size:13px; font-weight:normal;">(Total Price: ${formatCurrency(totalPrice)})</span></div>`;
         }
 
         let explanationHTML = `
@@ -2368,10 +2409,12 @@
         globalCalcData = {
             price: price,
             cashPrice: getApplicableCashPrice(data) || price,
-            standardCreditPrice: approvedStandardCreditPrice,
+            base29Price: base29CreditPrice,
+            standardCreditPrice: base29CreditPrice,
             calculatedTotalPrice: totalPrice,
             totalInterest: totalInterest,
             totalPrice: totalPrice,
+            isPriceChanged: isPriceChanged,
             dpAmount: dpAmount,
             months: months,
             emi: emi,
@@ -3230,18 +3273,31 @@
             setVal("bfP2CreditTotal", "");
             setVal("bfP2CashCalculationArea", `Vehicle Cash Price: Tk. ${formatNumberOnly(cashPriceVal)}\nDown Payment / Booking: Tk. ${formatNumberOnly(globalCalcData.dpAmount || 0)}\nBalance Payable: Tk. ${formatNumberOnly(Math.max(0, cashPriceVal - (globalCalcData.dpAmount || 0)))}`);
         } else {
-            // Credit Mode - Use 29-Month Standard Credit Price & Deviations for ALL roles
-            const standardCp = globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
-            setVal("bfCompanyTotal", formatCurrency(standardCp));
-            setVal("bfFinalTotal", formatCurrency(standardCp));
-            setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
-            setVal("bfOutstanding", formatCurrency(standardCp - globalCalcData.dpAmount));
+            // Credit Mode - 
+            // ২৯ মাসের প্রাইসের ঊর্ধ্বে কোনো প্রাইস আসলে সেটা ওই নির্দিষ্ট সেলসের জন্য প্রাইস চেঞ্জ হবে।
+            const base29 = globalCalcData.base29Price || globalCalcData.standardCreditPrice || globalCalcData.totalPrice;
+            const isPriceChanged = globalCalcData.isPriceChanged || globalCalcData.isCustomEmi || (globalCalcData.totalPrice > base29) || (globalCalcData.months > 29);
+            
+            if (isPriceChanged) {
+                const finalPrice = globalCalcData.totalPrice;
+                setVal("bfCompanyTotal", formatCurrency(finalPrice));
+                setVal("bfFinalTotal", formatCurrency(finalPrice));
+                setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+                setVal("bfOutstanding", formatCurrency(finalPrice - globalCalcData.dpAmount));
+            } else {
+                setVal("bfCompanyTotal", formatCurrency(base29));
+                setVal("bfFinalTotal", formatCurrency(base29));
+                setVal("bfFinalDp", formatCurrency(globalCalcData.dpAmount));
+                setVal("bfOutstanding", formatCurrency(base29 - globalCalcData.dpAmount));
+            }
             
             // Credit Remarks/Notes logic:
             // 1. Remove duplicate rebate note from bfVtsNote (Remarks/Notes column)
             // 2. Clear breakdown of VTS and Registration monthly addition
             let remarksNoteRow1 = "Includes Tk. 500 VTS/Mo";
-            const pkgRow1Text = globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)";
+            const pkgRow1Text = globalCalcData.isCustomEmi 
+                ? `Custom EMI Package (${globalCalcData.months} Months @ 8% Flat Profit)`
+                : (globalCalcData.deviationNote || "Standard 29M Package Deal (No Price Adjustment)");
             
             if (globalCalcData.selectedRegOption === 'emi' && globalCalcData.regCost > 0) {
                 const regPerMo = globalCalcData.months > 0 ? Math.round(globalCalcData.regCost / globalCalcData.months) : 0;
