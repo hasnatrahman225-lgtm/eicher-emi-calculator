@@ -1134,9 +1134,9 @@
             <!-- Action Buttons Toolbar -->
             <div class="header-actions-bar">
                 <button class="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
-                <button id="btnMyOffers" class="nav-pill-btn btn-offers" style="display: none;" onclick="openMyOffersModal()" title="আমার তৈরিকৃত অফার লেটার">
+                <button id="btnMyOffers" class="nav-pill-btn btn-offers" style="display: none;" onclick="openMyOffersModal()" title="Offer Letter">
                     <span>📋</span>
-                    <span>অফার লেটার</span>
+                    <span>Offer Letter</span>
                     <span id="myOffersCountBadge" class="pill-badge">0</span>
                 </button>
                 <button id="btnOpenAdmin" class="nav-pill-btn btn-dashboard" style="display:none;" onclick="openAdmin()" title="অ্যাডমিন ড্যাশবোর্ড">
@@ -1268,7 +1268,7 @@
                     </button>
                     <button class="primary-btn" id="btnGenerateOfferLetter" onclick="openOfferLetterGenerator()" style="background-color: #1d4ed8; display: none; align-items: center; justify-content: center; gap: 8px; width: auto; padding: 10px 22px; font-weight: 600;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                        📄 অটোমেটেড অফার লেটার তৈরি করুন
+                        Automated Offer Letter
                     </button>
                 </div>
             </div>
@@ -2371,25 +2371,23 @@
             `;
         }
 
-        // Add Grace Period Note in Explanation HTML
+        // Add Grace Period Note in Explanation HTML (Shortened & Compact)
         if (isGraceApplied && graceDays > 0) {
             let graceChargeText = "";
             if (chargeableGraceDays > 0) {
-                graceChargeText = `প্রথম ৩০ দিন ফ্রি। অতিরিক্ত <strong>${chargeableGraceDays} দিনের</strong> জন্য লোন পরিমাণের (${formatCurrency(totalLoan)}) উপর ${effectiveInterestRate}% হারে <strong>+${formatCurrency(graceProfit)}</strong> প্রফিট মূল প্রাইসের সাথে যোগ করা হয়েছে।`;
+                graceChargeText = `Tk. ${formatCurrency(graceProfit)} প্রাইসের সাথে যোগ করা হয়েছে।`;
             } else {
-                graceChargeText = `প্রথম ৩০ দিন সম্পূর্ণ ফ্রি গ্রেস পিরিয়ড। কোনো অতিরিক্ত প্রফিট চার্জ প্রযোজ্য নয় (+Tk. 0)।`;
+                graceChargeText = `Tk. 0`;
             }
 
             explanationHTML += `
-                <div style="margin-top:12px; padding:12px 14px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#14532d; font-size:14px;">
-                    <div style="font-size:15px; font-weight:bold; color:#15803d; margin-bottom:5px; display:flex; align-items:center; gap:6px;">
+                <div style="margin-top:10px; padding:10px 14px; background:#f0fdf4; border:2px solid #16a34a; border-radius:8px; color:#14532d; font-size:14px;">
+                    <div style="font-size:14.5px; font-weight:bold; color:#15803d; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
                         <span>⏳ ১ম কিস্তির সময়কাল (${graceDays} দিন পর):</span>
                     </div>
                     <div style="font-size:13px; font-weight:normal; line-height:1.6; color:#166534;">
                         • <strong>১ম কিস্তি শুরু হবে:</strong> গাড়ি ডেলিভারির <strong>${graceDays} দিন পর</strong>।<br>
-                        • <strong>গ্রেস প্রফিট চার্জ:</strong> ${graceChargeText}<br>
-                        • <strong>কিস্তির মেয়াদ:</strong> অনুমোদিত <strong>${months} মাস (${months} কিস্তি)</strong>। মেয়াদ থেকে কোনো কিস্তি বাদ দেওয়া হয়নি।<br>
-                        • <strong>নির্ধারিত মাসিক কিস্তি (EMI):</strong> <strong>${formatCurrency(effectiveEmi)}</strong> (VTS চার্জ ৫০০ টাকা সহ)।
+                        • <strong>গ্রেস প্রফিট চার্জ:</strong> ${graceChargeText}
                     </div>
                 </div>
             `;
