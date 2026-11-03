@@ -2236,18 +2236,11 @@
             
             if (deficitPerMonth > 0) {
                 const totalDeficit = deficitPerMonth * (months - 1);
-                const extraInterest = (totalDeficit * effectiveInterestRate * (months / 12)) / 100;
-                
-                totalInterest += extraInterest;
-                totalPrice += extraInterest;
-                totalPrice = Math.round(totalPrice / 1000) * 1000;
-                totalInterest = totalPrice - price;
-                
-                finalMonthEmi = emi + totalDeficit + extraInterest;
+                finalMonthEmi = Math.round(emi + totalDeficit);
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else if (deficitPerMonth < 0) {
                 const totalSurplus = Math.abs(deficitPerMonth) * (months - 1);
-                finalMonthEmi = Math.max(0, emi - totalSurplus);
+                finalMonthEmi = Math.max(0, Math.round(emi - totalSurplus));
                 emiDisplayText = `${formatCurrency(customEmi)} <span style="font-size:14px; display:block; margin-top:4px;">(1 to ${months-1} months)</span><div style="font-size:18px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.3); padding-top:4px;">${formatCurrency(finalMonthEmi)} <span style="font-size:14px;">(${months}th month)</span></div>`;
             } else {
                 emiDisplayText = isGraceApplied ? `${formatCurrency(emi)} <span style="font-size:13px; display:block; margin-top:3px; font-weight:normal; color:#dcfce7;">(${months} কিস্তি | ১ম কিস্তি ${graceDays} দিন পর)</span>` : formatCurrency(emi);
