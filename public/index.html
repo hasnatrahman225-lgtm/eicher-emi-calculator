@@ -815,13 +815,16 @@
             vertical-align: top !important;
         }
 
-        body.printing-buyer-form #bfKpiTable .print-input {
+        body.printing-buyer-form #bfKpiTable .print-input,
+        body.printing-buyer-form #bfRegNotes {
             white-space: normal !important;
             word-break: break-word !important;
             overflow-wrap: break-word !important;
             height: auto !important;
             overflow: visible !important;
             display: block !important;
+            font-size: 11px !important;
+            line-height: 1.2 !important;
         }
 
         /* Avoid any page break inside tables */
@@ -2760,9 +2763,11 @@
                                 <option value="Open">Open</option>
                             </select>
                         </td>
-                        <td colspan="2"><input type="text" class="print-input" id="bfRegNotes" style="width: 95%;"></td>
+                        <td colspan="2" style="padding: 2px 4px; vertical-align: middle;">
+                            <div contenteditable="true" class="print-input" id="bfRegNotes" style="width: 100%; min-height: 20px; word-break: break-word; overflow-wrap: break-word; white-space: normal; line-height: 1.25; font-size: 11.5px; outline: none; text-align: left;"></div>
+                        </td>
                         <td style="text-align: left; padding-left: 6px; font-weight: 500;">Location</td>
-                        <td><input type="text" class="print-input" style="width: 95%;"></td>
+                        <td><input type="text" class="print-input" id="bfLocation" style="width: 95%; text-align: center;"></td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: left; padding-left: 6px; font-weight: 500;">Insurance</td>
@@ -3205,12 +3210,14 @@
         overflow-wrap: break-word !important;
         white-space: normal !important;
     }
-    #bfKpiTable .print-input {
+    #bfKpiTable .print-input,
+    #bfRegNotes {
         white-space: normal !important;
         word-break: break-word !important;
         overflow-wrap: break-word !important;
         min-height: 20px;
-        line-height: 1.35;
+        line-height: 1.25;
+        font-size: 11.5px;
         height: auto !important;
     }
 </style>
@@ -3272,7 +3279,12 @@
         const baseNote = globalCalcData.regNote || "Not Included";
         const el = document.getElementById("bfRegNotes");
         if (el) {
-            el.value = `${baseNote} (${regType})`;
+            const noteText = `${baseNote} (${regType})`;
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.value = noteText;
+            } else {
+                el.innerText = noteText;
+            }
         }
     }
 
@@ -3328,6 +3340,7 @@
             }
             setVal("bfPkgRow3", "");
             setVal("bfNoteRow3", "");
+            setVal("bfLocation", "");
             updateBfRegNote();
 
             // Populate Page 2 Accounts Section for Cash Mode
@@ -3428,6 +3441,7 @@
                 setVal("bfPkgRow3", "");
                 setVal("bfNoteRow3", "");
             }
+            setVal("bfLocation", "Dhaka");
             updateBfRegNote();
 
             let processNote = "";
